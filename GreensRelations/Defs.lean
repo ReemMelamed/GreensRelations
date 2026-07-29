@@ -3,7 +3,6 @@ Copyright (c) 2026 Re'em Melamed-Katz. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Re'em Melamed-Katz
 -/
-
 import Mathlib.Algebra.Divisibility.Basic
 import Mathlib.Algebra.Group.Basic
 
@@ -38,6 +37,9 @@ abbrev IsGreenLeftDvd (a b : S) : Prop := a = b ∨ RightDvd b a
 /-- `IsGreenRightDvd a b` means that `a` is a right multiple of `b`,
   i.e., `a = b` or `a = b * z`. -/
 abbrev IsGreenRightDvd (a b : S) : Prop := a = b ∨ b ∣ a
+
+/-- `IsGreenHDvd a b` means `a` is both a left and a right multiple of `b`. -/
+abbrev IsGreenHDvd (a b : S) : Prop := IsGreenLeftDvd a b ∧ IsGreenRightDvd a b
 
 /-- `IsGreenJRel a b` represents the basic step of being a two-sided multiple.
   `a` is related to `b` if `a = b`, `a = u * b`, `a = b * v`, or `a = u * b * v`. -/

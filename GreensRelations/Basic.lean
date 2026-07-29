@@ -3,7 +3,6 @@ Copyright (c) 2026 Re'em Melamed-Katz. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Re'em Melamed-Katz
 -/
-
 import GreensRelations.Defs
 import Mathlib.Data.Setoid.Basic
 import Mathlib.Algebra.Group.Opposite
@@ -76,6 +75,19 @@ open MulOpposite in
   exact IsGreenLeftDvd.trans hab hbc
 
 end IsGreenRightDvd
+
+namespace IsGreenHDvd
+
+/-- Green's H-divisibility relation is reflexive. -/
+@[refl] theorem refl (a : S) : IsGreenHDvd a a :=
+  ⟨IsGreenLeftDvd.refl a, IsGreenRightDvd.refl a⟩
+
+/-- Green's H-divisibility relation is transitive. -/
+@[trans] theorem trans {a b c : S} (hab : IsGreenHDvd a b) (hbc : IsGreenHDvd b c) :
+    IsGreenHDvd a c :=
+  ⟨IsGreenLeftDvd.trans hab.1 hbc.1, IsGreenRightDvd.trans hab.2 hbc.2⟩
+
+end IsGreenHDvd
 
 namespace IsGreenJRel
 
