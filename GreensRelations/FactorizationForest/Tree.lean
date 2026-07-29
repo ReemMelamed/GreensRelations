@@ -252,7 +252,7 @@ theorem buildTree_height_bound {A S : Type*} [Semigroup S] {h : ℕ} [Nonempty (
                 x.val = 0 ∨ x.val = w_len := by
               intro x
               simp only [splitIndices, restrictSplit, List.mem_filter, List.mem_finRange,
-                decide_eq_true, true_and, Fin.val_eq_zero_iff]
+                decide_eq_true_iff, true_and, Fin.val_eq_zero_iff]
               constructor
               · intro h_max
                 have h_in_s : (⟨i.val + x.val, by omega⟩ : Fin _) ∈ splitIndices s := by
