@@ -998,5 +998,4 @@ lemma combineSplits_props {α S : Type*}
           hsr_Y_xy hsr_Y_uv hsr_Y_xu
         exact hx_eq ▸ hy_eq ▸ hu_eq ▸ hv_eq ▸ (h_σ_Y i x_oi y_oi) ▸ (h_σ_Y i u_oi v_oi) ▸ h_ramsey
 
-
 end SplitConstruction
