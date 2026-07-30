@@ -6,7 +6,6 @@ import GreensRelations.FactorizationForest.Irregular
 import GreensRelations.FactorizationForest.Regular
 import GreensRelations.FactorizationForest.Split
 import GreensRelations.FactorizationForest.Tree
-import GreensRelations.FactorizationForest.Word
 import GreensRelations.MulSeq
 import GreensRelations.Order
 import GreensRelations.Theorems

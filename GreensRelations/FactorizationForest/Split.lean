@@ -91,3 +91,15 @@ theorem simon_split {S α : Type*} [Semigroup S] [Fintype S]
         ((hsr_iff u v).mp hsr_uv) ((hsr_iff x u).mp hsr_xu)⟩
 
 end SimonSplit
+
+section SimonWord
+
+theorem simon_word {A S : Type*} [Semigroup S] [Fintype S] [Nonempty (Fin (nS S))]
+    (eval : List A → S)
+    (hmul : ∀ u v, u ≠ [] → v ≠ [] → eval (u ++ v) = eval u * eval v)
+    (u : List A) :
+    ∃ s : Split (Fin (u.length + 1)) (nS S),
+      IsNormalized s ∧ IsRamsey (wordLabeling eval hmul u) s :=
+  simon_split (wordLabeling eval hmul u)
+
+end SimonWord
