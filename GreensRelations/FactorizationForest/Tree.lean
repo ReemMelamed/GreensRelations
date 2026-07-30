@@ -358,26 +358,6 @@ theorem buildTree_height_bound {A S : Type*} [Semigroup S] {h : ℕ} [Nonempty (
       split <;> (dsimp [FactorizationTree.height] at h_max_bound ⊢; omega)
 termination_by (h, u.length)
 
-lemma child_height_bound {A S : Type*} [Semigroup S] {h : ℕ} [Nonempty (Fin h)]
-    (eval : List A → S) (w : List A) (hw : w ≠ []) (s_w : Split (Fin (w.length + 1)) h)
-    (h_child : (splitIndices s_w).map (·.val) = [0, w.length]) :
-    (buildFactorizationTree eval w hw s_w).height ≤ 3 * h - 2 := by
-  rw [buildFactorizationTree]
-  split
-  · split <;> {
-      dsimp [FactorizationTree.height]
-      have : 0 < h := Fin.pos_iff_nonempty.mpr inferInstance
-      omega
-    }
-  · dsimp only
-    split
-    · split <;> dsimp [FactorizationTree.height]
-      · have : Nonempty (Fin (h - 1)) := ⟨⟨0, by omega⟩⟩
-        exact le_trans (Nat.add_le_add_right (buildTree_height_bound eval _ _ _) 2) (by omega)
-      · have : 0 < h := Fin.pos_iff_nonempty.mpr inferInstance
-        omega
-    · rename_i h_not_idxs
-      contradiction
 
 lemma extract_idempotent {A S : Type*} [Semigroup S] {h : ℕ} [Nonempty (Fin h)]
     (eval : List A → S)
