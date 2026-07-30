@@ -14,7 +14,6 @@ This file proves the irregular case of the Factorization Forest Theorem.
 * [T. Colcombet, *The Factorization Forest Theorem*][colombet2008]
 -/
 
-
 section LabelingProperties
 
 variable {S : Type*} [Semigroup S]
