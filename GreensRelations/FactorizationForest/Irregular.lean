@@ -17,6 +17,8 @@ This file proves the irregular case of the Factorization Forest Theorem.
 
 section LabelingProperties
 
+variable {S : Type*} [Semigroup S]
+
 /-- If an irregular D-class contains elements from a multiplicative sequence,
 it cannot contain three consecutive products in that sequence. -/
 lemma irregular_d_class_no_three_seq [Finite S] (a : S) {α : Type*} [LinearOrder α]
@@ -38,7 +40,6 @@ lemma irregular_d_class_no_three_seq [Finite S] (a : S) {α : Type*} [LinearOrde
       (mul_mem_isGreenD_eqvClass_properties ⟨a, rfl⟩ _ _ h_d1 h_d2 h_D_xz_a).2
     ⟨e, he_D, he_idem⟩
   )
-
 
 end LabelingProperties
 
