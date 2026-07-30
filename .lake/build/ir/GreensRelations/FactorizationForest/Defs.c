@@ -45,6 +45,9 @@ LEAN_EXPORT lean_object* lp_GreensTheorems_FactorizationTree_height___redArg(lea
 LEAN_EXPORT lean_object* lp_GreensTheorems_FactorizationTree_height___redArg___boxed(lean_object*);
 LEAN_EXPORT lean_object* lp_GreensTheorems_FactorizationTree_height(lean_object*, lean_object*);
 LEAN_EXPORT lean_object* lp_GreensTheorems_FactorizationTree_height___boxed(lean_object*, lean_object*);
+LEAN_EXPORT lean_object* lp_GreensTheorems___private_GreensRelations_FactorizationForest_Defs_0__nSElement_match__1_splitter___redArg(lean_object*, lean_object*);
+LEAN_EXPORT lean_object* lp_GreensTheorems___private_GreensRelations_FactorizationForest_Defs_0__nSElement_match__1_splitter(lean_object*, lean_object*, lean_object*, lean_object*, lean_object*);
+LEAN_EXPORT lean_object* lp_GreensTheorems___private_GreensRelations_FactorizationForest_Defs_0__nSElement_match__1_splitter___boxed(lean_object*, lean_object*, lean_object*, lean_object*, lean_object*);
 LEAN_EXPORT lean_object* lp_GreensTheorems_wordLabeling___redArg___lam__0(lean_object* v_u_3_, lean_object* v_eval_4_, lean_object* v_i_5_, lean_object* v_j_6_){
 _start:
 {
@@ -416,6 +419,31 @@ lean_object* v_res_131_;
 v_res_131_ = lp_GreensTheorems_FactorizationTree_height(v_A_129_, v_x_130_);
 lean_dec_ref(v_x_130_);
 return v_res_131_;
+}
+}
+LEAN_EXPORT lean_object* lp_GreensTheorems___private_GreensRelations_FactorizationForest_Defs_0__nSElement_match__1_splitter___redArg(lean_object* v_x_132_, lean_object* v_h__1_133_){
+_start:
+{
+lean_object* v___x_134_; 
+v___x_134_ = lean_apply_2(v_h__1_133_, v_x_132_, lean_box(0));
+return v___x_134_;
+}
+}
+LEAN_EXPORT lean_object* lp_GreensTheorems___private_GreensRelations_FactorizationForest_Defs_0__nSElement_match__1_splitter(lean_object* v_S_135_, lean_object* v_strictlyAbove_136_, lean_object* v_motive_137_, lean_object* v_x_138_, lean_object* v_h__1_139_){
+_start:
+{
+lean_object* v___x_140_; 
+v___x_140_ = lean_apply_2(v_h__1_139_, v_x_138_, lean_box(0));
+return v___x_140_;
+}
+}
+LEAN_EXPORT lean_object* lp_GreensTheorems___private_GreensRelations_FactorizationForest_Defs_0__nSElement_match__1_splitter___boxed(lean_object* v_S_141_, lean_object* v_strictlyAbove_142_, lean_object* v_motive_143_, lean_object* v_x_144_, lean_object* v_h__1_145_){
+_start:
+{
+lean_object* v_res_146_; 
+v_res_146_ = lp_GreensTheorems___private_GreensRelations_FactorizationForest_Defs_0__nSElement_match__1_splitter(v_S_141_, v_strictlyAbove_142_, v_motive_143_, v_x_144_, v_h__1_145_);
+lean_dec(v_strictlyAbove_142_);
+return v_res_146_;
 }
 }
 lean_object* initialize_Init(uint8_t builtin);

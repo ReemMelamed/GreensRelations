@@ -1,10 +1,10 @@
 import GreensRelations.Basic
 import GreensRelations.Classes
 import GreensRelations.Defs
-import GreensRelations.FactorizationForest.Basic
 import GreensRelations.FactorizationForest.Defs
+import GreensRelations.FactorizationForest.Irregular
+import GreensRelations.FactorizationForest.Regular
 import GreensRelations.FactorizationForest.Split
-import GreensRelations.FactorizationForest.SplitCases
 import GreensRelations.FactorizationForest.Tree
 import GreensRelations.FactorizationForest.Word
 import GreensRelations.MulSeq
