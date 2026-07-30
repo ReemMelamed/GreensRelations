@@ -50,9 +50,7 @@ abbrev IsRamsey (L : MultiplicativeLabeling S α) (s : Split α h) : Prop :=
     SplitRelation s x y → SplitRelation s u v → SplitRelation s x u →
     L.σ x y = L.σ u v)
 
-/-- The relation induced by a split function is an equivalence relation. -/
-theorem splitRelation_equiv (s : Split α h) : Equivalence (SplitRelation s) := by
-  constructor <;> grind
+
 
 end SplitDefinitions
 
@@ -137,9 +135,7 @@ theorem nD_pos (D : Set S) (hD : ∃ x, D = IsGreenD.eqvClass x) : 0 < nD D := b
       IsGreenH.refl _⟩⟩
   · decide
 
-/-- Instance providing that the set of available ranks for a D-class is inhabited. -/
-abbrev nonempty_fin_nD (D : Set S) (hD : ∃ x, D = IsGreenD.eqvClass x) : Nonempty (Fin (nD D)) :=
-  Fin.pos_iff_nonempty.mp (nD_pos D hD)
+
 
 end nD
 
@@ -189,18 +185,6 @@ lemma isGreenD_of_prefix (a : S) {α : Type*} [LinearOrder α]
         labeling_factor_le_J σ u u v w le_rfl huv hvw)
       (h_img u w (huv.trans hvw_lt))))
 
-/-- If the product of a suffix is D-related to an element,
-then the extended product is also D-related to it. -/
-lemma isGreenD_of_suffix (a : S) {α : Type*} [LinearOrder α]
-    (σ : MultiplicativeLabeling S α) (h_img : labelingIn σ (jUp a))
-    (u v w : α) (huv : u ≤ v) (hvw : v < w) (hD : IsGreenD (σ.σ v w) a) :
-    IsGreenD (σ.σ u w) a := by
-  rcases huv.eq_or_lt with rfl | huv_lt
-  · exact hD
-  · exact isGreenD_of_isGreenJ (GreenJClass.mk_eq_mk_iff.mp (le_antisymm
-      (GreenJClass.mk_eq_mk_iff.mpr (isGreenJ_of_isGreenD hD) ▸
-        labeling_factor_le_J σ u v w w huv hvw le_rfl)
-      (h_img u w (huv_lt.trans hvw))))
 
 end LabelingProperties
 

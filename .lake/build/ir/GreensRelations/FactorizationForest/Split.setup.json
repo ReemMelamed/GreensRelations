@@ -3002,12 +3002,12 @@
   [["C:\\Users\\reems\\git-repositories\\GreensRelations\\.lake\\build\\lib\\lean\\GreensRelations\\Order.olean"]],
   "GreensRelations.MulSeq":
   [["C:\\Users\\reems\\git-repositories\\GreensRelations\\.lake\\build\\lib\\lean\\GreensRelations\\MulSeq.olean"]],
-  "GreensRelations.FactorizationForest.SplitCases":
-  [["C:\\Users\\reems\\git-repositories\\GreensRelations\\.lake\\build\\lib\\lean\\GreensRelations\\FactorizationForest\\SplitCases.olean"]],
+  "GreensRelations.FactorizationForest.Regular":
+  [["C:\\Users\\reems\\git-repositories\\GreensRelations\\.lake\\build\\lib\\lean\\GreensRelations\\FactorizationForest\\Regular.olean"]],
+  "GreensRelations.FactorizationForest.Irregular":
+  [["C:\\Users\\reems\\git-repositories\\GreensRelations\\.lake\\build\\lib\\lean\\GreensRelations\\FactorizationForest\\Irregular.olean"]],
   "GreensRelations.FactorizationForest.Defs":
   [["C:\\Users\\reems\\git-repositories\\GreensRelations\\.lake\\build\\lib\\lean\\GreensRelations\\FactorizationForest\\Defs.olean"]],
-  "GreensRelations.FactorizationForest.Basic":
-  [["C:\\Users\\reems\\git-repositories\\GreensRelations\\.lake\\build\\lib\\lean\\GreensRelations\\FactorizationForest\\Basic.olean"]],
   "GreensRelations.Defs":
   [["C:\\Users\\reems\\git-repositories\\GreensRelations\\.lake\\build\\lib\\lean\\GreensRelations\\Defs.olean"]],
   "GreensRelations.Classes":

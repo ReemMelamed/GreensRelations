@@ -1,6 +1,6 @@
 // Lean compiler output
-// Module: GreensRelations.FactorizationForest.Split
-// Imports: public import Init public meta import Init public import GreensRelations.FactorizationForest.Regular public import GreensRelations.FactorizationForest.Irregular
+// Module: GreensRelations.FactorizationForest.Irregular
+// Imports: public import Init public meta import Init public import GreensRelations.FactorizationForest.Defs
 #include <lean/lean.h>
 #if defined(__clang__)
 #pragma clang diagnostic ignored "-Wunused-parameter"
@@ -15,10 +15,9 @@ extern "C" {
 #endif
 lean_object* initialize_Init(uint8_t builtin);
 lean_object* initialize_Init(uint8_t builtin);
-lean_object* initialize_GreensTheorems_GreensRelations_FactorizationForest_Regular(uint8_t builtin);
-lean_object* initialize_GreensTheorems_GreensRelations_FactorizationForest_Irregular(uint8_t builtin);
+lean_object* initialize_GreensTheorems_GreensRelations_FactorizationForest_Defs(uint8_t builtin);
 static bool _G_initialized = false;
-LEAN_EXPORT lean_object* initialize_GreensTheorems_GreensRelations_FactorizationForest_Split(uint8_t builtin) {
+LEAN_EXPORT lean_object* initialize_GreensTheorems_GreensRelations_FactorizationForest_Irregular(uint8_t builtin) {
 lean_object * res;
 if (_G_initialized) return lean_io_result_mk_ok(lean_box(0));
 _G_initialized = true;
@@ -28,10 +27,7 @@ lean_dec_ref(res);
 res = initialize_Init(builtin);
 if (lean_io_result_is_error(res)) return res;
 lean_dec_ref(res);
-res = initialize_GreensTheorems_GreensRelations_FactorizationForest_Regular(builtin);
-if (lean_io_result_is_error(res)) return res;
-lean_dec_ref(res);
-res = initialize_GreensTheorems_GreensRelations_FactorizationForest_Irregular(builtin);
+res = initialize_GreensTheorems_GreensRelations_FactorizationForest_Defs(builtin);
 if (lean_io_result_is_error(res)) return res;
 lean_dec_ref(res);
 return lean_io_result_mk_ok(lean_box(0));
