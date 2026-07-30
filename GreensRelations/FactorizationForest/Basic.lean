@@ -238,7 +238,7 @@ lemma hOf_eq_class (ctx : SimonContext S α) (z : α) :
   ext w
   have he := eId_mem ctx z
   simp only [hOf, lOf, rOf, IsGreenH.eqvClass, IsGreenL.eqvClass, IsGreenR.eqvClass,
-    IsGreenH, Set.mem_inter_iff, Set.mem_setOf_eq] at he ⊢
+    IsGreenH, Set.mem_inter_iff, Set.mem_ofPred_eq] at he ⊢
   split_ifs at he ⊢ <;> exact ⟨
     fun ⟨hwL, hwR⟩ ↦ ⟨IsGreenL.trans hwL (IsGreenL.symm he.1),
       IsGreenR.trans hwR (IsGreenR.symm he.2)⟩,
