@@ -1,7 +1,7 @@
 {"synthetic": false,
  "schemaVersion": "2025-09-10",
  "outputs":
- {"o": ["62e3a0ef8bf816ef.olean"],
+ {"o": ["dd78b8183ccf59e1.olean"],
   "m": false,
   "i": "f29a4dd5e6808df6.ilean",
   "c": "c7eb16d1450bc2be.c"},
@@ -16,7 +16,7 @@
     ["imports",
      [["GreensRelations.MulSeq transitive imports (legacy)",
        "cac65e43c7e2c7af"],
-      ["GreensRelations.MulSeq:importAllArts", "af2b912710b49b66"],
+      ["GreensRelations.MulSeq:importAllArts", "2d4ebe810dce7c9b"],
       ["Mathlib.Data.Fintype.Card transitive imports (legacy)",
        "ca86319ee87f14ff"],
       ["Mathlib.Data.Fintype.Card:importAllArts", "98b13857c10a8628"]]]]],
@@ -38,4 +38,4 @@
   ["Module.name: GreensRelations.Theorems", "1ce3612de43a8fa6"],
   ["Package.id?: (some GreensTheorems)", "6ed9172dbfc8f471"],
   ["Module.leanArgs: #[]", "00000000000006bb"]],
- "depHash": "bfb46cc2a45c9632"}
+ "depHash": "9b982b2d533e1e4b"}

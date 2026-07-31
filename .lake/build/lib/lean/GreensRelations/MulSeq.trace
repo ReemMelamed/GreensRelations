@@ -1,9 +1,9 @@
 {"synthetic": false,
  "schemaVersion": "2025-09-10",
  "outputs":
- {"o": ["94eaaf73a8af4350.olean"],
+ {"o": ["8a5caa14a6d64d70.olean"],
   "m": false,
-  "i": "f62475264e802f93.ilean",
+  "i": "fa9ef191d769eaa9.ilean",
   "c": "d564376ea3742ae6.c"},
  "log":
  [{"message":
@@ -28,7 +28,7 @@
   ["Lean 4.33.0, commit 62eed1db4d67327ec8120be05f1a1b0847d74561",
    "8fa8fbe052c71a8e"],
   ["C:\\Users\\reems\\git-repositories\\GreensRelations\\GreensRelations\\MulSeq.lean",
-   "dec16b1fce119cdd"],
+   "6ca50ff66a2c094f"],
   ["options",
    [["-DmaxSynthPendingDepth=3", "c78e353d34de85d4"],
     ["-Dweak.linter.mathlibStandardSet=true", "8a155799906f2b42"],
@@ -38,4 +38,4 @@
   ["Module.name: GreensRelations.MulSeq", "7443d10bd4f76081"],
   ["Package.id?: (some GreensTheorems)", "6ed9172dbfc8f471"],
   ["Module.leanArgs: #[]", "00000000000006bb"]],
- "depHash": "2e14160f26f62f63"}
+ "depHash": "f9ef802e50923c8e"}

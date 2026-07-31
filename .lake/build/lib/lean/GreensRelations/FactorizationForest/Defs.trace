@@ -20,8 +20,8 @@
       ["Mathlib.Data.Finset.Max transitive imports (legacy)",
        "1a0a231c06238f53"],
       ["Mathlib.Data.Finset.Max:importAllArts", "58df536989245c6d"],
-      ["GreensRelations.Order transitive imports (legacy)", "dfb704d53f5a67b8"],
-      ["GreensRelations.Order:importAllArts", "a9fb48d308b005d5"]]]]],
+      ["GreensRelations.Order transitive imports (legacy)", "45cd144b01135dbc"],
+      ["GreensRelations.Order:importAllArts", "10c6c7cbc98c5002"]]]]],
   ["libs",
    [["import dynlibs", "00000000000006bb"],
     ["package external libraries", "00000000000006bb"],
@@ -40,4 +40,4 @@
   ["Module.name: GreensRelations.FactorizationForest.Defs", "84e41b9cec4f7d60"],
   ["Package.id?: (some GreensTheorems)", "6ed9172dbfc8f471"],
   ["Module.leanArgs: #[]", "00000000000006bb"]],
- "depHash": "ff8e6bea5e4f0202"}
+ "depHash": "2ecee2082b1be723"}

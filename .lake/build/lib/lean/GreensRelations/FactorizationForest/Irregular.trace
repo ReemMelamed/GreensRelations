@@ -15,7 +15,7 @@
      [["@GreensTheorems:extraDep", "00000000000006bb"]]],
     ["imports",
      [["GreensRelations.FactorizationForest.Defs transitive imports (legacy)",
-       "cb24fb1ca4526a65"],
+       "bdb7ebea8eb2f9fa"],
       ["GreensRelations.FactorizationForest.Defs:importAllArts",
        "77b566297a1f17fd"]]]]],
   ["libs",
@@ -37,4 +37,4 @@
    "2e675893256e5683"],
   ["Package.id?: (some GreensTheorems)", "6ed9172dbfc8f471"],
   ["Module.leanArgs: #[]", "00000000000006bb"]],
- "depHash": "988cf7e973255ea7"}
+ "depHash": "eb94c0ffbceaf159"}

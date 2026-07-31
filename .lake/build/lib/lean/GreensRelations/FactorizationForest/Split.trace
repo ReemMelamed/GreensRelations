@@ -15,11 +15,11 @@
      [["@GreensTheorems:extraDep", "00000000000006bb"]]],
     ["imports",
      [["GreensRelations.FactorizationForest.Regular transitive imports (legacy)",
-       "d5801d163fdd1331"],
+       "3ea53f5040159dd8"],
       ["GreensRelations.FactorizationForest.Regular:importAllArts",
        "cf9f6f8399fbea52"],
       ["GreensRelations.FactorizationForest.Irregular transitive imports (legacy)",
-       "d5801d163fdd1331"],
+       "3ea53f5040159dd8"],
       ["GreensRelations.FactorizationForest.Irregular:importAllArts",
        "6aac527486b542dc"]]]]],
   ["libs",
@@ -41,4 +41,4 @@
    "836a8ffc15bf3de6"],
   ["Package.id?: (some GreensTheorems)", "6ed9172dbfc8f471"],
   ["Module.leanArgs: #[]", "00000000000006bb"]],
- "depHash": "1f17b6e4206cda57"}
+ "depHash": "61aa2aa8640aaf78"}
