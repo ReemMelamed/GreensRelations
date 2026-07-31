@@ -105,18 +105,6 @@ noncomputable instance instFintypeSubtypeX
     Fintype {x : α // x ∈ xs} := by
   infer_instance
 
-/-- If an index `i` is valid for a list `xs`, then `xs.get ⟨i, h⟩` is an element of `xs`. -/
-lemma list_get_mem_local {α : Type*} (xs : List α) (i : ℕ) (h : i < xs.length) :
-    xs.get ⟨i, h⟩ ∈ xs := by
-  induction xs generalizing i with
-  | nil =>
-    simp only [List.length] at h
-    omega
-  | cons a tail ih =>
-    cases i with
-    | zero => exact List.Mem.head _
-    | succ i' => exact List.Mem.tail _ (ih i' _)
-
 /-- A strictly increasing sequence covering a domain bounds any element `x` either
 within an interval or at one of the sequence points. -/
 lemma list_interval_covers {α : Type*} [LinearOrder α] (x : α) :
@@ -141,7 +129,7 @@ lemma list_interval_covers {α : Type*} [LinearOrder α] (x : α) :
         omega
       let z := (a :: tail).get ⟨1, h⟩
       have hz_eq : z = tail.get ⟨0, h_len⟩ := rfl
-      have h_mem : z ∈ tail := hz_eq.symm ▸ list_get_mem_local tail 0 h_len
+      have h_mem : z ∈ tail := hz_eq.symm ▸ tail.get_mem ⟨0, h_len⟩
       rcases lt_trichotomy x z with h_lt | rfl | h_gt
       · exact h_lt
       · nomatch (h_not_in (List.Mem.tail _ h_mem))
@@ -400,7 +388,7 @@ lemma buildXSeq_same_interval_of_splitRelation {α : Type*} [LinearOrder α] {n 
     have h_pq : p < q := lt_trans h_px (lt_of_le_of_lt h_xj h_lt_qj)
     have hb := hsr_pq.right _ ((min_eq_left (le_of_lt h_pq)).symm ▸ le_of_lt h_px)
       ((max_eq_right (le_of_lt h_pq)).symm ▸ le_trans h_xj (le_of_lt h_lt_qj))
-    have h1 := rank_ge_diff_of_mem _ (list_get_mem_local xs _ hi1)
+    have h1 := rank_ge_diff_of_mem _ (xs.get_mem ⟨_, hi1⟩)
     have h2 := rank_lt_diff_of_not_mem p hp
     rw [min_eq_left (le_of_lt h_pq)] at hb
     have := Fin.le_iff_val_le_val.mp hb
@@ -415,7 +403,7 @@ lemma buildXSeq_same_interval_of_splitRelation {α : Type*} [LinearOrder α] {n 
     have h_qp : q < p := lt_trans h_qx (lt_of_le_of_lt h_xi h_lt_pi)
     have hb := hsr_pq.right _ ((min_eq_right (le_of_lt h_qp)).symm ▸ le_of_lt h_qx)
       ((max_eq_left (le_of_lt h_qp)).symm ▸ le_trans h_xi (le_of_lt h_lt_pi))
-    have h1 := rank_ge_diff_of_mem _ (list_get_mem_local xs _ hj1)
+    have h1 := rank_ge_diff_of_mem _ (xs.get_mem ⟨_, hj1⟩)
     have h2 := rank_lt_diff_of_not_mem q hq
     rw [min_eq_right (le_of_lt h_qp)] at hb
     have := Fin.le_iff_val_le_val.mp hb
@@ -615,7 +603,7 @@ lemma combineSplits_interval_ramsey {α S : Type*}
     rcases lt_trichotomy i j with h_ij | rfl | h_ji
     · have hi1 : i + 1 < xs.length := by omega
       let z := xs.get ⟨i + 1, hi1⟩
-      have hz_in : z ∈ xs := list_get_mem_local xs (i + 1) hi1
+      have hz_in : z ∈ xs := xs.get_mem ⟨i + 1, hi1⟩
       have h_z_gt_y : y < z := by
         by_contra h_not_lt
         have hz_bound : min x y ≤ z ∧ z ≤ max x y := by
