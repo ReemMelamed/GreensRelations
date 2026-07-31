@@ -1,7 +1,7 @@
 {"synthetic": false,
  "schemaVersion": "2025-09-10",
  "outputs":
- {"o": ["a5e7014095ffc6aa.olean"],
+ {"o": ["29b5bf8f856ba7f6.olean"],
   "m": false,
   "i": "3a32c5f31c8d7418.ilean",
   "c": "f9a97f6d78f5b561.c"},
@@ -17,7 +17,7 @@
      [["GreensRelations.FactorizationForest.Defs transitive imports (legacy)",
        "cb24fb1ca4526a65"],
       ["GreensRelations.FactorizationForest.Defs:importAllArts",
-       "cf047cb0b9b6fa9c"]]]]],
+       "77b566297a1f17fd"]]]]],
   ["libs",
    [["import dynlibs", "00000000000006bb"],
     ["package external libraries", "00000000000006bb"],
@@ -37,4 +37,4 @@
    "2e675893256e5683"],
   ["Package.id?: (some GreensTheorems)", "6ed9172dbfc8f471"],
   ["Module.leanArgs: #[]", "00000000000006bb"]],
- "depHash": "9a4fbc6a5b1432c9"}
+ "depHash": "988cf7e973255ea7"}
