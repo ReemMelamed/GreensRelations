@@ -520,15 +520,15 @@ lemma simon_split_regular_case {S : Type*} [Semigroup S] [Fintype S]
   obtain ⟨sX, hsX_norm, hsX_ramsey⟩ := simon_regular_d_case σ_X (IsGreenD.eqvClass a) ⟨a, rfl⟩ h_reg
     (fun x y hlt ↦ buildXSeq_range_w a σ _h_img x₀ x.val x.prop y.val y.prop hlt)
   choose sY hsY_ramsey hsY_strict using build_interval_splits_of_ih a σ _h_img x₀ xs
-    (buildXSeq_strict_mono a σ x₀) (buildXSeq_gap_not_D a σ _h_img x₀) ih
+    (buildXSeq_strict_mono a σ _h_img x₀) (buildXSeq_gap_not_D a σ _h_img x₀) ih
   exact ⟨regularSplits a xs sX sY, regularSplits_props a xs σ σ_X σ_Y sX sY hsX_ramsey hsY_ramsey
     h_x0_in (fun _ _ ↦ rfl) (fun _ _ _ ↦ rfl)
     (fun x hx ↦ buildXSeq_covers a σ x₀ x (Finset.min'_le _ _ (Finset.mem_univ x)) hx) hsY_strict
-    (buildXSeq_strict_mono a σ x₀)
+    (buildXSeq_strict_mono a σ _h_img x₀)
     (h_interval_ramsey := combineSplits_interval_ramsey a xs
       (fun x : {x // x ∈ xs} ↦ (⟨(sX x).val + (nSElement a - nD (IsGreenD.eqvClass a)),
         by have := (sX x).isLt; rw [nSElement]; omega⟩ : Fin (nSElement a)))
-      sY (nSElement a - nD (IsGreenD.eqvClass a)) (buildXSeq_strict_mono a σ x₀)
+      sY (nSElement a - nD (IsGreenD.eqvClass a)) (buildXSeq_strict_mono a σ _h_img x₀)
       (fun x hx ↦ buildXSeq_covers a σ x₀ x (Finset.min'_le _ _ (Finset.mem_univ x)) hx) hsY_strict
       (by intro x; exact Nat.le_add_left _ _))
     (h_min_sX := by

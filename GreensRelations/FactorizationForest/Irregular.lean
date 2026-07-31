@@ -152,7 +152,7 @@ lemma simon_split_irregular_case {S : Type*} [Semigroup S] [Fintype S]
   have h_sY_ex : ∀ i [Nonempty (OpenIntervalType xs i)],
       ∃ (s : Split (OpenIntervalType xs i) (nSElement a)),
         IsRamsey (σ_Y i) s ∧ ∀ z, (s z).val < nSElement a - nD (IsGreenD.eqvClass a) :=
-    build_interval_splits_of_ih a σ _h_img x₀ xs (buildXSeq_strict_mono a σ x₀)
+    build_interval_splits_of_ih a σ _h_img x₀ xs (buildXSeq_strict_mono a σ _h_img x₀)
       (buildXSeq_gap_not_D a σ _h_img x₀) ih
   choose sY hsY_ramsey hsY_strict using h_sY_ex
   have h_xs_len : xs.length ≤ 2 := by
@@ -186,7 +186,7 @@ lemma simon_split_irregular_case {S : Type*} [Semigroup S] [Fintype S]
     exact _h_not_reg (irregular_d_class_no_three_seq a σ x₀ x1 x2 _h_img
       h_x1_p.1 h_x2_p.1 h_x1_p.2 h_x2_p.2)
   exact ⟨irregularSplits a xs sY, irregularSplits_props a xs σ σ_Y sY hsY_ramsey
-    (h_xs_mono := buildXSeq_strict_mono a σ x₀) (h_xs_len := h_xs_len)
+    (h_xs_mono := buildXSeq_strict_mono a σ _h_img x₀) (h_xs_len := h_xs_len)
     (h_min_head := by change (buildXSeq a σ x₀).head? = _; rw [buildXSeq]; split_ifs <;> rfl)
     (h_max_val := by
       have hm : Finset.max' (Finset.univ : Finset (Fin (nSElement a))) Finset.univ_nonempty =
@@ -201,7 +201,7 @@ lemma simon_split_irregular_case {S : Type*} [Semigroup S] [Fintype S]
       simp only [nD, if_neg _h_not_reg] at this
       omega)
     (h_X_ramsey := fun x y hx hy hlt hsr ↦ by
-      have h_mono := buildXSeq_strict_mono a σ x₀
+      have h_mono := buildXSeq_strict_mono a σ _h_img x₀
       rcases List.mem_iff_get.mp hx with ⟨⟨i, hi⟩, h_ix⟩
       rcases List.mem_iff_get.mp hy with ⟨⟨j, hj⟩, h_jy⟩
       have : i < j := by
@@ -229,7 +229,7 @@ lemma simon_split_irregular_case {S : Type*} [Semigroup S] [Fintype S]
     (h_interval_ramsey := combineSplits_interval_ramsey a xs
       (fun x ↦ if xs.head? = some x.val then ⟨nSElement a - 1, by have := nSElement_pos a; omega⟩
         else ⟨nSElement a - 2, by have := nSElement_pos a; omega⟩)
-      sY (nSElement a - 2) (buildXSeq_strict_mono a σ x₀)
+      sY (nSElement a - 2) (buildXSeq_strict_mono a σ _h_img x₀)
       (fun x hx ↦ buildXSeq_covers a σ x₀ x (Finset.min'_le _ _ (Finset.mem_univ x)) hx)
       (fun i _ z ↦ by
         have := hsY_strict i z
