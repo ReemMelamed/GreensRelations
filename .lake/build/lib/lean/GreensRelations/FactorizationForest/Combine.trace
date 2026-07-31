@@ -1,20 +1,14 @@
 {"synthetic": false,
  "schemaVersion": "2025-09-10",
  "outputs":
- {"o": ["711eaf12de034501.olean"],
+ {"o": ["b007a8c6d32cacc4.olean"],
   "m": false,
-  "i": "393bc755f487bb5a.ilean",
+  "i": "7efbb853aeb150bb.ilean",
   "c": "61e496fb5246c2ce.c"},
  "log":
  [{"message":
    ".> LEAN_PATH=C:\\Users\\reems\\git-repositories\\GreensRelations\\.lake\\packages\\Cli\\.lake\\build\\lib\\lean;C:\\Users\\reems\\git-repositories\\GreensRelations\\.lake\\packages\\batteries\\.lake\\build\\lib\\lean;C:\\Users\\reems\\git-repositories\\GreensRelations\\.lake\\packages\\Qq\\.lake\\build\\lib\\lean;C:\\Users\\reems\\git-repositories\\GreensRelations\\.lake\\packages\\aesop\\.lake\\build\\lib\\lean;C:\\Users\\reems\\git-repositories\\GreensRelations\\.lake\\packages\\proofwidgets\\.lake\\build\\lib\\lean;C:\\Users\\reems\\git-repositories\\GreensRelations\\.lake\\packages\\importGraph\\.lake\\build\\lib\\lean;C:\\Users\\reems\\git-repositories\\GreensRelations\\.lake\\packages\\LeanSearchClient\\.lake\\build\\lib\\lean;C:\\Users\\reems\\git-repositories\\GreensRelations\\.lake\\packages\\plausible\\.lake\\build\\lib\\lean;C:\\Users\\reems\\git-repositories\\GreensRelations\\.lake\\packages\\mathlib\\.lake\\build\\lib\\lean;C:\\Users\\reems\\git-repositories\\GreensRelations\\.lake\\build\\lib\\lean c:\\Users\\reems\\.elan\\toolchains\\leanprover--lean4---v4.33.0-rc1\\bin\\lean.exe C:\\Users\\reems\\git-repositories\\GreensRelations\\GreensRelations\\FactorizationForest\\Combine.lean -o C:\\Users\\reems\\git-repositories\\GreensRelations\\.lake\\build\\lib\\lean\\GreensRelations\\FactorizationForest\\Combine.olean -i C:\\Users\\reems\\git-repositories\\GreensRelations\\.lake\\build\\lib\\lean\\GreensRelations\\FactorizationForest\\Combine.ilean -c C:\\Users\\reems\\git-repositories\\GreensRelations\\.lake\\build\\ir\\GreensRelations\\FactorizationForest\\Combine.c --setup C:\\Users\\reems\\git-repositories\\GreensRelations\\.lake\\build\\ir\\GreensRelations\\FactorizationForest\\Combine.setup.json --json",
-   "level": "trace"},
-  {"message":
-   "GreensRelations/FactorizationForest/Combine.lean:11:0: The module doc-string for a file should be the first command after the imports.\nPlease, add a module doc-string before `namespace FactorizationForest`.\n\nNote: This linter can be disabled with `set_option linter.style.header false`",
-   "level": "warning"},
-  {"message":
-   "GreensRelations/FactorizationForest/Combine.lean:11:0: The module doc-string for a file should be the first command after the imports.\nPlease, add a module doc-string before `/-!# Combine Splits Construction\n\nThis file contains the construction of `combineSplits` which is used to merge local\nRamsey splits over open intervals into a global split.\n-/\n`.\n\nNote: This linter can be disabled with `set_option linter.style.header false`",
-   "level": "warning"}],
+   "level": "trace"}],
  "inputs":
  [["deps",
    [["GreensTheorems/GreensRelations:extraDep",
@@ -31,7 +25,7 @@
       ["GreensRelations.FactorizationForest.Basic transitive imports (legacy)",
        "e247171c71dcf9e6"],
       ["GreensRelations.FactorizationForest.Basic:importAllArts",
-       "a43f9802d4766a2f"]]]]],
+       "72859555a74976c4"]]]]],
   ["libs",
    [["import dynlibs", "00000000000006bb"],
     ["package external libraries", "00000000000006bb"],
@@ -40,7 +34,7 @@
   ["Lean 4.33.0, commit 62eed1db4d67327ec8120be05f1a1b0847d74561",
    "8fa8fbe052c71a8e"],
   ["C:\\Users\\reems\\git-repositories\\GreensRelations\\GreensRelations\\FactorizationForest\\Combine.lean",
-   "a5a098d86b9045e6"],
+   "096532003023e5b0"],
   ["options",
    [["-DmaxSynthPendingDepth=3", "c78e353d34de85d4"],
     ["-Dweak.linter.mathlibStandardSet=true", "8a155799906f2b42"],
@@ -51,4 +45,4 @@
    "b95c36a19095b24d"],
   ["Package.id?: (some GreensTheorems)", "6ed9172dbfc8f471"],
   ["Module.leanArgs: #[]", "00000000000006bb"]],
- "depHash": "25117209423df674"}
+ "depHash": "dc33e486e7e88626"}

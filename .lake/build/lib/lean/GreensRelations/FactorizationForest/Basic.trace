@@ -1,20 +1,14 @@
 {"synthetic": false,
  "schemaVersion": "2025-09-10",
  "outputs":
- {"o": ["ad714e02f5b215c7.olean"],
+ {"o": ["3352e59bd21ca63a.olean"],
   "m": false,
   "i": "deb7c9c4b110e6c6.ilean",
   "c": "ec1543b47410d22c.c"},
  "log":
  [{"message":
    ".> LEAN_PATH=C:\\Users\\reems\\git-repositories\\GreensRelations\\.lake\\packages\\Cli\\.lake\\build\\lib\\lean;C:\\Users\\reems\\git-repositories\\GreensRelations\\.lake\\packages\\batteries\\.lake\\build\\lib\\lean;C:\\Users\\reems\\git-repositories\\GreensRelations\\.lake\\packages\\Qq\\.lake\\build\\lib\\lean;C:\\Users\\reems\\git-repositories\\GreensRelations\\.lake\\packages\\aesop\\.lake\\build\\lib\\lean;C:\\Users\\reems\\git-repositories\\GreensRelations\\.lake\\packages\\proofwidgets\\.lake\\build\\lib\\lean;C:\\Users\\reems\\git-repositories\\GreensRelations\\.lake\\packages\\importGraph\\.lake\\build\\lib\\lean;C:\\Users\\reems\\git-repositories\\GreensRelations\\.lake\\packages\\LeanSearchClient\\.lake\\build\\lib\\lean;C:\\Users\\reems\\git-repositories\\GreensRelations\\.lake\\packages\\plausible\\.lake\\build\\lib\\lean;C:\\Users\\reems\\git-repositories\\GreensRelations\\.lake\\packages\\mathlib\\.lake\\build\\lib\\lean;C:\\Users\\reems\\git-repositories\\GreensRelations\\.lake\\build\\lib\\lean c:\\Users\\reems\\.elan\\toolchains\\leanprover--lean4---v4.33.0-rc1\\bin\\lean.exe C:\\Users\\reems\\git-repositories\\GreensRelations\\GreensRelations\\FactorizationForest\\Basic.lean -o C:\\Users\\reems\\git-repositories\\GreensRelations\\.lake\\build\\lib\\lean\\GreensRelations\\FactorizationForest\\Basic.olean -i C:\\Users\\reems\\git-repositories\\GreensRelations\\.lake\\build\\lib\\lean\\GreensRelations\\FactorizationForest\\Basic.ilean -c C:\\Users\\reems\\git-repositories\\GreensRelations\\.lake\\build\\ir\\GreensRelations\\FactorizationForest\\Basic.c --setup C:\\Users\\reems\\git-repositories\\GreensRelations\\.lake\\build\\ir\\GreensRelations\\FactorizationForest\\Basic.setup.json --json",
-   "level": "trace"},
-  {"message":
-   "GreensRelations/FactorizationForest/Basic.lean:10:0: The module doc-string for a file should be the first command after the imports.\nPlease, add a module doc-string before `namespace FactorizationForest`.\n\nNote: This linter can be disabled with `set_option linter.style.header false`",
-   "level": "warning"},
-  {"message":
-   "GreensRelations/FactorizationForest/Basic.lean:10:0: The module doc-string for a file should be the first command after the imports.\nPlease, add a module doc-string before `/-!# The Factorization Forest Theorem\n\nThis file defines the basic structures for the Factorization Forest Theorem.\n\n## References\n* [T. Colcombet, *The Factorization Forest Theorem*][colombet2008]\n-/\n`.\n\nNote: This linter can be disabled with `set_option linter.style.header false`",
-   "level": "warning"}],
+   "level": "trace"}],
  "inputs":
  [["deps",
    [["GreensTheorems/GreensRelations:extraDep",
@@ -36,7 +30,7 @@
   ["Lean 4.33.0, commit 62eed1db4d67327ec8120be05f1a1b0847d74561",
    "8fa8fbe052c71a8e"],
   ["C:\\Users\\reems\\git-repositories\\GreensRelations\\GreensRelations\\FactorizationForest\\Basic.lean",
-   "872f0756b557b43d"],
+   "dc2373ab2469ad4a"],
   ["options",
    [["-DmaxSynthPendingDepth=3", "c78e353d34de85d4"],
     ["-Dweak.linter.mathlibStandardSet=true", "8a155799906f2b42"],
@@ -47,4 +41,4 @@
    "88c5534d0416a8f2"],
   ["Package.id?: (some GreensTheorems)", "6ed9172dbfc8f471"],
   ["Module.leanArgs: #[]", "00000000000006bb"]],
- "depHash": "d54847358fafa316"}
+ "depHash": "154e13674b267f0c"}
