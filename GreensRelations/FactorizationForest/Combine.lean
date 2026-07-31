@@ -88,23 +88,6 @@ abbrev OpenIntervalType {α : Type*} [LinearOrder α] (xs : List α) (i : ℕ) :
   { y : α // ∃ (h1 : i < xs.length),
     xs.get ⟨i, h1⟩ < y ∧ ∀ (h2 : i + 1 < xs.length), y < xs.get ⟨i + 1, h2⟩ }
 
-open Classical in
-/-- The open interval type is finite when `α` is finite. -/
-noncomputable instance instFintypeOpenInterval
-    {α : Type*} [LinearOrder α] [Fintype α]
-    (xs : List α) (i : ℕ) :
-    Fintype (OpenIntervalType xs i) := by
-  unfold OpenIntervalType
-  infer_instance
-
-open Classical in
-/-- The subtype of elements in a list is finite. -/
-noncomputable instance instFintypeSubtypeX
-    {α : Type*} [LinearOrder α] [Fintype α]
-    (xs : List α) :
-    Fintype {x : α // x ∈ xs} := by
-  infer_instance
-
 /-- A strictly increasing sequence covering a domain bounds any element `x` either
 within an interval or at one of the sequence points. -/
 lemma list_interval_covers {α : Type*} [LinearOrder α] (x : α) :
@@ -119,21 +102,7 @@ lemma list_interval_covers {α : Type*} [LinearOrder α] (x : α) :
   · obtain ⟨i, hi, hlt, hgt⟩ :=
       list_interval_covers x tail (fun h => h_not_in (List.Mem.tail _ h)) h_tail
     exact ⟨i + 1, by simp; omega, hlt, fun h => hgt (by simp at h; omega)⟩
-  · refine ⟨0, by simp, ?_, fun h => ?_⟩
-    · obtain ⟨y, hy, hyx⟩ := h_lb
-      cases hy with
-      | head => exact hyx
-      | tail _ hy_tail => nomatch (h_tail ⟨y, hy_tail, hyx⟩)
-    · have h_len : 0 < tail.length := by
-        simp at h
-        omega
-      let z := (a :: tail).get ⟨1, h⟩
-      have hz_eq : z = tail.get ⟨0, h_len⟩ := rfl
-      have h_mem : z ∈ tail := hz_eq.symm ▸ tail.get_mem ⟨0, h_len⟩
-      rcases lt_trichotomy x z with h_lt | rfl | h_gt
-      · exact h_lt
-      · nomatch (h_not_in (List.Mem.tail _ h_mem))
-      · nomatch (h_tail ⟨z, h_mem, h_gt⟩)
+  · grind
 
 /-- The elements built by `buildXSeq` cover the interval starting at the initial element. -/
 lemma buildXSeq_covers {S α : Type*} [Semigroup S] [Fintype S] [LinearOrder α] [Fintype α]
@@ -144,9 +113,7 @@ lemma buildXSeq_covers {S α : Type*} [Semigroup S] [Fintype S] [LinearOrder α]
   intro h_not_in
   have h_x0_in : x₀ ∈ buildXSeq a σ x₀ := by
     rw [buildXSeq]
-    split
-    · exact List.Mem.head _
-    · exact List.Mem.head _
+    grind
   have h_lb : ∃ y ∈ buildXSeq a σ x₀, y < x :=
     ⟨x₀, h_x0_in, lt_of_le_of_ne h_x0_le_x (fun heq => h_not_in (heq ▸ h_x0_in))⟩
   exact list_interval_covers x (buildXSeq a σ x₀) h_not_in h_lb
@@ -156,9 +123,7 @@ lemma buildXSeq_length_pos (a : S) {α : Type*} [LinearOrder α] [Fintype α]
     (σ : MultiplicativeLabeling S α) (w : α) : 0 < (buildXSeq a σ w).length := by
   classical
   rw [buildXSeq]
-  split_ifs
-  · exact Nat.zero_lt_succ _
-  · exact Nat.zero_lt_succ _
+  split_ifs <;> exact Nat.zero_lt_succ _
 
 /-- The first element of `buildXSeq` is exactly the initial element provided. -/
 lemma buildXSeq_head (a : S) {α : Type*} [LinearOrder α] [Fintype α]
@@ -170,23 +135,17 @@ lemma buildXSeq_head (a : S) {α : Type*} [LinearOrder α] [Fintype α]
     if h_cond : (Finset.univ.filter (fun y => w < y ∧ IsGreenD (σ.σ w y) a)).Nonempty then
       w :: buildXSeq a σ (Finset.min' _ h_cond)
     else [w] := by rw [buildXSeq]
-  rw [h_eq] at h_xs
-  by_cases h_cond : (Finset.univ.filter (fun y => w < y ∧ IsGreenD (σ.σ w y) a)).Nonempty
-  · simp only [dif_pos h_cond] at h_xs
-    subst h_xs
-    rfl
-  · simp only [dif_neg h_cond] at h_xs
-    subst h_xs
-    rfl
+  grind
 
-/-- Core properties of `buildXSeq` proven together to avoid boilerplate. -/
+/-- properties of `buildXSeq`. -/
 lemma buildXSeq_properties (a : S) {α : Type*} [LinearOrder α] [Fintype α]
     (σ : MultiplicativeLabeling S α) (h_img : labelingIn σ (jUp a)) (w : α) :
     (∀ y ∈ buildXSeq a σ w, w ≤ y) ∧
     (∀ x ∈ buildXSeq a σ w, ∀ y ∈ buildXSeq a σ w, x < y → IsGreenD (σ.σ x y) a) ∧
     (∀ (i : ℕ) (hi_lt : i < (buildXSeq a σ w).length) (y : α),
       (buildXSeq a σ w).get ⟨i, hi_lt⟩ < y →
-      (∀ hi_succ_lt : i + 1 < (buildXSeq a σ w).length, y < (buildXSeq a σ w).get ⟨i + 1, hi_succ_lt⟩) →
+      (∀ hi_succ_lt : i + 1 < (buildXSeq a σ w).length, y <
+      (buildXSeq a σ w).get ⟨i + 1, hi_succ_lt⟩) →
       ¬ IsGreenD (σ.σ ((buildXSeq a σ w).get ⟨i, hi_lt⟩) y) a) ∧
     (∀ (i j : ℕ) (hi_lt : i < (buildXSeq a σ w).length) (hj_lt : j < (buildXSeq a σ w).length),
       i < j → (buildXSeq a σ w).get ⟨i, hi_lt⟩ < (buildXSeq a σ w).get ⟨j, hj_lt⟩) := by
@@ -201,12 +160,9 @@ lemma buildXSeq_properties (a : S) {α : Type*} [LinearOrder α] [Fintype α]
     have ih := buildXSeq_properties a σ h_img w'
     obtain ⟨ih_ge, ih_range, ih_gap, ih_mono⟩ := ih
     have h_xs : buildXSeq a σ w = w :: buildXSeq a σ w' := by rw [h_eq, dif_pos h]
-    refine ⟨?_, ?_, ?_, ?_⟩
-    · intro y hy
-      rw [h_xs] at hy
-      rcases List.mem_cons.mp hy with rfl | hy_tail
-      · exact le_rfl
-      · exact le_trans (le_of_lt hw'.1) (ih_ge y hy_tail)
+    constructor
+    · grind
+    constructor
     · intro x hx y hy hlt
       rw [h_xs] at hx hy
       exact match List.mem_cons.mp hx, List.mem_cons.mp hy with
@@ -219,6 +175,7 @@ lemma buildXSeq_properties (a : S) {α : Type*} [LinearOrder α] [Fintype α]
         rw [hy_eq] at hlt
         nomatch (lt_irrefl w (lt_trans (lt_of_lt_of_le hw'.1 (ih_ge x hx_tail)) hlt))
       | Or.inr hx_tail, Or.inr hy_tail => ih_range x hx_tail y hy_tail hlt
+    constructor
     · intro i hi_lt y h_lt h_gt h_D
       generalize h_xs_gen : buildXSeq a σ w = xs at hi_lt h_lt h_gt h_D ⊢
       rw [h_xs] at h_xs_gen
@@ -255,17 +212,11 @@ lemma buildXSeq_properties (a : S) {α : Type*} [LinearOrder α] [Fintype α]
           have hj_tail : j' < (buildXSeq a σ w').length := Nat.succ_lt_succ_iff.mp hj_lt
           exact ih_mono i' j' hi_tail hj_tail (Nat.succ_lt_succ_iff.mp hij)
   · have h_xs : buildXSeq a σ w = [w] := by rw [h_eq, dif_neg h]
-    refine ⟨?_, ?_, ?_, ?_⟩
-    · intro y hy
-      rw [h_xs] at hy
-      rcases List.mem_singleton.mp hy with rfl
-      exact le_rfl
-    · intro x hx y hy hlt
-      rw [h_xs] at hx hy
-      exact match List.mem_singleton.mp hx, List.mem_singleton.mp hy with
-      | hx_eq, hy_eq => by
-        rw [hx_eq, hy_eq] at hlt
-        nomatch (lt_irrefl w hlt)
+    constructor
+    · grind
+    constructor
+    · grind
+    constructor
     · intro i hi_lt y h_lt h_gt h_D
       generalize h_xs_gen : buildXSeq a σ w = xs at hi_lt h_lt h_gt h_D ⊢
       rw [h_xs] at h_xs_gen
@@ -298,37 +249,6 @@ decreasing_by
       (heq.symm ▸ Finset.mem_filter.mpr ⟨Finset.mem_univ _, hw_lt⟩ : (Finset.min' _ h) ∈ _)).2
   exact Finset.card_lt_card (lt_of_le_of_ne h_le h_ne)
 
-/-- All elements generated by `buildXSeq` are greater than or equal to the initial element. -/
-lemma buildXSeq_ge (a : S) {α : Type*} [LinearOrder α] [Fintype α]
-    (σ : MultiplicativeLabeling S α) (h_img : labelingIn σ (jUp a))
-    (w : α) (y : α) (hy : y ∈ buildXSeq a σ w) : w ≤ y :=
-  (buildXSeq_properties a σ h_img w).1 y hy
-
-/-- The labeling of any pair strictly within an open interval between sequence elements
-belongs to the J-class strictly above `a`. -/
-lemma buildXSeq_range_w (a : S) {α : Type*} [LinearOrder α] [Fintype α]
-    (σ : MultiplicativeLabeling S α) (h_img : labelingIn σ (jUp a))
-    (w : α) (x : α) (hx : x ∈ buildXSeq a σ w) (y : α) (hy : y ∈ buildXSeq a σ w) (hlt : x < y) :
-    IsGreenD (σ.σ x y) a :=
-  (buildXSeq_properties a σ h_img w).2.1 x hx y hy hlt
-
-/-- No element strictly within an interval generated by `buildXSeq`
-evaluates to the D-class of `a` when multiplied by the interval's left endpoint. -/
-lemma buildXSeq_gap_not_D (a : S) {α : Type*} [LinearOrder α] [Fintype α]
-    (σ : MultiplicativeLabeling S α) (h_img : labelingIn σ (jUp a))
-    (w : α) (i : ℕ) (hi_lt : i < (buildXSeq a σ w).length) (y : α)
-    (h_lt : (buildXSeq a σ w).get ⟨i, hi_lt⟩ < y) (h_gt : ∀ hi_succ_lt : i + 1 <
-    (buildXSeq a σ w).length, y < (buildXSeq a σ w).get ⟨i + 1, hi_succ_lt⟩) :
-    ¬ IsGreenD (σ.σ ((buildXSeq a σ w).get ⟨i, hi_lt⟩) y) a :=
-  (buildXSeq_properties a σ h_img w).2.2.1 i hi_lt y h_lt h_gt
-
-/-- The elements in `buildXSeq` are strictly monotonically increasing. -/
-lemma buildXSeq_strict_mono (a : S) {α : Type*} [LinearOrder α] [Fintype α]
-    (σ : MultiplicativeLabeling S α) (h_img : labelingIn σ (jUp a)) (w : α) (i j : ℕ)
-    (hi_lt : i < (buildXSeq a σ w).length) (hj_lt : j < (buildXSeq a σ w).length) (hij : i < j) :
-    (buildXSeq a σ w).get ⟨i, hi_lt⟩ < (buildXSeq a σ w).get ⟨j, hj_lt⟩ :=
-  (buildXSeq_properties a σ h_img w).2.2.2 i j hi_lt hj_lt hij
-
 /-- An element in an open interval `OpenIntervalType` cannot be an element of the sequence `xs`. -/
 lemma not_mem_of_openInterval {α : Type*} [LinearOrder α] {xs : List α}
     (h_mono : ∀ (i j : ℕ) (hi_lt : i < xs.length) (hj_lt : j < xs.length),
@@ -337,25 +257,7 @@ lemma not_mem_of_openInterval {α : Type*} [LinearOrder α] {xs : List α}
     z < xs.get ⟨i + 1, hi_succ_lt⟩) : z ∉ xs := by
   intro hz_mem
   obtain ⟨j, hz_eq⟩ := List.mem_iff_get.mp hz_mem
-  obtain ⟨hi_lt, hlt_i, hgt_i⟩ := h_in
-  rcases lt_trichotomy j.val i with h | h | h
-  · have hlt : xs.get j < xs.get ⟨i, hi_lt⟩ := h_mono j.val i j.isLt hi_lt h
-    rw [hz_eq] at hlt
-    exact lt_irrefl _ (lt_trans hlt hlt_i)
-  · have hj_eq : j = ⟨i, hi_lt⟩ := Fin.ext (by omega)
-    rw [hj_eq] at hz_eq
-    rw [← hz_eq] at hlt_i
-    exact lt_irrefl _ hlt_i
-  · have h_le : i + 1 < xs.length := by omega
-    have hlt : z < xs.get ⟨i + 1, h_le⟩ := hgt_i h_le
-    rcases eq_or_lt_of_le (Nat.succ_le_of_lt h) with heq | hlt_j
-    · have hj_eq : j = ⟨i + 1, h_le⟩ := Fin.ext (by grind)
-      rw [hj_eq] at hz_eq
-      rw [hz_eq] at hlt
-      exact lt_irrefl _ hlt
-    · have hlt2 : xs.get ⟨i + 1, h_le⟩ < xs.get j := h_mono (i + 1) j.val h_le j.isLt hlt_j
-      rw [hz_eq] at hlt2
-      exact lt_irrefl _ (lt_trans hlt hlt2)
+  grind
 
 /-- If two elements are related by an interval split,
 they must belong to the same interval in `buildXSeq`. -/
@@ -539,18 +441,10 @@ lemma openInterval_unique {α : Type*} [LinearOrder α] (xs : List α)
     i = k := by
   rcases lt_trichotomy i k with h | rfl | h
   · exfalso
-    have hi1 : i + 1 < xs.length := by omega
-    have h_le : xs.get ⟨i + 1, hi1⟩ ≤ xs.get ⟨k, hk⟩ :=
-      (Nat.succ_le_of_lt h).eq_or_lt.elim (fun e => le_of_eq (congrArg xs.get (Fin.ext e)))
-        (fun hl => le_of_lt (h_mono _ _ _ _ hl))
-    exact lt_irrefl x (lt_trans (hgt_i hi1) (lt_of_le_of_lt h_le hlt_k))
+    grind
   · rfl
   · exfalso
-    have hk1 : k + 1 < xs.length := by omega
-    have h_le : xs.get ⟨k + 1, hk1⟩ ≤ xs.get ⟨i, hi⟩ :=
-      (Nat.succ_le_of_lt h).eq_or_lt.elim (fun e => le_of_eq (congrArg xs.get (Fin.ext e)))
-        (fun hl => le_of_lt (h_mono _ _ _ _ hl))
-    exact lt_irrefl x (lt_trans (hgt_k hk1) (lt_of_le_of_lt h_le hlt_i))
+    grind
 
 /-- The `combineSplits` function preserves the Ramsey property
 for elements within the same open interval. -/
@@ -632,28 +526,30 @@ lemma combineSplits_interval_ramsey {α S : Type*}
   subst hij
   let y_val : OpenIntervalType xs i := ⟨y, hy_lt, h_lt_y, h_gt_y⟩
   haveI : Nonempty (OpenIntervalType xs i) := ⟨x_val⟩
-  refine ⟨i, x_val, y_val, rfl, rfl, ?_⟩
-  have h_rx : combineSplits a xs rankX sY x = sY i x_val := h_r x hx_not_in i x_val rfl
-  have h_ry : combineSplits a xs rankX sY y = sY i y_val := h_r y hy_not_in i y_val rfl
-  refine ⟨Fin.ext (h_ry.symm ▸ h_rx.symm ▸ congrArg Fin.val hsr.left), fun z_val hz1 hz2 =>
-    Fin.le_iff_val_le_val.mpr ?_⟩
-  have hz_not_in : z_val.val ∉ xs := not_mem_of_openInterval h_mono i z_val.val z_val.prop
-  have h_rz : combineSplits a xs rankX sY z_val.val = sY i z_val :=
-    h_r z_val.val hz_not_in i z_val rfl
-  have h_bound_val := Fin.le_iff_val_le_val.mp (hsr.right z_val.val hz1 hz2)
-  have hs_min_eq : combineSplits a xs rankX sY (min x y) = sY i (min x_val y_val) := by
-    rcases min_choice x y with h | h
-    · have hxy : x ≤ y := by
-        rw [← h]
-        exact min_le_right x y
-      have h_le : x_val ≤ y_val := hxy
-      rw [min_eq_left h_le, h, h_rx]
-    · have hyx : y ≤ x := by
-        rw [← h]
-        exact min_le_left x y
-      have h_le : y_val ≤ x_val := hyx
-      rw [min_eq_right h_le, h, h_ry]
-  exact congrArg Fin.val hs_min_eq.symm ▸ congrArg Fin.val h_rz.symm ▸ h_bound_val
+  exact ⟨i, x_val, y_val, rfl, rfl, by
+    have h_rx : combineSplits a xs rankX sY x = sY i x_val := h_r x hx_not_in i x_val rfl
+    have h_ry : combineSplits a xs rankX sY y = sY i y_val := h_r y hy_not_in i y_val rfl
+    exact ⟨Fin.ext (h_ry.symm ▸ h_rx.symm ▸ congrArg Fin.val hsr.left), fun z_val hz1 hz2 =>
+      Fin.le_iff_val_le_val.mpr (by
+        have hz_not_in : z_val.val ∉ xs := not_mem_of_openInterval h_mono i z_val.val z_val.prop
+        have h_rz : combineSplits a xs rankX sY z_val.val = sY i z_val :=
+          h_r z_val.val hz_not_in i z_val rfl
+        have h_bound_val := Fin.le_iff_val_le_val.mp (hsr.right z_val.val hz1 hz2)
+        have hs_min_eq : combineSplits a xs rankX sY (min x y) = sY i (min x_val y_val) := by
+          rcases min_choice x y with h | h
+          · have hxy : x ≤ y := by
+              rw [← h]
+              exact min_le_right x y
+            have h_le : x_val ≤ y_val := hxy
+            rw [min_eq_left h_le, h, h_rx]
+          · have hyx : y ≤ x := by
+              rw [← h]
+              exact min_le_left x y
+            have h_le : y_val ≤ x_val := hyx
+            rw [min_eq_right h_le, h, h_ry]
+        exact congrArg Fin.val hs_min_eq.symm ▸ congrArg Fin.val h_rz.symm ▸ h_bound_val
+      )⟩
+  ⟩
 
 /-- Proves the normalization and Ramsey properties for the combined split. -/
 lemma combineSplits_props {α S : Type*}
@@ -762,15 +658,7 @@ lemma combineSplits_props {α S : Type*}
               obtain ⟨hi_lt, hlt_i, hgt_i⟩ := z_oi.prop
               rcases lt_trichotomy (Classical.choose hz_ex) i with h | h | h
               · exfalso
-                have hz_succ_lt : Classical.choose hz_ex + 1 < xs.length := by omega
-                have h_z_lt := hgt_k hz_succ_lt
-                rcases eq_or_lt_of_le (Nat.succ_le_of_lt h) with heq | hlt
-                · have h_eq : xs.get ⟨Classical.choose hz_ex + 1, hz_succ_lt⟩ = xs.get ⟨i, hi_lt⟩ :=
-                    congrArg xs.get (Fin.ext heq)
-                  rw [h_eq] at h_z_lt
-                  exact lt_irrefl _ (lt_trans h_z_lt hlt_i)
-                · have h_le := le_of_lt (h_xs_mono _ _ hz_succ_lt hi_lt hlt)
-                  exact lt_irrefl _ (lt_trans h_z_lt (lt_of_le_of_lt h_le hlt_i))
+                grind
               · exact h
               · exfalso
                 have hi_succ_lt : i + 1 < xs.length := by omega

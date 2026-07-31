@@ -1,9 +1,9 @@
 {"synthetic": false,
  "schemaVersion": "2025-09-10",
  "outputs":
- {"o": ["6d4a107d3c2bf924.olean"],
+ {"o": ["7095a337fc039d57.olean"],
   "m": false,
-  "i": "257c846782591457.ilean",
+  "i": "0cecfe3b4d440fc6.ilean",
   "c": "a12e70499f07e198.c"},
  "log":
  [{"message":
@@ -17,7 +17,7 @@
      [["GreensRelations.FactorizationForest.Combine transitive imports (legacy)",
        "710c0653ff7186dd"],
       ["GreensRelations.FactorizationForest.Combine:importAllArts",
-       "ed08f7b5cb45b017"]]]]],
+       "18f7de186aa424e9"]]]]],
   ["libs",
    [["import dynlibs", "00000000000006bb"],
     ["package external libraries", "00000000000006bb"],
@@ -26,7 +26,7 @@
   ["Lean 4.33.0, commit 62eed1db4d67327ec8120be05f1a1b0847d74561",
    "8fa8fbe052c71a8e"],
   ["C:\\Users\\reems\\git-repositories\\GreensRelations\\GreensRelations\\FactorizationForest\\Irregular.lean",
-   "9cbcd3ab4df09d6b"],
+   "667e893b63d02006"],
   ["options",
    [["-DmaxSynthPendingDepth=3", "c78e353d34de85d4"],
     ["-Dweak.linter.mathlibStandardSet=true", "8a155799906f2b42"],
@@ -37,4 +37,4 @@
    "2e675893256e5683"],
   ["Package.id?: (some GreensTheorems)", "6ed9172dbfc8f471"],
   ["Module.leanArgs: #[]", "00000000000006bb"]],
- "depHash": "c14ec71291359071"}
+ "depHash": "3985b112d6142236"}
