@@ -3,7 +3,7 @@
  "outputs":
  {"o": ["8a5caa14a6d64d70.olean"],
   "m": false,
-  "i": "fa9ef191d769eaa9.ilean",
+  "i": "c2444221196bf157.ilean",
   "c": "d564376ea3742ae6.c"},
  "log":
  [{"message":
@@ -15,7 +15,7 @@
      [["@GreensTheorems:extraDep", "00000000000006bb"]]],
     ["imports",
      [["GreensRelations.Classes transitive imports (legacy)",
-       "9c5386cf0845e140"],
+       "8358abdf9046dcdd"],
       ["GreensRelations.Classes:importAllArts", "77a063cde78a0e5e"],
       ["Mathlib.Data.Fintype.Pigeonhole transitive imports (legacy)",
        "66348dafde0eb26f"],
@@ -38,4 +38,4 @@
   ["Module.name: GreensRelations.MulSeq", "7443d10bd4f76081"],
   ["Package.id?: (some GreensTheorems)", "6ed9172dbfc8f471"],
   ["Module.leanArgs: #[]", "00000000000006bb"]],
- "depHash": "f9ef802e50923c8e"}
+ "depHash": "0a2e6a6420ad9298"}

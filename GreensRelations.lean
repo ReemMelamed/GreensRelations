@@ -1,6 +1,5 @@
 import GreensRelations.Basic
 import GreensRelations.Classes
-import GreensRelations.Defs
 import GreensRelations.FactorizationForest.Defs
 import GreensRelations.FactorizationForest.Irregular
 import GreensRelations.FactorizationForest.Regular

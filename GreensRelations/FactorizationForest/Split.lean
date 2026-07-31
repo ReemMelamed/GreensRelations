@@ -94,6 +94,7 @@ end SimonSplit
 
 section SimonWord
 
+/-- Simon's split theorem applied to word labelings. -/
 theorem simon_word {A S : Type*} [Semigroup S] [Fintype S] [Nonempty (Fin (nS S))]
     (eval : List A → S)
     (hmul : ∀ u v, u ≠ [] → v ≠ [] → eval (u ++ v) = eval u * eval v)

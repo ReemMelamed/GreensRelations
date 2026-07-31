@@ -58,6 +58,8 @@ end SplitDefinitions
 
 section WordDefinitions
 
+/-- A multiplicative labeling induced by a word `u`,
+  where `σ i j = eval(u[i..j])`. -/
 abbrev wordLabeling {A S : Type*} [Semigroup S]
     (eval : List A → S)
     (hmul : ∀ u v, u ≠ [] → v ≠ [] → eval (u ++ v) = eval u * eval v)
@@ -84,22 +86,31 @@ end WordDefinitions
 
 section TreeDefinitions
 
+/-- A factorization tree over an alphabet `A`. -/
 inductive FactorizationTree (A : Type*)
 | leaf (a : A)
 | binary (left right : FactorizationTree A) (word : List A) (height : ℕ)
 | nary (children : List (FactorizationTree A)) (word : List A) (height : ℕ)
 
-abbrev FactorizationTree.word {A : Type*} : FactorizationTree A → List A
+/-- The word (leaf sequence) stored in a factorization tree. -/
+abbrev FactorizationTree.word {A : Type*} :
+    FactorizationTree A → List A
 | leaf a => [a]
 | binary _ _ w _ => w
 | nary _ w _ => w
 
-abbrev FactorizationTree.height {A : Type*} : FactorizationTree A → ℕ
+/-- The height of a factorization tree. -/
+abbrev FactorizationTree.height {A : Type*} :
+    FactorizationTree A → ℕ
 | leaf _ => 0
 | binary _ _ _ h => h
 | nary _ _ h => h
 
-inductive IsRamseyTree {A S : Type*} [Semigroup S] (eval : List A → S) : FactorizationTree A → Prop
+/-- A factorization tree is Ramsey if its n-ary nodes
+  all evaluate to the same idempotent. -/
+inductive IsRamseyTree {A S : Type*} [Semigroup S]
+    (eval : List A → S) :
+    FactorizationTree A → Prop
 | leaf (a : A) : IsRamseyTree eval (FactorizationTree.leaf a)
 | binary (l r : FactorizationTree A) (w : List A) (h : ℕ) :
     IsRamseyTree eval l → IsRamseyTree eval r → IsRamseyTree eval (FactorizationTree.binary l r w h)
@@ -229,7 +240,10 @@ lemma nSElement_pos (x : S) : 0 < nSElement x := by
   have h_pos : 0 < nD (IsGreenD.eqvClass x) := nD_pos (IsGreenD.eqvClass x) ⟨x, rfl⟩
   omega
 
-instance instNonemptyFin_nSElement (x : S) : Nonempty (Fin (nSElement x)) :=
+/-- `Fin (nSElement x)` is nonempty since `nSElement` is
+  always positive. -/
+instance instNonemptyFin_nSElement (x : S) :
+    Nonempty (Fin (nSElement x)) :=
   Fin.pos_iff_nonempty.mp (nSElement_pos x)
 
 open Classical in
@@ -260,14 +274,18 @@ abbrev OpenIntervalType {α : Type*} [LinearOrder α] (xs : List α) (i : ℕ) :
     xs.get ⟨i, h1⟩ < y ∧ ∀ (h2 : i + 1 < xs.length), y < xs.get ⟨i + 1, h2⟩ }
 
 open Classical in
-noncomputable instance instFintypeOpenInterval {α : Type*} [LinearOrder α] [Fintype α]
+/-- The open interval type is finite when `α` is finite. -/
+noncomputable instance instFintypeOpenInterval
+    {α : Type*} [LinearOrder α] [Fintype α]
     (xs : List α) (i : ℕ) :
     Fintype (OpenIntervalType xs i) := by
   unfold OpenIntervalType
   infer_instance
 
 open Classical in
-noncomputable instance instFintypeSubtypeX {α : Type*} [LinearOrder α] [Fintype α]
+/-- The subtype of elements in a list is finite. -/
+noncomputable instance instFintypeSubtypeX
+    {α : Type*} [LinearOrder α] [Fintype α]
     (xs : List α) :
     Fintype {x : α // x ∈ xs} := by
   infer_instance

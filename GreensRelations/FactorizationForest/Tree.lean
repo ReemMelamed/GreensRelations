@@ -14,20 +14,26 @@ import GreensRelations.FactorizationForest.Split
 
 section FactorizationForest
 
+/-- Indices in `Fin (n+1)` that receive the maximal
+  split rank. -/
 def splitIndices {n h : ℕ} [Nonempty (Fin h)]
     (s : Split (Fin (n + 1)) h) : List (Fin (n + 1)) :=
   let max_val := Finset.max' Finset.univ Finset.univ_nonempty
   (List.finRange (n + 1)).filter (fun i => s i = max_val)
 
+/-- Adjacent pairs from a list of indices. -/
 def partitionIndices {n : ℕ} : List (Fin (n + 1)) → List (Fin (n + 1) × Fin (n + 1))
 | [] => []
 | _ :: [] => []
 | i :: j :: rest => (i, j) :: partitionIndices (j :: rest)
 
+/-- Properties of pairs from `partitionIndices`:
+  both elements are in the list, they are strictly ordered,
+  and no list element lies strictly between them. -/
 lemma partitionIndices_props {n : ℕ} {l : List (Fin (n + 1))} {i j : Fin (n + 1)}
     (hs : List.Pairwise (· < ·) l) (h : (i, j) ∈ partitionIndices l) :
     i ∈ l ∧ j ∈ l ∧ i < j ∧ (j.val - i.val = n → l.map (·.val) = [0, n]) ∧
-      (∀ k ∈ l, ¬(i < k ∧ k < j)) := by
+    (∀ k ∈ l, ¬(i < k ∧ k < j)) := by
   induction l with
   | nil => contradiction
   | cons a l' ih =>
@@ -67,19 +73,23 @@ lemma partitionIndices_props {n : ℕ} {l : List (Fin (n + 1))} {i j : Fin (n + 
               omega
             · exact h_adj k hk⟩
 
+/-- The split indices are sorted in increasing order. -/
 lemma splitIndices_sorted {n h : ℕ} [Nonempty (Fin h)]
   (s : Split (Fin (n + 1)) h) : List.Pairwise (· < ·) (splitIndices s) := by
   unfold splitIndices
   exact List.Pairwise.filter _ (List.sortedLT_finRange _ |>.pairwise)
 
+/-- Restricts a split to a sub-interval `[i, i + len]`. -/
 def restrictSplit {n h : ℕ} (s : Split (Fin (n + 1)) h) (i len : ℕ) (h_bound : i + len ≤ n) :
     Split (Fin (len + 1)) h :=
   fun k => s ⟨i + k.val, by omega⟩
 
+/-- Lowers a split whose values are all strictly below `h - 1` into `Fin (h - 1)`. -/
 def lowerSplitInterior {n h : ℕ} (s : Split (Fin (n + 1)) h)
     (h_interior : ∀ i : Fin (n + 1), (s i).val < h - 1) : Split (Fin (n + 1)) (h - 1) :=
   fun i => ⟨(s i).val, h_interior i⟩
 
+/-- Recursively builds a factorization tree from a word and a split function. -/
 def buildFactorizationTree {A S : Type*} [Semigroup S] {h : ℕ} [Nonempty (Fin h)]
     (eval : List A → S) (u : List A) (hu : u ≠ [])
     (s : Split (Fin (u.length + 1)) h) : FactorizationTree A :=
@@ -155,6 +165,7 @@ decreasing_by
     omega
   · grind
 
+/-- The word of a tree built by `buildFactorizationTree` equals the original word `u`. -/
 theorem buildTree_word_eq {A S : Type*} [Semigroup S] {h : ℕ} [Nonempty (Fin h)]
     (eval : List A → S) (u : List A) (hu : u ≠ []) (s : Split (Fin (u.length + 1)) h) :
     (buildFactorizationTree eval u hu s).word = u := by
@@ -174,9 +185,15 @@ theorem buildTree_word_eq {A S : Type*} [Semigroup S] {h : ℕ} [Nonempty (Fin h
   · dsimp only
     split <;> split <;> rfl
 
-lemma foldl_max_bound {A : Type*} (children : List (FactorizationTree A)) (bound : ℕ)
-    (h_bound : ∀ c ∈ children, c.height ≤ bound) :
-    (children.map FactorizationTree.height).foldl max 0 ≤ bound := by
+/-- The `foldl max` of tree heights is bounded by
+  any uniform upper bound on the children. -/
+lemma foldl_max_bound {A : Type*}
+    (children : List (FactorizationTree A))
+    (bound : ℕ)
+    (h_bound : ∀ c ∈ children,
+      c.height ≤ bound) :
+    (children.map FactorizationTree.height).foldl
+      max 0 ≤ bound := by
   have h_fold : ∀ (l : List (FactorizationTree A)) (init : ℕ), init ≤ bound →
       (∀ c ∈ l, c.height ≤ bound) → (l.map FactorizationTree.height).foldl max init ≤ bound := by
     intro l
@@ -193,6 +210,8 @@ lemma foldl_max_bound {A : Type*} (children : List (FactorizationTree A)) (bound
         exact h_all c (by simp [hc])
   exact h_fold children 0 (by omega) h_bound
 
+/-- The height of the tree built by
+  `buildFactorizationTree` is at most `3 * h - 1`. -/
 theorem buildTree_height_bound {A S : Type*} [Semigroup S] {h : ℕ} [Nonempty (Fin h)]
     (eval : List A → S) (u : List A) (hu : u ≠ []) (s : Split (Fin (u.length + 1)) h) :
     (buildFactorizationTree eval u hu s).height ≤ 3 * h - 1 := by
@@ -359,6 +378,8 @@ theorem buildTree_height_bound {A S : Type*} [Semigroup S] {h : ℕ} [Nonempty (
 termination_by (h, u.length)
 
 
+/-- Extracts the idempotent from a Ramsey tree
+  whose split indices cover the entire word. -/
 lemma extract_idempotent {A S : Type*} [Semigroup S] {h : ℕ} [Nonempty (Fin h)]
     (eval : List A → S)
     (hmul : ∀ u v, u ≠ [] → v ≠ [] → eval (u ++ v) = eval u * eval v)
@@ -399,6 +420,8 @@ lemma extract_idempotent {A S : Type*} [Semigroup S] {h : ℕ} [Nonempty (Fin h)
         exact Finset.le_max' _ _ (Finset.mem_univ _)⟩
     exact (hs_ramsey.right i0 i1 j0 j1 hlt hlt_j h_rel01 h_rel_j h_rel_cross).symm
 
+/-- A chunk of a word equals the corresponding
+  sublist. -/
 lemma chunk_eq {A : Type*} {u w : List A} {i : ℕ} (hw : ∃ j, w = (u.drop i).take (j - i))
     (x y : Fin (w.length + 1)) (hxy : x ≤ y) :
     (w.drop x.val).take (y.val - x.val) =
@@ -412,6 +435,8 @@ lemma chunk_eq {A : Type*} {u w : List A} {i : ℕ} (hw : ∃ j, w = (u.drop i).
     try rw [add_comm x.val i]
   rw [h_eq, List.take_take, h_min]
 
+/-- A split relation on a restricted sub-interval
+  lifts to a split relation on the original domain. -/
 lemma shift_split_relation {n h : ℕ} (s : Split (Fin (n + 1)) h)
     {i len : ℕ} (h_bound : i + len ≤ n) (x y : Fin (len + 1))
     (hsr : SplitRelation (restrictSplit s i len h_bound) x y) :
@@ -456,6 +481,8 @@ lemma shift_split_relation {n h : ℕ} (s : Split (Fin (n + 1)) h)
       rw [(Fin.ext (by dsimp [zw]; omega) : z = (⟨i + zw.val, by dsimp [zw]; omega⟩ : Fin (n + 1)))]
       exact h_res⟩
 
+/-- A restricted split preserves the Ramsey
+  property on the corresponding sub-word. -/
 lemma restrictSplit_ramsey {A S : Type*} [Semigroup S] {h : ℕ} [Nonempty (Fin h)]
     (eval : List A → S)
     (hmul : ∀ u v, u ≠ [] → v ≠ [] → eval (u ++ v) = eval u * eval v)
@@ -505,6 +532,8 @@ lemma restrictSplit_ramsey {A S : Type*} [Semigroup S] {h : ℕ} [Nonempty (Fin 
     rw [h_eval_eq1, h_eval_eq2] at h_eval
     exact h_eval
 
+/-- Lowering the interior of a split preserves
+  the Ramsey property. -/
 lemma lowerSplitInterior_ramsey {A S : Type*} [Semigroup S] {h : ℕ} [Nonempty (Fin h)]
     [Nonempty (Fin (h - 1))]
     (eval : List A → S)
@@ -531,6 +560,8 @@ lemma lowerSplitInterior_ramsey {A S : Type*} [Semigroup S] {h : ℕ} [Nonempty 
            hs_ramsey.2 x y p q hxy hpq ((h_rel_eq x y).mp hsr1)
              ((h_rel_eq p q).mp hsr2) ((h_rel_eq x p).mp hsr3)⟩
 
+/-- Children of an n-ary node in a Ramsey tree
+  all evaluate to the same idempotent. -/
 lemma nary_children_ramsey {A S : Type*} [Semigroup S] {h : ℕ} [Nonempty (Fin h)]
     (eval : List A → S)
     (hmul : ∀ u v, u ≠ [] → v ≠ [] → eval (u ++ v) = eval u * eval v)
@@ -602,6 +633,8 @@ lemma nary_children_ramsey {A S : Type*} [Semigroup S] {h : ℕ} [Nonempty (Fin 
             omega⟩
         nomatch h_valid_false h_valid_true
 
+/-- The tree built by `buildFactorizationTree`
+  satisfies the Ramsey property. -/
 theorem buildTree_isRamsey {A S : Type*} [Semigroup S] {h : ℕ} [Nonempty (Fin h)]
     (eval : List A → S)
     (hmul : ∀ u v, u ≠ [] → v ≠ [] → eval (u ++ v) = eval u * eval v)
@@ -667,6 +700,8 @@ decreasing_by
     grind
   · grind
 
+/-- Given a Ramsey split, one can construct a
+  factorization tree with bounded height. -/
 theorem exists_factorizationTree_of_split {A S : Type*} [Semigroup S]
     (eval : List A → S)
     (hmul : ∀ u v, u ≠ [] → v ≠ [] → eval (u ++ v) = eval u * eval v)
@@ -680,6 +715,9 @@ theorem exists_factorizationTree_of_split {A S : Type*} [Semigroup S]
          buildTree_height_bound eval u hu s,
          buildTree_isRamsey eval hmul u hu s hs_ramsey⟩
 
+/-- **Simon's Factorization Forest Theorem:**
+  Every word over a finite semigroup admits a
+  factorization tree of height at most `3 * nS S`. -/
 theorem factorization_forest {A S : Type*} [Semigroup S] [Fintype S]
     [Nonempty (Fin (nS S))]
     (eval : List A → S)

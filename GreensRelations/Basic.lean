@@ -3,15 +3,28 @@ Copyright (c) 2026 Re'em Melamed-Katz. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Re'em Melamed-Katz
 -/
-import GreensRelations.Defs
+import Mathlib.Algebra.Divisibility.Basic
+import Mathlib.Algebra.Group.Basic
 import Mathlib.Data.Setoid.Basic
 import Mathlib.Algebra.Group.Opposite
 
 /-!
-# Basic Properties of Green's Relations
+# Green's Relations: Definitions and Basic Properties
 
-This file proves the foundational equivalences and duality properties of Green's relations,
+This file contains the fundamental definitions of Green's relations (L, R, H, D, and J)
+on a general semigroup, and proves their foundational equivalences and duality properties,
 establishing them as setoids over a semigroup.
+
+## Main definitions
+
+* `IsGreenLeftDvd`: Left divisibility in a semigroup.
+* `IsGreenRightDvd`: Right divisibility in a semigroup.
+* `IsGreenJRel`: The basic step of being a two-sided multiple.
+* `IsGreenL`: Green's L relation (generating the same left ideal).
+* `IsGreenR`: Green's R relation (generating the same right ideal).
+* `IsGreenH`: Green's H relation (the intersection of L and R).
+* `IsGreenD`: Green's D relation (the composition of L and R).
+* `IsGreenJ`: Green's J relation (generating the same two-sided ideal).
 
 ## References
 * [T. Colcombet, *The Factorization Forest Theorem*][colombet2008]
@@ -19,30 +32,92 @@ establishing them as setoids over a semigroup.
 
 variable {S : Type*} [Semigroup S]
 
+/-- `IsGreenLeftDvd a b` means that `a` is a left multiple of `b`,
+  i.e., `a = b` or `a = z * b`. -/
+abbrev IsGreenLeftDvd (a b : S) : Prop := a = b ∨ RightDvd b a
+
+/-- `IsGreenRightDvd a b` means that `a` is a right multiple of `b`,
+  i.e., `a = b` or `a = b * z`. -/
+abbrev IsGreenRightDvd (a b : S) : Prop := a = b ∨ b ∣ a
+
+/-- `IsGreenHDvd a b` means `a` is both a left and a right multiple of `b`. -/
+abbrev IsGreenHDvd (a b : S) : Prop := IsGreenLeftDvd a b ∧ IsGreenRightDvd a b
+
+/-- `IsGreenJRel a b` represents the basic step of being a two-sided multiple.
+  `a` is related to `b` if `a = b`, `a = u * b`, `a = b * v`, or `a = u * b * v`. -/
+inductive IsGreenJRel (a b : S) : Prop
+  /-- `a` and `b` are equal. -/
+  | of_eq (h : a = b)
+  /-- `a` is a left multiple of `b`. -/
+  | mul_left (u : S) (h : a = u * b)
+  /-- `a` is a right multiple of `b`. -/
+  | mul_right (v : S) (h : a = b * v)
+  /-- `a` is a two-sided multiple of `b`. -/
+  | mul_both (u v : S) (h : a = u * b * v)
+
+/-- Green's L relation: `a` and `b` generate the same left ideal. -/
+abbrev IsGreenL (a b : S) : Prop := IsGreenLeftDvd a b ∧ IsGreenLeftDvd b a
+
+/-- Green's R relation: `a` and `b` generate the same right ideal. -/
+abbrev IsGreenR (a b : S) : Prop := IsGreenRightDvd a b ∧ IsGreenRightDvd b a
+
+/-- Green's H relation: the intersection of Green's L and Green's R relations. -/
+abbrev IsGreenH (a b : S) : Prop := IsGreenL a b ∧ IsGreenR a b
+
+/-- Green's D relation: the composition of Green's L and Green's R relations.
+Here defined explicitly as the existence of an intermediate element `z`. -/
+abbrev IsGreenD (a b : S) : Prop := ∃ z, IsGreenL a z ∧ IsGreenR z b
+
+/-- Green's J relation: `a` and `b` generate the same two-sided ideal. -/
+abbrev IsGreenJ (a b : S) : Prop := IsGreenJRel a b ∧ IsGreenJRel b a
+
+
 section Duality
 
 open MulOpposite
 
-lemma op_rightDvd_op_iff {a b : S} : RightDvd (op a) (op b) ↔ a ∣ b :=
+-- TODO: This lemma belongs upstream in mathlib
+-- (e.g., `Mathlib.Algebra.Group.Opposite`).
+-- It should be moved there in a future PR.
+/-- Right divisibility in the opposite semigroup
+  is equivalent to left divisibility. -/
+lemma op_rightDvd_op_iff {a b : S} :
+    RightDvd (op a) (op b) ↔ a ∣ b :=
   ⟨fun ⟨c, hc⟩ ↦ ⟨unop c, op_injective (by simp [hc])⟩,
    fun ⟨c, hc⟩ ↦ ⟨op c, by simp [hc]⟩⟩
 
-lemma op_dvd_op_iff {a b : S} : op a ∣ op b ↔ RightDvd a b :=
+-- TODO: This lemma belongs upstream in mathlib
+-- (e.g., `Mathlib.Algebra.Group.Opposite`).
+-- It should be moved there in a future PR.
+/-- Left divisibility in the opposite semigroup
+  is equivalent to right divisibility. -/
+lemma op_dvd_op_iff {a b : S} :
+    op a ∣ op b ↔ RightDvd a b :=
   ⟨fun ⟨c, hc⟩ ↦ ⟨unop c, op_injective (by simp [hc])⟩,
    fun ⟨c, hc⟩ ↦ ⟨op c, by simp [hc]⟩⟩
 
+/-- Green's right divisibility is equivalent to
+  left divisibility in the opposite semigroup. -/
 lemma isGreenRightDvd_iff_isGreenLeftDvd_op {a b : S} :
     IsGreenRightDvd a b ↔ IsGreenLeftDvd (op a) (op b) := by
   simp only [IsGreenRightDvd, IsGreenLeftDvd, op_rightDvd_op_iff, op_inj]
 
+/-- Green's left divisibility is equivalent to
+  right divisibility in the opposite semigroup. -/
 lemma isGreenLeftDvd_iff_isGreenRightDvd_op {a b : S} :
     IsGreenLeftDvd a b ↔ IsGreenRightDvd (op a) (op b) := by
   simp only [IsGreenRightDvd, IsGreenLeftDvd, op_dvd_op_iff, op_inj]
 
-lemma isGreenR_iff_isGreenL_op {a b : S} : IsGreenR a b ↔ IsGreenL (op a) (op b) := by
+/-- Green's R relation is equivalent to L relation
+  in the opposite semigroup. -/
+lemma isGreenR_iff_isGreenL_op {a b : S} :
+    IsGreenR a b ↔ IsGreenL (op a) (op b) := by
   simp only [IsGreenR, IsGreenL, isGreenRightDvd_iff_isGreenLeftDvd_op]
 
-lemma isGreenL_iff_isGreenR_op {a b : S} : IsGreenL a b ↔ IsGreenR (op a) (op b) := by
+/-- Green's L relation is equivalent to R relation
+  in the opposite semigroup. -/
+lemma isGreenL_iff_isGreenR_op {a b : S} :
+    IsGreenL a b ↔ IsGreenR (op a) (op b) := by
   simp only [IsGreenL, IsGreenR, isGreenLeftDvd_iff_isGreenRightDvd_op]
 
 end Duality

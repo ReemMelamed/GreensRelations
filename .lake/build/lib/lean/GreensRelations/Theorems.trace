@@ -1,9 +1,9 @@
 {"synthetic": false,
  "schemaVersion": "2025-09-10",
  "outputs":
- {"o": ["dd78b8183ccf59e1.olean"],
+ {"o": ["0961c5d824e51ec9.olean"],
   "m": false,
-  "i": "f29a4dd5e6808df6.ilean",
+  "i": "d787c2c91ab6061a.ilean",
   "c": "c7eb16d1450bc2be.c"},
  "log":
  [{"message":
@@ -15,7 +15,7 @@
      [["@GreensTheorems:extraDep", "00000000000006bb"]]],
     ["imports",
      [["GreensRelations.MulSeq transitive imports (legacy)",
-       "cac65e43c7e2c7af"],
+       "6001b3266cd9444b"],
       ["GreensRelations.MulSeq:importAllArts", "2d4ebe810dce7c9b"],
       ["Mathlib.Data.Fintype.Card transitive imports (legacy)",
        "ca86319ee87f14ff"],
@@ -28,7 +28,7 @@
   ["Lean 4.33.0, commit 62eed1db4d67327ec8120be05f1a1b0847d74561",
    "8fa8fbe052c71a8e"],
   ["C:\\Users\\reems\\git-repositories\\GreensRelations\\GreensRelations\\Theorems.lean",
-   "c257b56232b6d1ec"],
+   "913c155382a96bbb"],
   ["options",
    [["-DmaxSynthPendingDepth=3", "c78e353d34de85d4"],
     ["-Dweak.linter.mathlibStandardSet=true", "8a155799906f2b42"],
@@ -38,4 +38,4 @@
   ["Module.name: GreensRelations.Theorems", "1ce3612de43a8fa6"],
   ["Package.id?: (some GreensTheorems)", "6ed9172dbfc8f471"],
   ["Module.leanArgs: #[]", "00000000000006bb"]],
- "depHash": "9b982b2d533e1e4b"}
+ "depHash": "028b3d11686c1c71"}

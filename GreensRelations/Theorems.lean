@@ -19,17 +19,7 @@ in finite semigroups, and conditions for H-classes to be subgroups.
 
 variable {S : Type*} [Semigroup S]
 
-open MulSeq
-
 section MonotonicityAndCommutativity
-
-/-- Right multiplication preserves Green's `L`-relation. -/
-theorem isGreenL_mul_right {a b c : S} (h : IsGreenL a b) :
-IsGreenL (a * c) (b * c) := IsGreenL.mul_right c h
-
-/-- Left multiplication preserves Green's `R`-relation. -/
-theorem isGreenR_mul_left {a b c : S} (h : IsGreenR a b) :
-    IsGreenR (c * a) (c * b) := IsGreenR.mul_left c h
 
 /-- Equivalence of `L ∘ R` and `R ∘ L` compositions in the definition of Green's `D`-relation. -/
 theorem isGreenD_commutes_L_R {a b : S} :
@@ -77,7 +67,7 @@ theorem isRegularDClass_iff_forall_LClass_has_idempotent
   obtain ⟨x₀, rfl⟩ := hD
   constructor
   · rintro hReg L ⟨x, hx, rfl⟩
-    exact exists_idempotent_in_greenL_of_regular (hReg x hx)
+    exact MulSeq.exists_idempotent_in_greenL_of_regular (hReg x hx)
   · intro H x hx
     obtain ⟨e, he, he_idem⟩ := H (IsGreenL.eqvClass x) ⟨x, hx, rfl⟩
     obtain ⟨u, hu⟩ : ∃ u, e = u * x := by
@@ -97,7 +87,7 @@ theorem isRegularDClass_iff_forall_RClass_has_idempotent
   obtain ⟨x₀, rfl⟩ := hD
   constructor
   · rintro hReg R ⟨x, hx, rfl⟩
-    exact exists_idempotent_in_greenR_of_regular (hReg x hx)
+    exact MulSeq.exists_idempotent_in_greenR_of_regular (hReg x hx)
   · intro H x hx
     obtain ⟨e, he, he_idem⟩ := H (IsGreenR.eqvClass x) ⟨x, hx, rfl⟩
     obtain ⟨u, hu⟩ : ∃ u, e = x * u := by
@@ -157,15 +147,15 @@ theorem isGreenD_of_isGreenJ [Finite S] {a b : S} (h : IsGreenJ a b) : IsGreenD 
   match h.left, h.right with
   | .of_eq h1, _ => h1 ▸ IsGreenD.refl a
   | _, .of_eq h2 => h2.symm ▸ IsGreenD.refl b
-  | .mul_left _ hu1, .mul_left _ hu2 => isGreenD_of_left_left hu1 hu2
-  | .mul_left _ hu1, .mul_right _ hv2 => isGreenD_of_left_right hu1 hv2
-  | .mul_left _ hu1, .mul_both _ _ huv2 => isGreenD_of_JRel_left_both hu1 huv2
-  | .mul_right _ hv1, .mul_left _ hu2 => isGreenD_of_right_left hv1 hu2
-  | .mul_right _ hv1, .mul_right _ hv2 => isGreenD_of_right_right hv1 hv2
-  | .mul_right _ hv1, .mul_both _ _ huv2 => isGreenD_of_JRel_right_both hv1 huv2
-  | .mul_both _ _ huv1, .mul_left _ hu2 => (isGreenD_of_JRel_left_both hu2 huv1).symm
-  | .mul_both _ _ huv1, .mul_right _ hv2 => (isGreenD_of_JRel_right_both hv2 huv1).symm
-  | .mul_both _ _ huv1, .mul_both _ _ huv2 => isGreenD_of_JRel_both huv1 huv2
+  | .mul_left _ hu1, .mul_left _ hu2 => MulSeq.isGreenD_of_left_left hu1 hu2
+  | .mul_left _ hu1, .mul_right _ hv2 => MulSeq.isGreenD_of_left_right hu1 hv2
+  | .mul_left _ hu1, .mul_both _ _ huv2 => MulSeq.isGreenD_of_JRel_left_both hu1 huv2
+  | .mul_right _ hv1, .mul_left _ hu2 => MulSeq.isGreenD_of_right_left hv1 hu2
+  | .mul_right _ hv1, .mul_right _ hv2 => MulSeq.isGreenD_of_right_right hv1 hv2
+  | .mul_right _ hv1, .mul_both _ _ huv2 => MulSeq.isGreenD_of_JRel_right_both hv1 huv2
+  | .mul_both _ _ huv1, .mul_left _ hu2 => (MulSeq.isGreenD_of_JRel_left_both hu2 huv1).symm
+  | .mul_both _ _ huv1, .mul_right _ hv2 => (MulSeq.isGreenD_of_JRel_right_both hv2 huv1).symm
+  | .mul_both _ _ huv1, .mul_both _ _ huv2 => MulSeq.isGreenD_of_JRel_both huv1 huv2
 
 /-- If `a` and `b` are `D`-related, they satisfy the basic `J`-relation step. -/
 theorem isGreenJRel_of_isGreenD {a b : S} (h : IsGreenD a b) : IsGreenJRel a b :=
@@ -197,7 +187,7 @@ theorem isGreenL_sl_of_isGreenD_sl [Finite S] {a b : S} (h : IsGreenD b (a * b))
       · exact ⟨w * a, by rw [hw, mul_assoc]⟩
     rcases hR_bz.left with h_eq | ⟨d, hd⟩
     · exact (IsGreenL.trans (h_eq ▸ IsGreenL.refl _) hL_zab).left
-    · exact (IsGreenL.trans (greenL_of_eq_mul_mul hd) hL_zab).left
+    · exact (IsGreenL.trans (MulSeq.greenL_of_eq_mul_mul hd) hL_zab).left
   · exact Or.inr ⟨a, rfl⟩
 
 open MulOpposite in

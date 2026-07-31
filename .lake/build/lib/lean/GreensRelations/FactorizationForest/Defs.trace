@@ -1,9 +1,9 @@
 {"synthetic": false,
  "schemaVersion": "2025-09-10",
  "outputs":
- {"o": ["5d59a5f40313da55.olean"],
+ {"o": ["6b5784799e514142.olean"],
   "m": false,
-  "i": "f83073671b860713.ilean",
+  "i": "80584c09c910c5a7.ilean",
   "c": "6f908a04a48f9521.c"},
  "log":
  [{"message":
@@ -20,8 +20,8 @@
       ["Mathlib.Data.Finset.Max transitive imports (legacy)",
        "1a0a231c06238f53"],
       ["Mathlib.Data.Finset.Max:importAllArts", "58df536989245c6d"],
-      ["GreensRelations.Order transitive imports (legacy)", "45cd144b01135dbc"],
-      ["GreensRelations.Order:importAllArts", "10c6c7cbc98c5002"]]]]],
+      ["GreensRelations.Order transitive imports (legacy)", "0f88838f78a4fd81"],
+      ["GreensRelations.Order:importAllArts", "adb0068b3c7575b6"]]]]],
   ["libs",
    [["import dynlibs", "00000000000006bb"],
     ["package external libraries", "00000000000006bb"],
@@ -30,7 +30,7 @@
   ["Lean 4.33.0, commit 62eed1db4d67327ec8120be05f1a1b0847d74561",
    "8fa8fbe052c71a8e"],
   ["C:\\Users\\reems\\git-repositories\\GreensRelations\\GreensRelations\\FactorizationForest\\Defs.lean",
-   "308b4b3cd377aa5a"],
+   "e640a6fc5e3fa14b"],
   ["options",
    [["-DmaxSynthPendingDepth=3", "c78e353d34de85d4"],
     ["-Dweak.linter.mathlibStandardSet=true", "8a155799906f2b42"],
@@ -40,4 +40,4 @@
   ["Module.name: GreensRelations.FactorizationForest.Defs", "84e41b9cec4f7d60"],
   ["Package.id?: (some GreensTheorems)", "6ed9172dbfc8f471"],
   ["Module.leanArgs: #[]", "00000000000006bb"]],
- "depHash": "2ecee2082b1be723"}
+ "depHash": "cd741523cdde67aa"}

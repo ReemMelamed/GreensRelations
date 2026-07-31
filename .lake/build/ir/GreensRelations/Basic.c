@@ -1,6 +1,6 @@
 // Lean compiler output
 // Module: GreensRelations.Basic
-// Imports: public import Init public meta import Init public import GreensRelations.Defs public import Mathlib.Data.Setoid.Basic public import Mathlib.Algebra.Group.Opposite
+// Imports: public import Init public meta import Init public import Mathlib.Algebra.Divisibility.Basic public import Mathlib.Algebra.Group.Basic public import Mathlib.Data.Setoid.Basic public import Mathlib.Algebra.Group.Opposite
 #include <lean/lean.h>
 #if defined(__clang__)
 #pragma clang diagnostic ignored "-Wunused-parameter"
@@ -110,7 +110,8 @@ return v_res_30_;
 }
 lean_object* initialize_Init(uint8_t builtin);
 lean_object* initialize_Init(uint8_t builtin);
-lean_object* initialize_GreensTheorems_GreensRelations_Defs(uint8_t builtin);
+lean_object* initialize_mathlib_Mathlib_Algebra_Divisibility_Basic(uint8_t builtin);
+lean_object* initialize_mathlib_Mathlib_Algebra_Group_Basic(uint8_t builtin);
 lean_object* initialize_mathlib_Mathlib_Data_Setoid_Basic(uint8_t builtin);
 lean_object* initialize_mathlib_Mathlib_Algebra_Group_Opposite(uint8_t builtin);
 static bool _G_initialized = false;
@@ -124,7 +125,10 @@ lean_dec_ref(res);
 res = initialize_Init(builtin);
 if (lean_io_result_is_error(res)) return res;
 lean_dec_ref(res);
-res = initialize_GreensTheorems_GreensRelations_Defs(builtin);
+res = initialize_mathlib_Mathlib_Algebra_Divisibility_Basic(builtin);
+if (lean_io_result_is_error(res)) return res;
+lean_dec_ref(res);
+res = initialize_mathlib_Mathlib_Algebra_Group_Basic(builtin);
 if (lean_io_result_is_error(res)) return res;
 lean_dec_ref(res);
 res = initialize_mathlib_Mathlib_Data_Setoid_Basic(builtin);

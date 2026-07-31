@@ -1,9 +1,9 @@
 {"synthetic": false,
  "schemaVersion": "2025-09-10",
  "outputs":
- {"o": ["a8cde9a07826d979.olean"],
+ {"o": ["8735ae79941d8a46.olean"],
   "m": false,
-  "i": "cf94d7890a15168c.ilean",
+  "i": "b28b1e179185fe67.ilean",
   "c": "3d822b874aafef39.c"},
  "log":
  [{"message":
@@ -15,9 +15,9 @@
      [["@GreensTheorems:extraDep", "00000000000006bb"]]],
     ["imports",
      [["GreensRelations.FactorizationForest.Defs transitive imports (legacy)",
-       "bdb7ebea8eb2f9fa"],
+       "49fd36e9394ce0f2"],
       ["GreensRelations.FactorizationForest.Defs:importAllArts",
-       "77b566297a1f17fd"]]]]],
+       "0e69e1bfcc33d388"]]]]],
   ["libs",
    [["import dynlibs", "00000000000006bb"],
     ["package external libraries", "00000000000006bb"],
@@ -37,4 +37,4 @@
    "01f50a38cca2f8e8"],
   ["Package.id?: (some GreensTheorems)", "6ed9172dbfc8f471"],
   ["Module.leanArgs: #[]", "00000000000006bb"]],
- "depHash": "79a3cf07dd53bb91"}
+ "depHash": "5751436b4734106b"}
