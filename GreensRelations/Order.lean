@@ -51,7 +51,6 @@ instance : PartialOrder (GreenLClass S) where
 
 end GreenLClass
 
-
 namespace GreenRClass
 
 /-- `IsGreenRightDvd` is well-defined with respect to Green's R relation. -/
@@ -80,7 +79,6 @@ instance : PartialOrder (GreenRClass S) where
 
 end GreenRClass
 
-
 namespace GreenJClass
 
 /-- `IsGreenJRel` is well-defined with respect to Green's J relation. -/
@@ -108,7 +106,6 @@ instance : PartialOrder (GreenJClass S) where
     exact mk_eq_mk_iff.mpr ⟨hab, hba⟩
 
 end GreenJClass
-
 
 namespace GreenDClass
 

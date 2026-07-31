@@ -1,5 +1,4 @@
 import GreensRelations.Basic
-import GreensRelations.Classes
 import GreensRelations.FactorizationForest.Basic
 import GreensRelations.FactorizationForest.Combine
 import GreensRelations.FactorizationForest.Irregular
