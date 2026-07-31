@@ -1,6 +1,6 @@
 // Lean compiler output
 // Module: GreensRelations.MulSeq
-// Imports: public import Init public meta import Init public import GreensRelations.Classes public import Mathlib.Data.Fintype.Pigeonhole
+// Imports: public import Init public meta import Init public import GreensRelations.Basic public import Mathlib.Data.Fintype.Pigeonhole
 #include <lean/lean.h>
 #if defined(__clang__)
 #pragma clang diagnostic ignored "-Wunused-parameter"
@@ -207,7 +207,7 @@ return v_res_84_;
 }
 lean_object* initialize_Init(uint8_t builtin);
 lean_object* initialize_Init(uint8_t builtin);
-lean_object* initialize_GreensTheorems_GreensRelations_Classes(uint8_t builtin);
+lean_object* initialize_GreensTheorems_GreensRelations_Basic(uint8_t builtin);
 lean_object* initialize_mathlib_Mathlib_Data_Fintype_Pigeonhole(uint8_t builtin);
 static bool _G_initialized = false;
 LEAN_EXPORT lean_object* initialize_GreensTheorems_GreensRelations_MulSeq(uint8_t builtin) {
@@ -220,7 +220,7 @@ lean_dec_ref(res);
 res = initialize_Init(builtin);
 if (lean_io_result_is_error(res)) return res;
 lean_dec_ref(res);
-res = initialize_GreensTheorems_GreensRelations_Classes(builtin);
+res = initialize_GreensTheorems_GreensRelations_Basic(builtin);
 if (lean_io_result_is_error(res)) return res;
 lean_dec_ref(res);
 res = initialize_mathlib_Mathlib_Data_Fintype_Pigeonhole(builtin);

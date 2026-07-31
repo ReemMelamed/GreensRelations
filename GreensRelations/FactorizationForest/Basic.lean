@@ -13,7 +13,7 @@ import GreensRelations.Order
 This file defines the basic structures for the Factorization Forest Theorem.
 
 ## References
-* [T. Colcombet, *The Factorization Forest Theorem*][colombet2008]
+* [T. Colcombet, *The Factorization Forest Theorem*][colcombet2008]
 -/
 
 namespace FactorizationForest

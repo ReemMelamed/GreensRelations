@@ -35,7 +35,7 @@ regular elements and regular D-classes.
 * `IsRegularDClass`: A predicate indicating that all elements in a D-class are regular.
 
 ## References
-* [T. Colcombet, *The Factorization Forest Theorem*][colombet2008]
+* [T. Colcombet, *The Factorization Forest Theorem*][colcombet2008]
 -/
 
 variable {S : Type*} [Semigroup S]

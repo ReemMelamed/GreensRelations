@@ -11,6 +11,9 @@ import Mathlib.Data.Fintype.Card
 
 This file proves the major structural theorems regarding Green's relations,
 including Green's theorem (bijections between H-classes) and regular D-class characterizations.
+
+## References
+* [T. Colcombet, *The Factorization Forest Theorem*][colcombet2008]
 -/
 
 variable {S : Type*} [Semigroup S]

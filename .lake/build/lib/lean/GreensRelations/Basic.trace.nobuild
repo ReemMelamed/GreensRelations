@@ -33,7 +33,7 @@
   ["Lean 4.33.0, commit 62eed1db4d67327ec8120be05f1a1b0847d74561",
    "8fa8fbe052c71a8e"],
   ["C:\\Users\\reems\\git-repositories\\GreensRelations\\GreensRelations\\Basic.lean",
-   "554ffcf86a10de53"],
+   "ccbc049c02cb233c"],
   ["options",
    [["-DmaxSynthPendingDepth=3", "c78e353d34de85d4"],
     ["-Dweak.linter.mathlibStandardSet=true", "8a155799906f2b42"],
@@ -43,4 +43,4 @@
   ["Module.name: GreensRelations.Basic", "12e5e7184728c957"],
   ["Package.id?: (some GreensTheorems)", "6ed9172dbfc8f471"],
   ["Module.leanArgs: #[]", "00000000000006bb"]],
- "depHash": "5ea9730dabeda12d"}
+ "depHash": "f13c811d2faefe46"}

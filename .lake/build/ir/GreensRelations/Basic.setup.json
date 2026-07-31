@@ -2030,6 +2030,12 @@
     "C:\\Users\\reems\\git-repositories\\GreensRelations\\.lake\\packages\\mathlib\\.lake\\build\\lib\\lean\\Mathlib\\Data\\FunLike\\Basic.olean.private"],
    ["C:\\Users\\reems\\git-repositories\\GreensRelations\\.lake\\packages\\mathlib\\.lake\\build\\lib\\lean\\Mathlib\\Data\\FunLike\\Basic.ir.sig",
     "C:\\Users\\reems\\git-repositories\\GreensRelations\\.lake\\packages\\mathlib\\.lake\\build\\lib\\lean\\Mathlib\\Data\\FunLike\\Basic.ir"]],
+  "Mathlib.Data.Finite.Defs":
+  [["C:\\Users\\reems\\git-repositories\\GreensRelations\\.lake\\packages\\mathlib\\.lake\\build\\lib\\lean\\Mathlib\\Data\\Finite\\Defs.olean",
+    "C:\\Users\\reems\\git-repositories\\GreensRelations\\.lake\\packages\\mathlib\\.lake\\build\\lib\\lean\\Mathlib\\Data\\Finite\\Defs.olean.server",
+    "C:\\Users\\reems\\git-repositories\\GreensRelations\\.lake\\packages\\mathlib\\.lake\\build\\lib\\lean\\Mathlib\\Data\\Finite\\Defs.olean.private"],
+   ["C:\\Users\\reems\\git-repositories\\GreensRelations\\.lake\\packages\\mathlib\\.lake\\build\\lib\\lean\\Mathlib\\Data\\Finite\\Defs.ir.sig",
+    "C:\\Users\\reems\\git-repositories\\GreensRelations\\.lake\\packages\\mathlib\\.lake\\build\\lib\\lean\\Mathlib\\Data\\Finite\\Defs.ir"]],
   "Mathlib.Data.Bool.Basic":
   [["C:\\Users\\reems\\git-repositories\\GreensRelations\\.lake\\packages\\mathlib\\.lake\\build\\lib\\lean\\Mathlib\\Data\\Bool\\Basic.olean",
     "C:\\Users\\reems\\git-repositories\\GreensRelations\\.lake\\packages\\mathlib\\.lake\\build\\lib\\lean\\Mathlib\\Data\\Bool\\Basic.olean.server",

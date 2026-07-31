@@ -3,7 +3,7 @@
  "outputs":
  {"o": ["3352e59bd21ca63a.olean"],
   "m": false,
-  "i": "deb7c9c4b110e6c6.ilean",
+  "i": "ff7a15994ac0faad.ilean",
   "c": "ec1543b47410d22c.c"},
  "log":
  [{"message":
@@ -20,8 +20,8 @@
       ["Mathlib.Data.Finset.Max transitive imports (legacy)",
        "1a0a231c06238f53"],
       ["Mathlib.Data.Finset.Max:importAllArts", "58df536989245c6d"],
-      ["GreensRelations.Order transitive imports (legacy)", "85bdb0fc40a79148"],
-      ["GreensRelations.Order:importAllArts", "14c2ced1a2b224f1"]]]]],
+      ["GreensRelations.Order transitive imports (legacy)", "3cae020544fc18fa"],
+      ["GreensRelations.Order:importAllArts", "03e373a2cfa56006"]]]]],
   ["libs",
    [["import dynlibs", "00000000000006bb"],
     ["package external libraries", "00000000000006bb"],
@@ -41,4 +41,4 @@
    "88c5534d0416a8f2"],
   ["Package.id?: (some GreensTheorems)", "6ed9172dbfc8f471"],
   ["Module.leanArgs: #[]", "00000000000006bb"]],
- "depHash": "154e13674b267f0c"}
+ "depHash": "0ac0197092535abe"}

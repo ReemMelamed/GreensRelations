@@ -3,7 +3,7 @@
  "outputs":
  {"o": ["2a0197a18950f4c4.olean"],
   "m": false,
-  "i": "bd07bd3c0cabb261.ilean",
+  "i": "7142934e200a3c24.ilean",
   "c": "e685d32750b77168.c"},
  "log":
  [{"message":
@@ -14,7 +14,7 @@
    [["GreensTheorems/GreensRelations:extraDep",
      [["@GreensTheorems:extraDep", "00000000000006bb"]]],
     ["imports",
-     [["GreensRelations.Green transitive imports (legacy)", "594ee7f55a7edc12"],
+     [["GreensRelations.Green transitive imports (legacy)", "11cc314514f4024b"],
       ["GreensRelations.Green:importAllArts", "900714eb163c9a97"]]]]],
   ["libs",
    [["import dynlibs", "00000000000006bb"],
@@ -34,4 +34,4 @@
   ["Module.name: GreensRelations.Finite", "9bfbb9fc00de2808"],
   ["Package.id?: (some GreensTheorems)", "6ed9172dbfc8f471"],
   ["Module.leanArgs: #[]", "00000000000006bb"]],
- "depHash": "e95a5a1b68b7fba7"}
+ "depHash": "6877a2dcbb089ed9"}
