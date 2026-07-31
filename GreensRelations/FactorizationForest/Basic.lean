@@ -7,8 +7,6 @@ import Mathlib.Data.Fintype.Card
 import Mathlib.Data.Finset.Max
 import GreensRelations.Order
 
-namespace FactorizationForest
-
 /-!
 # The Factorization Forest Theorem
 
@@ -17,6 +15,8 @@ This file defines the basic structures for the Factorization Forest Theorem.
 ## References
 * [T. Colcombet, *The Factorization Forest Theorem*][colombet2008]
 -/
+
+namespace FactorizationForest
 
 section SplitDefinitions
 

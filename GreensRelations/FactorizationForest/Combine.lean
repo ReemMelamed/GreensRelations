@@ -8,14 +8,14 @@ import Mathlib.Data.Finset.Max
 import GreensRelations.Order
 import GreensRelations.FactorizationForest.Basic
 
-namespace FactorizationForest
-
 /-!
 # Combine Splits Construction
 
 This file contains the construction of `combineSplits` which is used to merge local
 Ramsey splits over open intervals into a global split.
 -/
+
+namespace FactorizationForest
 
 variable {S : Type*} [Semigroup S] [Fintype S]
 

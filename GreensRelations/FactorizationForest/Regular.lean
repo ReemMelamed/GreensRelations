@@ -5,8 +5,6 @@ Authors: Re'em Melamed-Katz
 -/
 import GreensRelations.FactorizationForest.Combine
 
-namespace FactorizationForest
-
 /-!
 # The Factorization Forest Theorem
 
@@ -15,6 +13,8 @@ This file proves the regular case of the Factorization Forest Theorem.
 ## References
 * [T. Colcombet, *The Factorization Forest Theorem*][colombet2008]
 -/
+
+namespace FactorizationForest
 
 section RegularDClassCase
 

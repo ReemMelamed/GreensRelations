@@ -6,14 +6,14 @@ Authors: Re'em Melamed-Katz
 import GreensRelations.FactorizationForest.Regular
 import GreensRelations.FactorizationForest.Irregular
 
-namespace FactorizationForest
-
 /-!
 # The Factorization Forest Theorem
 
 ## References
 * [T. Colcombet, *The Factorization Forest Theorem*][colombet2008]
 -/
+
+namespace FactorizationForest
 
 section SimonSplit
 
