@@ -1,9 +1,9 @@
 {"synthetic": false,
  "schemaVersion": "2025-09-10",
  "outputs":
- {"o": ["6b5784799e514142.olean"],
+ {"o": ["752095526e371143.olean"],
   "m": false,
-  "i": "80584c09c910c5a7.ilean",
+  "i": "219fa9c3721824b3.ilean",
   "c": "6f908a04a48f9521.c"},
  "log":
  [{"message":
@@ -30,7 +30,7 @@
   ["Lean 4.33.0, commit 62eed1db4d67327ec8120be05f1a1b0847d74561",
    "8fa8fbe052c71a8e"],
   ["C:\\Users\\reems\\git-repositories\\GreensRelations\\GreensRelations\\FactorizationForest\\Defs.lean",
-   "e640a6fc5e3fa14b"],
+   "df5dc1936d3b38d0"],
   ["options",
    [["-DmaxSynthPendingDepth=3", "c78e353d34de85d4"],
     ["-Dweak.linter.mathlibStandardSet=true", "8a155799906f2b42"],
@@ -40,4 +40,4 @@
   ["Module.name: GreensRelations.FactorizationForest.Defs", "84e41b9cec4f7d60"],
   ["Package.id?: (some GreensTheorems)", "6ed9172dbfc8f471"],
   ["Module.leanArgs: #[]", "00000000000006bb"]],
- "depHash": "cd741523cdde67aa"}
+ "depHash": "27803946e7d98fae"}

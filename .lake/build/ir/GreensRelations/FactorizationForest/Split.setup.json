@@ -2996,18 +2996,22 @@
     "C:\\Users\\reems\\git-repositories\\GreensRelations\\.lake\\packages\\importGraph\\.lake\\build\\lib\\lean\\ImportGraph\\Graph\\TransitiveClosure.olean.private"],
    ["C:\\Users\\reems\\git-repositories\\GreensRelations\\.lake\\packages\\importGraph\\.lake\\build\\lib\\lean\\ImportGraph\\Graph\\TransitiveClosure.ir.sig",
     "C:\\Users\\reems\\git-repositories\\GreensRelations\\.lake\\packages\\importGraph\\.lake\\build\\lib\\lean\\ImportGraph\\Graph\\TransitiveClosure.ir"]],
-  "GreensRelations.Theorems":
-  [["C:\\Users\\reems\\git-repositories\\GreensRelations\\.lake\\build\\lib\\lean\\GreensRelations\\Theorems.olean"]],
   "GreensRelations.Order":
   [["C:\\Users\\reems\\git-repositories\\GreensRelations\\.lake\\build\\lib\\lean\\GreensRelations\\Order.olean"]],
   "GreensRelations.MulSeq":
   [["C:\\Users\\reems\\git-repositories\\GreensRelations\\.lake\\build\\lib\\lean\\GreensRelations\\MulSeq.olean"]],
+  "GreensRelations.Green":
+  [["C:\\Users\\reems\\git-repositories\\GreensRelations\\.lake\\build\\lib\\lean\\GreensRelations\\Green.olean"]],
+  "GreensRelations.Finite":
+  [["C:\\Users\\reems\\git-repositories\\GreensRelations\\.lake\\build\\lib\\lean\\GreensRelations\\Finite.olean"]],
   "GreensRelations.FactorizationForest.Regular":
   [["C:\\Users\\reems\\git-repositories\\GreensRelations\\.lake\\build\\lib\\lean\\GreensRelations\\FactorizationForest\\Regular.olean"]],
   "GreensRelations.FactorizationForest.Irregular":
   [["C:\\Users\\reems\\git-repositories\\GreensRelations\\.lake\\build\\lib\\lean\\GreensRelations\\FactorizationForest\\Irregular.olean"]],
-  "GreensRelations.FactorizationForest.Defs":
-  [["C:\\Users\\reems\\git-repositories\\GreensRelations\\.lake\\build\\lib\\lean\\GreensRelations\\FactorizationForest\\Defs.olean"]],
+  "GreensRelations.FactorizationForest.Combine":
+  [["C:\\Users\\reems\\git-repositories\\GreensRelations\\.lake\\build\\lib\\lean\\GreensRelations\\FactorizationForest\\Combine.olean"]],
+  "GreensRelations.FactorizationForest.Basic":
+  [["C:\\Users\\reems\\git-repositories\\GreensRelations\\.lake\\build\\lib\\lean\\GreensRelations\\FactorizationForest\\Basic.olean"]],
   "GreensRelations.Classes":
   [["C:\\Users\\reems\\git-repositories\\GreensRelations\\.lake\\build\\lib\\lean\\GreensRelations\\Classes.olean"]],
   "GreensRelations.Basic":

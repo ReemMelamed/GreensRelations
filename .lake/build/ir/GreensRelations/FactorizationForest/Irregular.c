@@ -1,6 +1,6 @@
 // Lean compiler output
 // Module: GreensRelations.FactorizationForest.Irregular
-// Imports: public import Init public meta import Init public import GreensRelations.FactorizationForest.Defs
+// Imports: public import Init public meta import Init public import GreensRelations.FactorizationForest.Combine
 #include <lean/lean.h>
 #if defined(__clang__)
 #pragma clang diagnostic ignored "-Wunused-parameter"
@@ -15,7 +15,7 @@ extern "C" {
 #endif
 lean_object* initialize_Init(uint8_t builtin);
 lean_object* initialize_Init(uint8_t builtin);
-lean_object* initialize_GreensTheorems_GreensRelations_FactorizationForest_Defs(uint8_t builtin);
+lean_object* initialize_GreensTheorems_GreensRelations_FactorizationForest_Combine(uint8_t builtin);
 static bool _G_initialized = false;
 LEAN_EXPORT lean_object* initialize_GreensTheorems_GreensRelations_FactorizationForest_Irregular(uint8_t builtin) {
 lean_object * res;
@@ -27,7 +27,7 @@ lean_dec_ref(res);
 res = initialize_Init(builtin);
 if (lean_io_result_is_error(res)) return res;
 lean_dec_ref(res);
-res = initialize_GreensTheorems_GreensRelations_FactorizationForest_Defs(builtin);
+res = initialize_GreensTheorems_GreensRelations_FactorizationForest_Combine(builtin);
 if (lean_io_result_is_error(res)) return res;
 lean_dec_ref(res);
 return lean_io_result_mk_ok(lean_box(0));

@@ -6,6 +6,8 @@ Authors: Re'em Melamed-Katz
 import GreensRelations.FactorizationForest.Regular
 import GreensRelations.FactorizationForest.Irregular
 
+namespace FactorizationForest
+
 /-!
 # The Factorization Forest Theorem
 
@@ -104,3 +106,5 @@ theorem simon_word {A S : Type*} [Semigroup S] [Fintype S] [Nonempty (Fin (nS S)
   simon_split (wordLabeling eval hmul u)
 
 end SimonWord
+
+end FactorizationForest

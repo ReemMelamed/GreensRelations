@@ -1,10 +1,12 @@
 import GreensRelations.Basic
 import GreensRelations.Classes
-import GreensRelations.FactorizationForest.Defs
+import GreensRelations.FactorizationForest.Basic
+import GreensRelations.FactorizationForest.Combine
 import GreensRelations.FactorizationForest.Irregular
 import GreensRelations.FactorizationForest.Regular
 import GreensRelations.FactorizationForest.Split
-import GreensRelations.FactorizationForest.Tree
+import GreensRelations.FactorizationForest.Forest
 import GreensRelations.MulSeq
 import GreensRelations.Order
-import GreensRelations.Theorems
+import GreensRelations.Green
+import GreensRelations.Finite

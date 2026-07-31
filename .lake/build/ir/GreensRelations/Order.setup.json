@@ -2882,10 +2882,12 @@
     "C:\\Users\\reems\\git-repositories\\GreensRelations\\.lake\\packages\\importGraph\\.lake\\build\\lib\\lean\\ImportGraph\\Graph\\TransitiveClosure.olean.private"],
    ["C:\\Users\\reems\\git-repositories\\GreensRelations\\.lake\\packages\\importGraph\\.lake\\build\\lib\\lean\\ImportGraph\\Graph\\TransitiveClosure.ir.sig",
     "C:\\Users\\reems\\git-repositories\\GreensRelations\\.lake\\packages\\importGraph\\.lake\\build\\lib\\lean\\ImportGraph\\Graph\\TransitiveClosure.ir"]],
-  "GreensRelations.Theorems":
-  [["C:\\Users\\reems\\git-repositories\\GreensRelations\\.lake\\build\\lib\\lean\\GreensRelations\\Theorems.olean"]],
   "GreensRelations.MulSeq":
   [["C:\\Users\\reems\\git-repositories\\GreensRelations\\.lake\\build\\lib\\lean\\GreensRelations\\MulSeq.olean"]],
+  "GreensRelations.Green":
+  [["C:\\Users\\reems\\git-repositories\\GreensRelations\\.lake\\build\\lib\\lean\\GreensRelations\\Green.olean"]],
+  "GreensRelations.Finite":
+  [["C:\\Users\\reems\\git-repositories\\GreensRelations\\.lake\\build\\lib\\lean\\GreensRelations\\Finite.olean"]],
   "GreensRelations.Classes":
   [["C:\\Users\\reems\\git-repositories\\GreensRelations\\.lake\\build\\lib\\lean\\GreensRelations\\Classes.olean"]],
   "GreensRelations.Basic":

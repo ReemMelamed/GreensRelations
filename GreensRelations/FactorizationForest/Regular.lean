@@ -3,7 +3,9 @@ Copyright (c) 2026 Re'em Melamed-Katz. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Re'em Melamed-Katz
 -/
-import GreensRelations.FactorizationForest.Defs
+import GreensRelations.FactorizationForest.Combine
+
+namespace FactorizationForest
 
 /-!
 # The Factorization Forest Theorem
@@ -550,3 +552,5 @@ lemma simon_split_regular_case {S : Type*} [Semigroup S] [Fintype S]
 
 
 end SplitConstruction
+
+end FactorizationForest
