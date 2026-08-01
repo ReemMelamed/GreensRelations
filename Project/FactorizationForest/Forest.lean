@@ -587,9 +587,11 @@ lemma nary_children_ramsey {A S : Type*} [Semigroup S] {h : ℕ} [Nonempty (Fin 
     exact of_decide_eq_true hi.right
   have h_len_idxs : idxs.length ≥ 4 := by
     have h_map_len : (partitionIndices idxs).length = children.length := by
-      have : (((partitionIndices idxs).map _).length) = children.length := congrArg List.length h_children
+      have : (((partitionIndices idxs).map _).length) = children.length :=
+        congrArg List.length h_children
       rwa [List.length_map] at this
-    have h_part_len : ∀ {n} (l : List (Fin n)), (partitionIndices l).length = l.length - 1 := by
+    have h_part_len : ∀ {n} (l : List (Fin (n + 1))),
+        (partitionIndices l).length = l.length - 1 := by
       intro n l
       induction l with
       | nil => rfl
@@ -611,9 +613,11 @@ lemma nary_children_ramsey {A S : Type*} [Semigroup S] {h : ℕ} [Nonempty (Fin 
       unfold splitIndices
       exact List.Pairwise.filter _ (List.sortedLT_finRange (u.length + 1) |>.pairwise)
     have hlt01 : i0 < i1 := List.pairwise_cons.1 h_sorted |>.1 i1 (by simp)
-    have hlt12 : i1 < i2 := List.pairwise_cons.1 (List.pairwise_cons.1 h_sorted |>.2) |>.1 i2 (by simp)
+    have hlt12 : i1 < i2 :=
+      List.pairwise_cons.1 (List.pairwise_cons.1 h_sorted |>.2) |>.1 i2 (by simp)
     obtain ⟨h_ee, h_all_pairs⟩ :=
-      extract_idempotent eval hmul u s hs_ramsey (i0 :: i1 :: i2 :: rest) h_idxs i0 i1 i2 h0 h1 h2 hlt01 hlt12
+      extract_idempotent eval hmul u s hs_ramsey (i0 :: i1 :: i2 :: rest) h_idxs i0 i1 i2
+        h0 h1 h2 hlt01 hlt12
     use (wordLabeling eval hmul u).σ i0 i1
     constructor
     · exact h_ee

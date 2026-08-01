@@ -92,13 +92,19 @@ theorem simon_split {S α : Type*} [Semigroup S] [Fintype S]
            fun h ↦ ⟨h_eq.mpr h.1, fun z hz1 hz2 ↦ (h_le z).mpr (h.2 z hz1 hz2)⟩⟩
   exact ⟨s, by
       ext; simp only [h_norm, s]
-      exact (congrArg Fin.val ((Finset.max'_eq_iff _ _
-        (⟨nS S - 1, by have : 0 < nS S := Fin.pos_iff_nonempty.mpr inferInstance; omega⟩ :
-        Fin (nS S))).mpr ⟨Finset.mem_univ _, fun w _ ↦ Fin.le_iff_val_le_val.mpr
-        (Nat.le_pred_of_lt w.isLt)⟩)).symm ▸ (congrArg Fin.val ((Finset.max'_eq_iff _ _
-        (⟨nSElement a - 1, by have : 0 < nSElement a := nSElement_pos a; omega⟩ :
-        Fin (nSElement a))).mpr ⟨Finset.mem_univ _, fun w _ ↦ Fin.le_iff_val_le_val.mpr
-        (Nat.le_pred_of_lt w.isLt)⟩)).symm ▸ (by have : 0 < nSElement a := nSElement_pos a; grind),
+      have h2 : (Finset.max' Finset.univ Finset.univ_nonempty : Fin (nSElement a)).val
+          = nSElement a - 1 :=
+        congrArg Fin.val ((Finset.max'_eq_iff _ _
+          (⟨nSElement a - 1, by have : 0 < nSElement a := nSElement_pos a; omega⟩ :
+          Fin (nSElement a))).mpr ⟨Finset.mem_univ _, fun w _ ↦ Fin.le_iff_val_le_val.mpr
+          (Nat.le_pred_of_lt w.isLt)⟩)
+      have h3 : (Finset.max' Finset.univ Finset.univ_nonempty : Fin (nS S)).val = nS S - 1 :=
+        congrArg Fin.val ((Finset.max'_eq_iff _ _
+          (⟨nS S - 1, by have : 0 < nS S := Fin.pos_iff_nonempty.mpr inferInstance; omega⟩ :
+          Fin (nS S))).mpr ⟨Finset.mem_univ _, fun w _ ↦ Fin.le_iff_val_le_val.mpr
+          (Nat.le_pred_of_lt w.isLt)⟩)
+      have h4 : 0 < nSElement a := nSElement_pos a
+      omega,
     fun x y z hxy hyz hsr_xy hsr_yz ↦
       h_ramsey.1 x y z hxy hyz ((hsr_iff x y).mp hsr_xy) ((hsr_iff y z).mp hsr_yz),
     fun x y u v hxy huv hsr_xy hsr_uv hsr_xu ↦

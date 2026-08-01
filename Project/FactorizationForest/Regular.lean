@@ -414,7 +414,8 @@ lemma regularSplits_props {α S : Type*}
         rw [h_min_eq]
         apply Fin.le_iff_val_le_val.mpr
         grind
-    simpa only [h_σ_X] using hsX_ramsey.1 ⟨x, hx⟩ ⟨y, hy⟩ ⟨z, hz⟩ hlt_xy hlt_yz (convert_sr_X x y hx hy hlt_xy hsr_xy) (convert_sr_X y z hy hz hlt_yz hsr_yz)
+    simpa only [h_σ_X] using hsX_ramsey.1 ⟨x, hx⟩ ⟨y, hy⟩ ⟨z, hz⟩ hlt_xy hlt_yz
+      (convert_sr_X x y hx hy hlt_xy hsr_xy) (convert_sr_X y z hy hz hlt_yz hsr_yz)
   · intro x y u v hx hy hu hv hlt_xy hlt_uv hsr_xy hsr_uv hsr_xu
     have convert_sr_X : ∀ (p q : α) (hp : p ∈ xs) (hq : q ∈ xs) (hpq : p < q),
         SplitRelation (regularSplits a xs sX sY) p q →
