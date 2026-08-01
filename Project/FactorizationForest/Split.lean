@@ -77,7 +77,19 @@ theorem simon_split {S α : Type*} [Semigroup S] [Fintype S]
     exact (dif_pos h_ne).symm ▸ Finset.le_max' _ _ (Finset.mem_image_of_mem _ (Finset.mem_univ a))
   let Δ := nS S - nSElement a
   let s : Split α (nS S) := fun x ↦ ⟨(s_a x).val + Δ, by have h_bound := (s_a x).isLt; omega⟩
-  have hsr_iff : ∀ u v, SplitRelation s u v ↔ SplitRelation s_a u v := by grind
+  have hsr_iff : ∀ u v, SplitRelation s u v ↔ SplitRelation s_a u v := by
+    intro u v
+    have h_eq : s u = s v ↔ s_a u = s_a v := by
+      rw [Fin.ext_iff, Fin.ext_iff]
+      change (s_a u).val + Δ = (s_a v).val + Δ ↔ (s_a u).val = (s_a v).val
+      exact ⟨fun h ↦ by omega, fun h ↦ by omega⟩
+    have h_le : ∀ z, s z ≤ s (min u v) ↔ s_a z ≤ s_a (min u v) := by
+      intro z
+      rw [Fin.le_iff_val_le_val, Fin.le_iff_val_le_val]
+      change (s_a z).val + Δ ≤ (s_a (min u v)).val + Δ ↔ (s_a z).val ≤ (s_a (min u v)).val
+      exact ⟨fun h ↦ by omega, fun h ↦ by omega⟩
+    exact ⟨fun h ↦ ⟨h_eq.mp h.1, fun z hz1 hz2 ↦ (h_le z).mp (h.2 z hz1 hz2)⟩,
+           fun h ↦ ⟨h_eq.mpr h.1, fun z hz1 hz2 ↦ (h_le z).mpr (h.2 z hz1 hz2)⟩⟩
   exact ⟨s, by
       ext; simp only [h_norm, s]
       exact (congrArg Fin.val ((Finset.max'_eq_iff _ _
@@ -87,7 +99,8 @@ theorem simon_split {S α : Type*} [Semigroup S] [Fintype S]
         (⟨nSElement a - 1, by have : 0 < nSElement a := nSElement_pos a; omega⟩ :
         Fin (nSElement a))).mpr ⟨Finset.mem_univ _, fun w _ ↦ Fin.le_iff_val_le_val.mpr
         (Nat.le_pred_of_lt w.isLt)⟩)).symm ▸ (by have : 0 < nSElement a := nSElement_pos a; grind),
-    fun x y hlt hsr ↦ h_ramsey.1 x y hlt ((hsr_iff x y).mp hsr),
+    fun x y z hxy hyz hsr_xy hsr_yz ↦
+      h_ramsey.1 x y z hxy hyz ((hsr_iff x y).mp hsr_xy) ((hsr_iff y z).mp hsr_yz),
     fun x y u v hxy huv hsr_xy hsr_uv hsr_xu ↦
       h_ramsey.2 x y u v hxy huv ((hsr_iff x y).mp hsr_xy)
         ((hsr_iff u v).mp hsr_uv) ((hsr_iff x u).mp hsr_xu)⟩

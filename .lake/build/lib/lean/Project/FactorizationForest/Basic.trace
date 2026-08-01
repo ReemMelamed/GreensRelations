@@ -1,9 +1,9 @@
 {"synthetic": false,
  "schemaVersion": "2025-09-10",
  "outputs":
- {"o": ["1d67ebac8f95e6e8.olean"],
+ {"o": ["ab41f17f5fecbf8b.olean"],
   "m": false,
-  "i": "b14ee9463163e2ab.ilean",
+  "i": "36d30084490bd9fc.ilean",
   "c": "a85cf79dc65925ed.c"},
  "log":
  [{"message":
@@ -30,7 +30,7 @@
   ["Lean 4.33.0, commit 62eed1db4d67327ec8120be05f1a1b0847d74561",
    "8fa8fbe052c71a8e"],
   ["C:\\Users\\reems\\git-repositories\\lean4-factorization-forest\\Project\\FactorizationForest\\Basic.lean",
-   "a328f12a48182aa9"],
+   "f05f487090377052"],
   ["options",
    [["-DmaxSynthPendingDepth=3", "c78e353d34de85d4"],
     ["-Dweak.linter.mathlibStandardSet=true", "8a155799906f2b42"],
@@ -40,4 +40,4 @@
   ["Module.name: Project.FactorizationForest.Basic", "ab7edd159860f66c"],
   ["Package.id?: (some Project)", "264312e6c45eec93"],
   ["Module.leanArgs: #[]", "00000000000006bb"]],
- "depHash": "4f76c31a7ccd1d3f"}
+ "depHash": "631d4b36900d9d54"}

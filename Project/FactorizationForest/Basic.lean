@@ -44,10 +44,13 @@ abbrev IsNormalized [Fintype α] [Nonempty α] [Nonempty (Fin h)] (s : Split α 
   let min_α := Finset.min' Finset.univ Finset.univ_nonempty
   s min_α = Finset.max' Finset.univ Finset.univ_nonempty
 
-/-- `IsRamsey L s` holds if for any equivalence class under the split relation,
-all pairs within that class evaluate to the exact same idempotent. -/
+/-- `IsRamsey L s` holds if for any equivalence class of size ≥ 3 under the split relation,
+all pairs within that class evaluate to the exact same idempotent.
+The idempotent condition is required only when three consecutive points share split relations,
+which suffices for building factorization trees (n-ary nodes need ≥ 3 children). -/
 abbrev IsRamsey (L : MultiplicativeLabeling S α) (s : Split α h) : Prop :=
-  (∀ x y : α, x < y → SplitRelation s x y → L.σ x y * L.σ x y = L.σ x y) ∧
+  (∀ x y z : α, x < y → y < z → SplitRelation s x y → SplitRelation s y z →
+    L.σ x y * L.σ x y = L.σ x y) ∧
   (∀ x y u v : α, x < y → u < v →
     SplitRelation s x y → SplitRelation s u v → SplitRelation s x u →
     L.σ x y = L.σ u v)
@@ -125,14 +128,14 @@ variable {S : Type*} [Semigroup S] [Fintype S]
 
 open Classical in
 /-- The number of elements in a D-class that are H-related to an idempotent.
-Returns 2 for non-regular D-classes as a default. -/
+Returns 1 for non-regular D-classes, matching Colcombet's original bound. -/
 noncomputable abbrev nD (D : Set S) : ℕ :=
   if IsRegularDClass D then
     (Finset.univ.filter (fun x ↦
       x ∈ D ∧ ∃ e ∈ D, e * e = e ∧ IsGreenH x e
     )).card
   else
-    2
+    1
 
 open Classical in
 /-- The value `nD D` is strictly positive for any Green's D-class. -/

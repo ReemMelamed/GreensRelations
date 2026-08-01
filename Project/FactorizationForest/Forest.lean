@@ -383,28 +383,25 @@ lemma extract_idempotent {A S : Type*} [Semigroup S] {h : ℕ} [Nonempty (Fin h)
     (hs_ramsey : IsRamsey (wordLabeling eval hmul u) s)
     (idxs : List (Fin (u.length + 1)))
     (h_idxs : ∀ i ∈ idxs, s i = Finset.max' Finset.univ Finset.univ_nonempty)
-    (i0 i1 : Fin (u.length + 1)) (h0 : i0 ∈ idxs) (h1 : i1 ∈ idxs) (hlt : i0 < i1) :
+    (i0 i1 i2 : Fin (u.length + 1))
+    (h0 : i0 ∈ idxs) (h1 : i1 ∈ idxs) (h2 : i2 ∈ idxs)
+    (hlt01 : i0 < i1) (hlt12 : i1 < i2) :
     let L := wordLabeling eval hmul u
     let e := L.σ i0 i1
     e * e = e ∧ ∀ j0 j1, j0 ∈ idxs → j1 ∈ idxs → j0 < j1 → L.σ j0 j1 = e := by
   intros L e
-  have h_rel01 : SplitRelation s i0 i1 := by
+  have mk_rel : ∀ a b, a ∈ idxs → b ∈ idxs → a < b → SplitRelation s a b := by
+    intro a b ha hb hab
     dsimp [SplitRelation]
-    exact ⟨by rw [h_idxs i0 h0, h_idxs i1 h1], fun z hz1 hz2 ↦ by
-      have h_s_min : s (min i0 i1) = Finset.max' Finset.univ Finset.univ_nonempty := by
-        rw [min_eq_left (le_of_lt hlt), h_idxs i0 h0]
+    exact ⟨by rw [h_idxs a ha, h_idxs b hb], fun z hz1 hz2 ↦ by
+      have h_s_min : s (min a b) = Finset.max' Finset.univ Finset.univ_nonempty := by
+        rw [min_eq_left (le_of_lt hab), h_idxs a ha]
       rw [h_s_min]
       exact Finset.le_max' _ _ (Finset.mem_univ _)⟩
   constructor
-  · exact hs_ramsey.left i0 i1 hlt h_rel01
+  · exact hs_ramsey.left i0 i1 i2 hlt01 hlt12 (mk_rel i0 i1 h0 h1 hlt01)
+      (mk_rel i1 i2 h1 h2 hlt12)
   · intros j0 j1 hj0 hj1 hlt_j
-    have h_rel_j : SplitRelation s j0 j1 := by
-      dsimp [SplitRelation]
-      exact ⟨by rw [h_idxs j0 hj0, h_idxs j1 hj1], fun z hz1 hz2 ↦ by
-        have h_s_min : s (min j0 j1) = Finset.max' Finset.univ Finset.univ_nonempty := by
-          rw [min_eq_left (le_of_lt hlt_j), h_idxs j0 hj0]
-        rw [h_s_min]
-        exact Finset.le_max' _ _ (Finset.mem_univ _)⟩
     have h_rel_cross : SplitRelation s i0 j0 := by
       dsimp [SplitRelation]
       exact ⟨by rw [h_idxs i0 h0, h_idxs j0 hj0], fun z hz1 hz2 ↦ by
@@ -414,7 +411,8 @@ lemma extract_idempotent {A S : Type*} [Semigroup S] {h : ℕ} [Nonempty (Fin h)
           · rw [min_eq_right h, h_idxs j0 hj0]
         rw [h_s_min]
         exact Finset.le_max' _ _ (Finset.mem_univ _)⟩
-    exact (hs_ramsey.right i0 i1 j0 j1 hlt hlt_j h_rel01 h_rel_j h_rel_cross).symm
+    exact (hs_ramsey.right i0 i1 j0 j1 hlt01 hlt_j (mk_rel i0 i1 h0 h1 hlt01)
+      (mk_rel j0 j1 hj0 hj1 hlt_j) h_rel_cross).symm
 
 /-- A chunk of a word equals the corresponding sublist. -/
 lemma chunk_eq {A : Type*} {u w : List A} {i : ℕ} (hw : ∃ j, w = (u.drop i).take (j - i))
@@ -486,13 +484,18 @@ lemma restrictSplit_ramsey {A S : Type*} [Semigroup S] {h : ℕ} [Nonempty (Fin 
     (hw : ∃ j, w = (u.drop i).take (j - i) := by exact ⟨_, rfl⟩) :
     IsRamsey (wordLabeling eval hmul w) (restrictSplit s i w.length h_bound) := by
   constructor
-  · intros x y hxy hsr
+  · intros x y z hxy hyz hsr_xy hsr_yz
     have hx_b : i + x.val < u.length + 1 := by omega
     have hy_b : i + y.val < u.length + 1 := by omega
+    have hz_b : i + z.val < u.length + 1 := by omega
     have hxy_shift : (⟨i + x.val, hx_b⟩ : Fin (u.length + 1)) < ⟨i + y.val, hy_b⟩ := by
       simp only [Fin.mk_lt_mk]
       omega
-    have h_eval := hs_ramsey.1 _ _ hxy_shift (shift_split_relation s h_bound x y hsr)
+    have hyz_shift : (⟨i + y.val, hy_b⟩ : Fin (u.length + 1)) < ⟨i + z.val, hz_b⟩ := by
+      simp only [Fin.mk_lt_mk]
+      omega
+    have h_eval := hs_ramsey.1 _ _ _ hxy_shift hyz_shift
+      (shift_split_relation s h_bound x y hsr_xy) (shift_split_relation s h_bound y z hsr_yz)
     dsimp [wordLabeling] at h_eval ⊢
     rw [chunk_eq hw x y (le_of_lt hxy)]
     have h_sub : (i + y.val) - (i + x.val) = y.val - x.val := by omega
@@ -548,7 +551,8 @@ lemma lowerSplitInterior_ramsey {A S : Type*} [Semigroup S] {h : ℕ} [Nonempty 
       have h1_val := congrArg Fin.val h1
       exact ⟨Fin.ext h1_val, fun z hz1 hz2 ↦
         Fin.le_iff_val_le_val.mpr (Fin.le_iff_val_le_val.mp (h2 z hz1 hz2))⟩
-  exact ⟨fun x y hxy hsr => hs_ramsey.1 x y hxy ((h_rel_eq x y).mp hsr),
+  exact ⟨fun x y z hxy hyz hsr_xy hsr_yz => hs_ramsey.1 x y z hxy hyz
+           ((h_rel_eq x y).mp hsr_xy) ((h_rel_eq y z).mp hsr_yz),
          fun x y p q hxy hpq hsr1 hsr2 hsr3 =>
            hs_ramsey.2 x y p q hxy hpq ((h_rel_eq x y).mp hsr1)
              ((h_rel_eq p q).mp hsr2) ((h_rel_eq x p).mp hsr3)⟩
@@ -571,7 +575,7 @@ lemma nary_children_ramsey {A S : Type*} [Semigroup S] {h : ℕ} [Nonempty (Fin 
           buildFactorizationTree eval w (by exact h_valid.2.2) s_w
         else
           FactorizationTree.leaf (u.head hu)) = children)
-    (h_nonempty : children ≠ [])
+    (h_at_least_3 : children.length ≥ 3)
     (h_not_idxs : (splitIndices s).map (·.val) ≠ [0, u.length]) :
     ∃ (e : S), e * e = e ∧ ∀ c ∈ children, eval (FactorizationTree.word c) = e := by
   generalize h_idx_eq : splitIndices s = idxs at h_children ⊢
@@ -581,18 +585,35 @@ lemma nary_children_ramsey {A S : Type*} [Semigroup S] {h : ℕ} [Nonempty (Fin 
     unfold splitIndices at hi
     rw [List.mem_filter] at hi
     exact of_decide_eq_true hi.right
-  rcases idxs with _ | ⟨i0, _ | ⟨i1, rest⟩⟩
-  · nomatch h_nonempty h_children.symm
-  · nomatch h_nonempty h_children.symm
-  · have h0 : i0 ∈ i0 :: i1 :: rest := by simp
-    have h1 : i1 ∈ i0 :: i1 :: rest := by simp
-    have h_sorted : List.Pairwise (· < ·) (i0 :: i1 :: rest) := by
+  have h_len_idxs : idxs.length ≥ 4 := by
+    have h_map_len : (partitionIndices idxs).length = children.length := by
+      have : (((partitionIndices idxs).map _).length) = children.length := congrArg List.length h_children
+      rwa [List.length_map] at this
+    have h_part_len : ∀ {n} (l : List (Fin n)), (partitionIndices l).length = l.length - 1 := by
+      intro n l
+      induction l with
+      | nil => rfl
+      | cons a l' ih =>
+        cases l'
+        · rfl
+        · simp [partitionIndices, ih]
+    rw [h_part_len] at h_map_len
+    omega
+  rcases idxs with _ | ⟨i0, _ | ⟨i1, _ | ⟨i2, rest⟩⟩⟩
+  · nomatch h_len_idxs
+  · nomatch h_len_idxs
+  · nomatch h_len_idxs
+  · have h0 : i0 ∈ i0 :: i1 :: i2 :: rest := by simp
+    have h1 : i1 ∈ i0 :: i1 :: i2 :: rest := by simp
+    have h2 : i2 ∈ i0 :: i1 :: i2 :: rest := by simp
+    have h_sorted : List.Pairwise (· < ·) (i0 :: i1 :: i2 :: rest) := by
       rw [← h_idx_eq]
       unfold splitIndices
       exact List.Pairwise.filter _ (List.sortedLT_finRange (u.length + 1) |>.pairwise)
-    have hlt : i0 < i1 := List.pairwise_cons.1 h_sorted |>.1 i1 (by simp)
+    have hlt01 : i0 < i1 := List.pairwise_cons.1 h_sorted |>.1 i1 (by simp)
+    have hlt12 : i1 < i2 := List.pairwise_cons.1 (List.pairwise_cons.1 h_sorted |>.2) |>.1 i2 (by simp)
     obtain ⟨h_ee, h_all_pairs⟩ :=
-      extract_idempotent eval hmul u s hs_ramsey (i0 :: i1 :: rest) h_idxs i0 i1 h0 h1 hlt
+      extract_idempotent eval hmul u s hs_ramsey (i0 :: i1 :: i2 :: rest) h_idxs i0 i1 i2 h0 h1 h2 hlt01 hlt12
     use (wordLabeling eval hmul u).σ i0 i1
     constructor
     · exact h_ee

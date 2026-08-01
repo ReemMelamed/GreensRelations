@@ -307,7 +307,7 @@ lemma simon_regular_d_case
   exact ⟨fun y ↦ indexMap (fColoring ctx y), by
       simp only [IsNormalized, indexMap, Equiv.trans_apply, Equiv.swap_apply_left]
       symm; rw [Finset.max'_eq_iff]; exact ⟨Finset.mem_univ _, fun _ _ ↦ by grind⟩,
-    fun x y hlt hsr ↦ by simp [h_sig_eq_eId x y hlt hsr, eId_idem ctx x],
+    fun x y z hlt1 _ hsr1 _ ↦ by simp [h_sig_eq_eId x y hlt1 hsr1],
     fun x y u v hlt_xy hlt_uv hsr_xy hsr_uv hsr_xu ↦ by
       have val_eq := congrArg Subtype.val (indexMap.injective hsr_xu.1)
       have he_eq_xu := MulSeq.eq_of_isGreenH_of_idempotent
@@ -388,7 +388,7 @@ lemma regularSplits_props {α S : Type*}
     exact Nat.le_add_left _ _
   · exact h_xs_mono
   · exact h_interval_ramsey
-  · intro x y hx hy hlt hsr
+  · intro x y z hx hy hz hlt_xy hlt_yz hsr_xy hsr_yz
     have convert_sr_X : ∀ (p q : α) (hp : p ∈ xs) (hq : q ∈ xs) (hpq : p < q),
         SplitRelation (regularSplits a xs sX sY) p q →
         SplitRelation sX ⟨p, hp⟩ ⟨q, hq⟩ := by
@@ -414,7 +414,7 @@ lemma regularSplits_props {α S : Type*}
         rw [h_min_eq]
         apply Fin.le_iff_val_le_val.mpr
         grind
-    simpa only [h_σ_X] using hsX_ramsey.1 ⟨x, hx⟩ ⟨y, hy⟩ hlt (convert_sr_X x y hx hy hlt hsr)
+    simpa only [h_σ_X] using hsX_ramsey.1 ⟨x, hx⟩ ⟨y, hy⟩ ⟨z, hz⟩ hlt_xy hlt_yz (convert_sr_X x y hx hy hlt_xy hsr_xy) (convert_sr_X y z hy hz hlt_yz hsr_yz)
   · intro x y u v hx hy hu hv hlt_xy hlt_uv hsr_xy hsr_uv hsr_xu
     have convert_sr_X : ∀ (p q : α) (hp : p ∈ xs) (hq : q ∈ xs) (hpq : p < q),
         SplitRelation (regularSplits a xs sX sY) p q →

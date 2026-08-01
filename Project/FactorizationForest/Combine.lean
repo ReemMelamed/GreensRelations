@@ -379,7 +379,8 @@ lemma build_interval_splits_of_ih {S : Type*} [Semigroup S] [Fintype S]
     have hs_b_lift_ramsey : IsRamsey σ_Y
       (fun x => ⟨(s_b x).val, Nat.lt_trans (s_b x).isLt h_lt_a⟩) :=
       And.intro
-        (fun u v huv hsr => hs_b_ramsey.1 u v huv ((hsr_iff u v).mp hsr))
+        (fun u v w huv hvw hsr_uv hsr_vw => hs_b_ramsey.1 u v w huv hvw ((hsr_iff u v).mp hsr_uv)
+          ((hsr_iff v w).mp hsr_vw))
         (fun x y u v hx hu hxy huv hxu => hs_b_ramsey.2 x y u v hx hu ((hsr_iff x y).mp hxy)
           ((hsr_iff u v).mp huv) ((hsr_iff x u).mp hxu))
     have h_bound : ∀ z, ((fun x => ⟨(s_b x).val, Nat.lt_trans (s_b x).isLt h_lt_a⟩ :
@@ -392,8 +393,9 @@ lemma build_interval_splits_of_ih {S : Type*} [Semigroup S] [Fintype S]
       And.intro hs_b_lift_ramsey h_bound⟩
   · have h_ramsey_vacuous : IsRamsey σ_Y (fun _ => ⟨0, nSElement_pos a⟩) :=
       And.intro
-        (fun u v huv _ => nomatch (h_lt (lt_of_le_of_lt (Finset.min'_le _ _ (Finset.mem_univ u))
-          (lt_of_lt_of_le huv (Finset.le_max' _ _ (Finset.mem_univ v))))))
+        (fun u v w huv hvw _ _ => nomatch (h_lt (lt_of_le_of_lt
+          (Finset.min'_le _ _ (Finset.mem_univ u))
+          (lt_of_lt_of_le (lt_trans huv hvw) (Finset.le_max' _ _ (Finset.mem_univ w))))))
         (fun x y _ _ hxy _ _ _ _ => nomatch (h_lt (lt_of_le_of_lt
           (Finset.min'_le _ _ (Finset.mem_univ x)) (lt_of_lt_of_le hxy
             (Finset.le_max' _ _ (Finset.mem_univ y))))))
@@ -574,8 +576,9 @@ lemma combineSplits_props {α S : Type*}
       ∃ (i : ℕ) (x_val y_val : OpenIntervalType xs i),
         x_val.val = x ∧ y_val.val = y ∧
         SplitRelation (@sY i ⟨x_val⟩) x_val y_val)
-    (h_X_ramsey_1 : ∀ x y, x ∈ xs → y ∈ xs → x < y →
+    (h_X_ramsey_1 : ∀ x y z, x ∈ xs → y ∈ xs → z ∈ xs → x < y → y < z →
       SplitRelation (combineSplits a xs rankX sY) x y →
+      SplitRelation (combineSplits a xs rankX sY) y z →
       σ.σ x y * σ.σ x y = σ.σ x y)
     (h_X_ramsey_2 : ∀ x y u v, x ∈ xs → y ∈ xs → u ∈ xs → v ∈ xs → x < y → u < v →
       SplitRelation (combineSplits a xs rankX sY) x y →
@@ -627,12 +630,32 @@ lemma combineSplits_props {α S : Type*}
       exact buildXSeq_same_interval_of_splitRelation xs (combineSplits a xs rankX sY) C
         h_xs_mono rank_ge_diff_of_mem rank_lt_diff_of_not_mem
     constructor
-    · intro x y hlt hsr
+    · intro x y z hlt_xy hlt_yz hsr_xy hsr_yz
       by_cases hx : x ∈ xs
-      · have hy : y ∈ xs := mem_of_sr_mem x y hx hsr
-        exact h_X_ramsey_1 x y hx hy hlt hsr
-      · obtain ⟨i, x_val, y_val, rfl, rfl, hsr_Y⟩ := h_interval_ramsey x y hx hlt hsr
-        simpa only [h_σ_Y] using (@hsY_ramsey i ⟨x_val⟩).1 x_val y_val hlt hsr_Y
+      · have hy : y ∈ xs := mem_of_sr_mem x y hx hsr_xy
+        have hz : z ∈ xs := mem_of_sr_mem y z hy hsr_yz
+        exact h_X_ramsey_1 x y z hx hy hz hlt_xy hlt_yz hsr_xy hsr_yz
+      · obtain ⟨i, x_val, y_val, hx_eq, hy_eq, hsr_Y_xy⟩ := h_interval_ramsey x y hx hlt_xy hsr_xy
+        have hy_not_mem := not_mem_of_sr_not_mem x y hx hsr_xy
+        obtain ⟨j, y_val_2, z_val, hy_eq_2, hz_eq, hsr_Y_yz⟩ :=
+          h_interval_ramsey y z hy_not_mem hlt_yz hsr_yz
+        have hij : i = j := same_interval x y hx hy_not_mem hsr_xy i j x_val y_val_2 hx_eq hy_eq_2
+        subst hij
+        have hy_val_eq : y_val = y_val_2 := Subtype.ext (hy_eq.trans hy_eq_2.symm)
+        rw [← hy_val_eq] at hsr_Y_yz
+        have hlt_xy_Y : x_val < y_val := by
+          change x_val.val < y_val.val
+          rw [hx_eq, hy_eq]
+          exact hlt_xy
+        have hlt_yz_Y : y_val < z_val := by
+          change y_val.val < z_val.val
+          rw [hy_eq, hz_eq]
+          exact hlt_yz
+        have h_ramsey :=
+          (@hsY_ramsey i ⟨x_val⟩).1 x_val y_val z_val hlt_xy_Y hlt_yz_Y hsr_Y_xy hsr_Y_yz
+        rw [h_σ_Y i x_val y_val] at h_ramsey
+        rw [hx_eq, hy_eq] at h_ramsey
+        exact h_ramsey
     · intro x y u v hlt_xy hlt_uv hsr_xy hsr_uv hsr_xu
       by_cases hx : x ∈ xs
       · have hu := mem_of_sr_mem x u hx hsr_xu
