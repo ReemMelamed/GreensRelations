@@ -5,8 +5,8 @@ Authors: Re'em Melamed-Katz
 -/
 import Mathlib.Data.Fintype.Card
 import Mathlib.Data.Finset.Max
-import GreensRelations.Order
-import GreensRelations.FactorizationForest.Basic
+import Project.GreensRelations.Order
+import Project.FactorizationForest.Basic
 
 /-!
 # Combine Splits Construction

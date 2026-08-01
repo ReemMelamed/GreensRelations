@@ -5,7 +5,7 @@ Authors: Re'em Melamed-Katz
 -/
 import Mathlib.Data.Fintype.Card
 import Mathlib.Data.Finset.Max
-import GreensRelations.Order
+import Project.GreensRelations.Order
 
 /-!
 # The Factorization Forest Theorem

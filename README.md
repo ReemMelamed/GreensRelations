@@ -19,7 +19,7 @@ with a focus on Green's relations.
 
 ## Overview
 
-### `GreensRelations/`
+### `Project/GreensRelations/`
 Contains the foundational semigroup theory and Green's relations.
 
 * `Basic.lean`
@@ -40,7 +40,7 @@ Contains the foundational semigroup theory and Green's relations.
 * `Order.lean`
   - Defines the natural partial order structures on the quotient types (`GreenLClass`, `GreenRClass`, `GreenJClass`, and `GreenDClass`).
 
-### `GreensRelations/FactorizationForest/`
+### `Project/FactorizationForest/`
 Contains the definitions, lemmas, and constructions for Simon's Factorization Forest Theorem.
 
 * `Basic.lean`
