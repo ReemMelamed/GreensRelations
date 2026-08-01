@@ -22,43 +22,43 @@ with a focus on Green's relations.
 ### `GreensRelations/`
 Contains the foundational semigroup theory and Green's relations.
 
-* `Defs.lean`
-  - The foundational definitions for Green's relations (L, R, H, D, and J) and left/right divisibility over semigroups. 
-
 * `Basic.lean`
-  - Foundational equivalences and the setup of the relations as formal setoids.
-
-* `Classes.lean`
-  - Equivalence classes and quotient spaces for the relations.
+  - The foundational definitions for Green's relations (L, R, H, D, and J) and left/right divisibility over semigroups. 
+  - Setoid instances, duality equivalences, equivalence classes as sets, quotient spaces, and notions of regular elements/D-classes.
  
 * `MulSeq.lean`
   - Tools for analyzing finite semigroups using iterated multiplication sequences.
-  - Structural helper lemmas, such as applications of the pigeonhole principle.
- 
-* `Theorems.lean`
+  - Structural helper lemmas for intermediate proofs, such as the existence of idempotents in regular L/R-classes.
+
+* `Green.lean`
   - The major structural theorems of Green's relations.
-  - Key results like the proof that D and J relations are strictly equal in finite semigroups, Green's lemma (constructing explicit bijections between H-classes), and the proof that an H-class is either a group or contains no idempotents.
+  - Key results like Green's lemma (constructing explicit bijections between H-classes) and characterizations of regular D-classes via idempotents.
+
+* `Finite.lean`
+  - Structural theorems regarding Green's relations requiring a finite semigroup, such as the equivalence of D and J, and conditions for H-classes to be subgroups.
+
+* `Order.lean`
+  - Defines the natural partial order structures on the quotient types (`GreenLClass`, `GreenRClass`, `GreenJClass`, and `GreenDClass`).
 
 ### `GreensRelations/FactorizationForest/`
 Contains the definitions, lemmas, and constructions for Simon's Factorization Forest Theorem.
 
-* `Defs.lean`
-  - Core structures: `MultiplicativeLabeling`, `Split` (normalized and Ramsey), and the `FactorizationTree` inductive type (leaf, binary, nary) with its associated `IsRamseyTree` property.
-
 * `Basic.lean`
-  - Proofs for specific sub-cases of the Factorization Forest Theorem:
-  - The group case (`simon_group_case`).
-  - The subgroup H-class case (`simon_hclass_case`).
-  - The regular D-class case (`simon_regular_d_case`) using custom colorings.
+  - Core structures: `MultiplicativeLabeling`, `Split` (normalized and Ramsey).
 
-* `Split.lean` & `SplitCases.lean`
-  - The induction steps for Simon's split theorem.
-  - `simon_split`: The main theorem stating that any multiplicative labeling over a finite linear order admits a normalized Ramsey split bounded by the semigroup's Simon complexity.
+* `Combine.lean`
+  - Lemmas for combining splits and merging colored trees.
 
-* `Word.lean`
-  - Helper lemma specifically dealing with list evaluations and word labelings.
+* `Irregular.lean`
+  - Proofs for the irregular cases of the Factorization Forest Theorem (the irregular D-class case).
 
-* `Tree.lean`
-  - The algorithmic construction of the factorization tree (`buildFactorizationTree`) from a given split.
-  - Proofs bounding the height of the generated tree by $3h - 1$ (`buildTree_height_bound`).
+* `Regular.lean`
+  - Proofs for the regular cases, dealing with group/H-class cases and regular D-class cases using custom colorings.
+
+* `Split.lean`
+  - The induction steps for Simon's split theorem, proving that any multiplicative labeling over a finite linear order admits a bounded normalized Ramsey split.
+
+* `Forest.lean`
+  - The algorithmic construction of the factorization tree from a given split.
+  - Proofs bounding the height of the generated tree.
   - The final culmination of the formalization: `factorization_forest`, proving the existence of a Ramsey factorization tree of bounded height for any finite semigroup.
