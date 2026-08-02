@@ -441,12 +441,7 @@ lemma openInterval_unique {α : Type*} [LinearOrder α] (xs : List α)
     (hlt_i : xs.get ⟨i, hi⟩ < x) (hgt_i : ∀ h2 : i + 1 < xs.length, x < xs.get ⟨i + 1, h2⟩)
     (hlt_k : xs.get ⟨k, hk⟩ < x) (hgt_k : ∀ h2 : k + 1 < xs.length, x < xs.get ⟨k + 1, h2⟩) :
     i = k := by
-  rcases lt_trichotomy i k with h | rfl | h
-  · exfalso
-    grind
-  · rfl
-  · exfalso
-    grind
+  rcases lt_trichotomy i k with h | rfl | h <;> first | exfalso; grind | rfl
 
 /-- The `combineSplits` function preserves the Ramsey property
 for elements within the same open interval. -/

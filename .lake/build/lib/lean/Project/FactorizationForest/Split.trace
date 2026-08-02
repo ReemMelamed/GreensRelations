@@ -14,10 +14,10 @@
    [["Project/Project:extraDep", [["@Project:extraDep", "00000000000006bb"]]],
     ["imports",
      [["Project.FactorizationForest.Regular transitive imports (legacy)",
-       "99ca13a975edddd2"],
+       "f4552ff69e6d44d4"],
       ["Project.FactorizationForest.Regular:importAllArts", "6ff172b96024677b"],
       ["Project.FactorizationForest.Irregular transitive imports (legacy)",
-       "99ca13a975edddd2"],
+       "f4552ff69e6d44d4"],
       ["Project.FactorizationForest.Irregular:importAllArts",
        "32aeef480f6ba95e"]]]]],
   ["libs",
@@ -38,4 +38,4 @@
   ["Module.name: Project.FactorizationForest.Split", "7277e07e12714bd4"],
   ["Package.id?: (some Project)", "264312e6c45eec93"],
   ["Module.leanArgs: #[]", "00000000000006bb"]],
- "depHash": "487743db5194e0b0"}
+ "depHash": "7a9bf068ff1492df"}

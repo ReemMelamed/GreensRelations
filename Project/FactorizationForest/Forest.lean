@@ -701,9 +701,7 @@ theorem buildTree_isRamsey {A S : Type*} [Semigroup S] {h : ℕ} [Nonempty (Fin 
       · rename_i c
         apply IsRamseyTree.binary <;> exact h_all c (by simp)
       · rename_i c1 c2
-        apply IsRamseyTree.binary
-        · exact h_all c1 (by simp)
-        · exact h_all c2 (by simp)
+        apply IsRamseyTree.binary <;> exact h_all _ (by simp)
       · rename_i c1 c2 c3 rest
         apply IsRamseyTree.nary
         · simp
