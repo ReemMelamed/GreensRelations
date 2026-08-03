@@ -384,38 +384,18 @@ return v_res_123_;
 LEAN_EXPORT lean_object* lp_Project_FactorizationForest_FactorizationTree_height(lean_object* v_A_124_, lean_object* v_x_125_){
 _start:
 {
-switch(lean_obj_tag(v_x_125_))
-{
-case 0:
-{
 lean_object* v___x_126_; 
-v___x_126_ = lean_unsigned_to_nat(0u);
+v___x_126_ = lp_Project_FactorizationForest_FactorizationTree_height___redArg(v_x_125_);
 return v___x_126_;
 }
-case 1:
-{
-lean_object* v_height_127_; 
-v_height_127_ = lean_ctor_get(v_x_125_, 3);
-lean_inc(v_height_127_);
-return v_height_127_;
 }
-default: 
-{
-lean_object* v_height_128_; 
-v_height_128_ = lean_ctor_get(v_x_125_, 2);
-lean_inc(v_height_128_);
-return v_height_128_;
-}
-}
-}
-}
-LEAN_EXPORT lean_object* lp_Project_FactorizationForest_FactorizationTree_height___boxed(lean_object* v_A_129_, lean_object* v_x_130_){
+LEAN_EXPORT lean_object* lp_Project_FactorizationForest_FactorizationTree_height___boxed(lean_object* v_A_127_, lean_object* v_x_128_){
 _start:
 {
-lean_object* v_res_131_; 
-v_res_131_ = lp_Project_FactorizationForest_FactorizationTree_height(v_A_129_, v_x_130_);
-lean_dec_ref(v_x_130_);
-return v_res_131_;
+lean_object* v_res_129_; 
+v_res_129_ = lp_Project_FactorizationForest_FactorizationTree_height(v_A_127_, v_x_128_);
+lean_dec_ref(v_x_128_);
+return v_res_129_;
 }
 }
 lean_object* initialize_Init(uint8_t builtin);

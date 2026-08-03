@@ -101,7 +101,7 @@ abbrev FactorizationTree.word {A : Type*} :
 | nary _ w _ => w
 
 /-- The height of a factorization tree. -/
-abbrev FactorizationTree.height {A : Type*} :
+def FactorizationTree.height {A : Type*} :
     FactorizationTree A → ℕ
 | leaf _ => 0
 | binary _ _ _ h => h
@@ -114,10 +114,15 @@ inductive IsRamseyTree {A S : Type*} [Semigroup S]
     FactorizationTree A → Prop
 | leaf (a : A) : IsRamseyTree eval (FactorizationTree.leaf a)
 | binary (l r : FactorizationTree A) (w : List A) (h : ℕ) :
-    IsRamseyTree eval l → IsRamseyTree eval r → IsRamseyTree eval (FactorizationTree.binary l r w h)
+    IsRamseyTree eval l → IsRamseyTree eval r →
+    w = l.word ++ r.word →
+    l.height + 1 ≤ h → r.height + 1 ≤ h →
+    IsRamseyTree eval (FactorizationTree.binary l r w h)
 | nary (cs : List (FactorizationTree A)) (w : List A) (h : ℕ) :
     cs.length ≥ 3 → (∀ c ∈ cs, IsRamseyTree eval c) →
     (∃ (e : S), e * e = e ∧ ∀ c ∈ cs, eval (FactorizationTree.word c) = e) →
+    w = List.flatten (cs.map FactorizationTree.word) →
+    (∀ c ∈ cs, c.height + 1 ≤ h) →
     IsRamseyTree eval (FactorizationTree.nary cs w h)
 
 end TreeDefinitions

@@ -14,7 +14,7 @@
    [["Project/Project:extraDep", [["@Project:extraDep", "00000000000006bb"]]],
     ["imports",
      [["Project.FactorizationForest.Combine transitive imports (legacy)",
-       "c7430ab350926370"],
+       "0e491ab96c3d46ad"],
       ["Project.FactorizationForest.Combine:importAllArts",
        "3cf02fb059699b28"]]]]],
   ["libs",
@@ -35,4 +35,4 @@
   ["Module.name: Project.FactorizationForest.Irregular", "ba6d36d8e9ad7e45"],
   ["Package.id?: (some Project)", "264312e6c45eec93"],
   ["Module.leanArgs: #[]", "00000000000006bb"]],
- "depHash": "66bbd3398a94ba91"}
+ "depHash": "7576843d01a5b972"}
