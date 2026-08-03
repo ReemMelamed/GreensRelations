@@ -265,7 +265,8 @@ theorem closure_eq_X_seq [Fintype T] [Nonempty T] (ϕ : S →ₙ* T) (X : Set S)
           grind
         | nary cs w h =>
           have h_valid : cs ≠ [] ∧ (∀ c ∈ cs, c.word ≠ []) ∧
-            w = List.flatten (cs.map FactorizationTree.word) ∧ ∀ c ∈ cs, c.height + 1 ≤ h := valid_nary h_ram
+            w = List.flatten (cs.map FactorizationTree.word) ∧ ∀ c ∈ cs, c.height + 1 ≤ h :=
+              valid_nary h_ram
           obtain ⟨h_cs_ne, hc_ne, hw_eq, h_prev_c⟩ := h_valid
           have hc_mem := List.head_mem h_cs_ne
           have hc_prev := h_prev_c (cs.head h_cs_ne) hc_mem
@@ -315,7 +316,8 @@ theorem closure_eq_X_seq [Fintype T] [Nonempty T] (ϕ : S →ₙ* T) (X : Set S)
           exact h_step h_mul
         | nary cs w h =>
           have h_valid : cs ≠ [] ∧ (∀ c ∈ cs, c.word ≠ []) ∧
-            w = List.flatten (cs.map FactorizationTree.word) ∧ ∀ c ∈ cs, c.height + 1 ≤ h := valid_nary h_ram
+            w = List.flatten (cs.map FactorizationTree.word) ∧ ∀ c ∈ cs, c.height + 1 ≤ h :=
+              valid_nary h_ram
           obtain ⟨h_cs_ne, hc_ne, hw_eq, h_prev_c⟩ := h_valid
           have h_e : ∃ e : T, e * e = e ∧ ∀ c ∈ cs, eval_T c.word = e := by
             cases h_ram; rename_i h_len h_all he; exact he
@@ -340,7 +342,8 @@ theorem closure_eq_X_seq [Fintype T] [Nonempty T] (ϕ : S →ₙ* T) (X : Set S)
                   cases h_ram; rename_i h_len h_all he; exact h_all c hc_in
                 have hc_X : ∀ x ∈ c.word, x ∈ X := fun x hx ↦
                   hX x (hw_eq ▸ List.mem_flatten.mpr ⟨c.word, List.mem_map_of_mem hc_in, hx⟩)
-                have h_mem_c := ih c (by have := h_prev_c c hc_in; omega) (hc_ne c hc_in) hc_X hc_ram
+                have h_mem_c :=
+                  ih c (by have := h_prev_c c hc_in; omega) (hc_ne c hc_in) hc_X hc_ram
                 exact X_seq_mono ϕ X (by have := h_prev_c c hc_in; omega) h_mem_c)
               w hw_eq ht'
           have h_step : (Subsemigroup.closure
