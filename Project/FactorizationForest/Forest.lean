@@ -63,8 +63,8 @@ lemma partitionIndices_props {n : ℕ} {l : List (Fin (n + 1))} {i j : Fin (n + 
       · obtain ⟨hi, hj, hij, h_len, h_adj⟩ := ih (List.pairwise_cons.1 hs |>.2) h_tail
         exact ⟨by simp [hi], by simp [hj], hij,
           fun h_eq_n ↦ by
-            have : a < b := List.pairwise_cons.1 hs |>.1 b (by simp)
-            have : b.val = 0 := by injection h_len h_eq_n
+            have hab : a < b := List.pairwise_cons.1 hs |>.1 b (by simp)
+            have hb_zero : b.val = 0 := by injection h_len h_eq_n
             omega,
           fun k hk ↦ by
             rcases List.mem_cons.1 hk with rfl | hk
@@ -72,23 +72,17 @@ lemma partitionIndices_props {n : ℕ} {l : List (Fin (n + 1))} {i j : Fin (n + 
               omega
             · exact h_adj k hk⟩
 
-lemma take_append_take_drop {A : Type*} (L : List A) (x y : ℕ) :
-  L.take x ++ (L.drop x).take y = L.take (x + y) := by
-  revert x y
-  induction L with
-  | nil => intro x y; simp
-  | cons a l ih =>
-    intro x y
-    cases x with
-    | zero => simp
-    | succ x' =>
-      simp only [List.take_succ_cons, List.drop_succ_cons, List.cons_append, Nat.succ_add]
-      rw [ih x' y]
+lemma take_append_take_drop {A : Type*} : (L : List A) → (x y : ℕ) →
+    L.take x ++ (L.drop x).take y = L.take (x + y)
+  | [], _, _ => by simp
+  | _ :: _, 0, _ => by simp
+  | _ :: l, x' + 1, y => by
+    simp only [List.take_succ_cons, List.drop_succ_cons, List.cons_append, Nat.succ_add]
+    rw [take_append_take_drop l x' y]
 
 lemma idxs_le_getLast {n : ℕ} (L : List (Fin (n + 1)))
   (hL : L ≠ []) (h_sort : List.Pairwise (· < ·) L) :
-    ∀ x ∈ L, x.val ≤ (L.getLast hL).val := by
-  intro x hx
+    ∀ x ∈ L, x.val ≤ (L.getLast hL).val := fun x hx ↦ by
   obtain ⟨i, rfl⟩ := List.mem_iff_get.mp hx
   have h_last_eq : L.getLast hL = L.get ⟨L.length - 1, by grind⟩ := by grind
   rw [h_last_eq]
@@ -99,13 +93,12 @@ lemma idxs_le_getLast {n : ℕ} (L : List (Fin (n + 1)))
   else
     have h_lt : i.val < L.length - 1 := by omega
     have h_get_lt : L.get i < L.get ⟨L.length - 1, by omega⟩ := h_pw i ⟨L.length - 1, by omega⟩ h_lt
-    have : (L.get i).val < (L.get ⟨L.length - 1, by omega⟩).val := h_get_lt
+    have h_val_lt : (L.get i).val < (L.get ⟨L.length - 1, by omega⟩).val := h_get_lt
     omega
 
 lemma head_le_idxs {n : ℕ} (L : List (Fin (n + 1)))
   (hL : L ≠ []) (h_sort : List.Pairwise (· < ·) L) :
-    ∀ x ∈ L, (L.head hL).val ≤ x.val := by
-  intro x hx
+    ∀ x ∈ L, (L.head hL).val ≤ x.val := fun x hx ↦ by
   cases L with
   | nil => contradiction
   | cons a l =>
@@ -114,24 +107,24 @@ lemma head_le_idxs {n : ℕ} (L : List (Fin (n + 1)))
     rcases hx with rfl | hx
     · omega
     · have h_all : ∀ y ∈ l, a < y := List.pairwise_cons.1 h_sort |>.1
-      have := h_all x hx
+      have h_lt := h_all x hx
       omega
 
 lemma flatten_partitionIndices_take_drop_gen {A : Type*} (u : List A) {n : ℕ}
     (idxs : List (Fin (n + 1))) (h_not_empty : idxs ≠ [])
     (h_sorted : List.Pairwise (· < ·) idxs) :
-    (List.map (fun x : Fin (n + 1) × Fin (n + 1) => List.take (x.2.val - x.1.val)
-    (List.drop x.1.val u)) (partitionIndices idxs)).flatten =
+    (List.map (fun x : Fin (n + 1) × Fin (n + 1) ↦
+      List.take (x.2.val - x.1.val) (List.drop x.1.val u)) (partitionIndices idxs)).flatten =
     (List.drop (idxs.head h_not_empty).val u).take
-    ((idxs.getLast h_not_empty).val - (idxs.head h_not_empty).val) := by
+      ((idxs.getLast h_not_empty).val - (idxs.head h_not_empty).val) := by
   induction idxs with
   | nil => contradiction
   | cons i1 idxs' ih =>
     cases idxs' with
     | nil =>
       simp only [partitionIndices, List.map_nil, List.flatten_nil, List.head_cons]
-      have : (i1.val - i1.val) = 0 := by omega
-      simp [this]
+      have h_zero : (i1.val - i1.val) = 0 := by omega
+      simp [h_zero]
     | cons i2 idxs'' =>
       have h_sorted_tail : List.Pairwise (· < ·) (i2 :: idxs'') :=
         List.pairwise_cons.1 h_sorted |>.2
@@ -217,8 +210,8 @@ lemma h_valid_of_mem_partitionIndices {A : Type*} {n h : ℕ} [Nonempty (Fin h)]
   have h_lt : w.length < u.length := by
     rw [h_w_len]
     by_contra h_not_lt
-    have : j.val - i.val = n := by omega
-    have := h_props.2.2.2.1 this
+    have h_n : j.val - i.val = n := by omega
+    have h_contra := h_props.2.2.2.1 h_n
     contradiction
   exact ⟨h_lt, h_le, h_w_ne⟩
 
@@ -231,21 +224,21 @@ def buildFactorizationTree {A S : Type*} [Semigroup S] {h : ℕ} [Nonempty (Fin 
     if _h_len2 : u.length = 1 then
       FactorizationTree.leaf (u.head hu)
     else
-      have : u.length = 2 := by have := List.length_pos_of_ne_nil hu; omega
+      have h_len2 : u.length = 2 := by have h_pos := List.length_pos_of_ne_nil hu; omega
       let (u1, u2) := (u.head hu, u.getLast (by omega))
       FactorizationTree.binary (FactorizationTree.leaf u1) (FactorizationTree.leaf u2) u 1
   else
     let idxs := splitIndices s
     if h_idxs : idxs.map (·.val) = [0, u.length] then
       if hh : 1 < h then
-        have : Nonempty (Fin (h - 1)) := ⟨⟨0, by omega⟩⟩
+        have h_nonempty : Nonempty (Fin (h - 1)) := ⟨⟨0, by omega⟩⟩
         let w := (u.drop 1).take (u.length - 2)
         have h_len_w : w.length = u.length - 2 := by
           rw [List.length_take, List.length_drop]
           omega
         have hw : w ≠ [] := by
           intro h
-          have : w.length = 0 := congrArg List.length h
+          have hw0 : w.length = 0 := congrArg List.length h
           omega
         have h_bound : 1 + w.length ≤ u.length := by omega
         let s_w := restrictSplit s 1 w.length h_bound
@@ -269,7 +262,7 @@ def buildFactorizationTree {A S : Type*} [Semigroup S] {h : ℕ} [Nonempty (Fin 
             rw [h_idxs] at h_map
             simp at h_map
             omega
-          have := (s_w i).isLt
+          have h_lt := (s_w i).isLt
           omega
         let t_w := buildFactorizationTree eval w hw (lowerSplitInterior s_w h_interior)
         let last_val := u.getLast (by omega)
@@ -356,10 +349,10 @@ def buildFactorizationTree {A S : Type*} [Semigroup S] {h : ℕ} [Nonempty (Fin 
                     apply idxs_le_getLast idxs h_empty (splitIndices_sorted s)
                     exact h_in
                   grind
-                have := (s_suf i).isLt
+                have h_lt := (s_suf i).isLt
                 omega
               have hh : Nonempty (Fin (h - 1)) := by
-                if h1 : h = 1 then
+                if h_eq_one : h = 1 then
                   have h_max_zero :
                     (Finset.max' Finset.univ Finset.univ_nonempty : Fin h).val = 0 := by omega
                   have h_all_max : ∀ x :
@@ -376,7 +369,7 @@ def buildFactorizationTree {A S : Type*} [Semigroup S] {h : ℕ} [Nonempty (Fin 
                   have h_le : u.length ≤ k := idxs_le_getLast idxs h_empty h_s _ h_last_in
                   omega
                 else
-                  have : 0 < h := Fin.pos_iff_nonempty.mpr inferInstance
+                  have h_pos : 0 < h := Fin.pos_iff_nonempty.mpr inferInstance
                   exact ⟨⟨0, by omega⟩⟩
               have h_lt_h : h - 1 < h := by obtain ⟨⟨_, hlt⟩⟩ := hh; omega
               let t_suf_rest :=
@@ -450,10 +443,10 @@ def buildFactorizationTree {A S : Type*} [Semigroup S] {h : ℕ} [Nonempty (Fin 
                   apply head_le_idxs idxs h_empty (splitIndices_sorted s)
                   exact h_in
                 grind
-              have := (s_pre i).isLt
+              have h_lt := (s_pre i).isLt
               omega
             have hh : Nonempty (Fin (h - 1)) := by
-              if h1 : h = 1 then
+              if h_eq_one : h = 1 then
                 have h_max_zero :
                   (Finset.max' Finset.univ Finset.univ_nonempty : Fin h).val = 0 := by omega
                 have h_all_max : ∀ x :
@@ -470,7 +463,7 @@ def buildFactorizationTree {A S : Type*} [Semigroup S] {h : ℕ} [Nonempty (Fin 
                 have h_le : k_pre ≤ 0 := head_le_idxs idxs h_empty h_s _ h_first_in
                 omega
               else
-                have : 0 < h := Fin.pos_iff_nonempty.mpr inferInstance
+                have h_pos : 0 < h := Fin.pos_iff_nonempty.mpr inferInstance
                 exact ⟨⟨0, by omega⟩⟩
             have h_lt_h : h - 1 < h := by obtain ⟨⟨_, hlt⟩⟩ := hh; omega
             let t_pre_rest :=
@@ -507,24 +500,24 @@ theorem buildTree_word_eq {A S : Type*} [Semigroup S] {h : ℕ} [Nonempty (Fin h
     (buildFactorizationTree eval u hu s).word = u := by
   have h_pos : 1 ≤ h := by obtain ⟨⟨_, h_lt⟩⟩ := ‹Nonempty (Fin h)›; omega
   have hu1 : u.length = 1 → [u.head hu] = u := by
-    intro h1
+    intro h_len_eq_one
     cases u with
-    | nil => revert h1; simp
+    | nil => revert h_len_eq_one; simp
     | cons a l =>
       cases l with
       | nil => rfl
-      | cons b l => revert h1; simp
+      | cons b l => revert h_len_eq_one; simp
   have hu2 : u.length = 2 → [u.head hu, u.getLast (by omega)] = u := by
-    intro h2
+    intro h_len_eq_two
     cases u with
-    | nil => revert h2; simp
+    | nil => revert h_len_eq_two; simp
     | cons a l =>
       cases l with
-      | nil => revert h2; simp
+      | nil => revert h_len_eq_two; simp
       | cons b l =>
         cases l with
         | nil => rfl
-        | cons c l => revert h2; simp
+        | cons c l => revert h_len_eq_two; simp
   induction h, ‹Nonempty (Fin h)›, u, hu, s using buildFactorizationTree.induct eval
   · rw [buildFactorizationTree.eq_def]; dsimp only at *; split_ifs; grind
   · rw [buildFactorizationTree.eq_def]; dsimp only at *; split_ifs; simp_all
@@ -589,7 +582,7 @@ lemma extract_idempotent {A S : Type*} [Semigroup S] {h : ℕ} [Nonempty (Fin h)
     (idxs : List (Fin (u.length + 1)))
     (h_idxs : ∀ i ∈ idxs, s i = Finset.max' Finset.univ Finset.univ_nonempty)
     (i0 i1 i2 : Fin (u.length + 1))
-    (h0 : i0 ∈ idxs) (h1 : i1 ∈ idxs) (h2 : i2 ∈ idxs)
+    (hi0_mem : i0 ∈ idxs) (hi1_mem : i1 ∈ idxs) (hi2_mem : i2 ∈ idxs)
     (hlt01 : i0 < i1) (hlt12 : i1 < i2) :
     let L := wordLabeling eval hmul u
     let e := L.σ i0 i1
@@ -604,17 +597,17 @@ lemma extract_idempotent {A S : Type*} [Semigroup S] {h : ℕ} [Nonempty (Fin h)
       rw [h_s_min]
       exact Finset.le_max' _ _ (Finset.mem_univ _)⟩
   constructor
-  · exact hs_ramsey.left i0 i1 i2 hlt01 hlt12 (mk_rel i0 i1 h0 h1 hlt01)
-      (mk_rel i1 i2 h1 h2 hlt12)
+  · exact hs_ramsey.left i0 i1 i2 hlt01 hlt12 (mk_rel i0 i1 hi0_mem hi1_mem hlt01)
+      (mk_rel i1 i2 hi1_mem hi2_mem hlt12)
   · intros j0 j1 hj0 hj1 hlt_j
     have h_rel_cross : SplitRelation s i0 j0 := by
       dsimp [SplitRelation]
-      exact ⟨by rw [h_idxs i0 h0, h_idxs j0 hj0], fun z hz1 hz2 ↦ by
+      exact ⟨by rw [h_idxs i0 hi0_mem, h_idxs j0 hj0], fun z hi0_le_z hz_le_j0 ↦ by
         have h_s_min : s (min i0 j0) = Finset.max' Finset.univ Finset.univ_nonempty := by
-          obtain h | h := le_total i0 j0 <;>
-            simp only [min_eq_left h, min_eq_right h, h_idxs i0 h0, h_idxs j0 hj0]
+          obtain h_le | h_le := le_total i0 j0 <;>
+            simp only [min_eq_left h_le, min_eq_right h_le, h_idxs i0 hi0_mem, h_idxs j0 hj0]
         exact h_s_min ▸ Finset.le_max' _ _ (Finset.mem_univ _)⟩
-    exact (hs_ramsey.right i0 i1 j0 j1 hlt01 hlt_j (mk_rel i0 i1 h0 h1 hlt01)
+    exact (hs_ramsey.right i0 i1 j0 j1 hlt01 hlt_j (mk_rel i0 i1 hi0_mem hi1_mem hlt01)
       (mk_rel j0 j1 hj0 hj1 hlt_j) h_rel_cross).symm
 
 /-- A chunk of a word equals the corresponding sublist. -/
@@ -642,15 +635,15 @@ lemma shift_split_relation {n h : ℕ} (s : Split (Fin (n + 1)) h)
       rw [min_eq_left hxy, max_eq_right hxy] at hsr2
       rw [min_eq_left hxy', max_eq_right hxy'] at *
       have hi_le_z : i ≤ z.val := by
-        have := Fin.le_iff_val_le_val.mp hz1
+        have hz1_val := Fin.le_iff_val_le_val.mp hz1
         simp
         grind
       let zw : Fin (len + 1) := ⟨z.val - i, by
-        have := Fin.le_iff_val_le_val.mp hz2; have := y.isLt; simp; grind⟩
+        have hz2_val := Fin.le_iff_val_le_val.mp hz2; have hy_lt := y.isLt; simp; grind⟩
       have hx_zw : x ≤ zw := Fin.le_iff_val_le_val.mpr (by
-        dsimp [zw]; have := Fin.le_iff_val_le_val.mp hz1; simp; grind)
+        dsimp [zw]; have hz1_val := Fin.le_iff_val_le_val.mp hz1; simp; grind)
       have hzw_y : zw ≤ y := Fin.le_iff_val_le_val.mpr (by
-        dsimp [zw]; have := Fin.le_iff_val_le_val.mp hz2; simp; grind)
+        dsimp [zw]; have hz2_val := Fin.le_iff_val_le_val.mp hz2; simp; grind)
       have h_res := hsr2 zw hx_zw hzw_y
       rw [(Fin.ext (by dsimp [zw]; omega) : z = (⟨i + zw.val, by dsimp [zw]; omega⟩ : Fin (n + 1)))]
       exact h_res
@@ -660,15 +653,15 @@ lemma shift_split_relation {n h : ℕ} (s : Split (Fin (n + 1)) h)
       rw [min_eq_right hyx'] at hz1 ⊢
       rw [max_eq_left hyx'] at hz2
       have hi_le_z : i ≤ z.val := by
-        have := Fin.le_iff_val_le_val.mp hz1
+        have hz1_val := Fin.le_iff_val_le_val.mp hz1
         simp
         grind
       let zw : Fin (len + 1) := ⟨z.val - i, by
-        have := Fin.le_iff_val_le_val.mp hz2; have := x.isLt; simp; grind⟩
+        have hz2_val := Fin.le_iff_val_le_val.mp hz2; have hx_lt := x.isLt; simp; grind⟩
       have hy_zw : y ≤ zw := Fin.le_iff_val_le_val.mpr (by
-        dsimp [zw]; have := Fin.le_iff_val_le_val.mp hz1; simp; grind)
+        dsimp [zw]; have hz1_val := Fin.le_iff_val_le_val.mp hz1; simp; grind)
       have hzw_x : zw ≤ x := Fin.le_iff_val_le_val.mpr (by
-        dsimp [zw]; have := Fin.le_iff_val_le_val.mp hz2; simp; grind)
+        dsimp [zw]; have hz2_val := Fin.le_iff_val_le_val.mp hz2; simp; grind)
       have h_res := hsr2 zw hy_zw hzw_x
       rw [(Fin.ext (by dsimp [zw]; omega) : z = (⟨i + zw.val, by dsimp [zw]; omega⟩ : Fin (n + 1)))]
       exact h_res⟩
@@ -702,7 +695,7 @@ lemma restrictSplit_ramsey {A S : Type*} [Semigroup S] {h : ℕ} [Nonempty (Fin 
                      (u.drop (i + x.val)).take (y.val - x.val) := by rw [h_sub]
     rw [h_eval_eq] at h_eval
     exact h_eval
-  · intros x y p q hxy hpq hsr1 hsr2 hsr3
+  · intros x y p q hxy hpq h_rel_xy h_rel_pq h_rel_xp
     have hx_b : i + x.val < u.length + 1 := by omega
     have hy_b : i + y.val < u.length + 1 := by omega
     have hp_b : i + p.val < u.length + 1 := by omega
@@ -714,9 +707,9 @@ lemma restrictSplit_ramsey {A S : Type*} [Semigroup S] {h : ℕ} [Nonempty (Fin 
       simp
       omega
     have h_eval := hs_ramsey.2 _ _ _ _ hxy_shift hpq_shift
-      (shift_split_relation s h_bound x y hsr1)
-      (shift_split_relation s h_bound p q hsr2)
-      (shift_split_relation s h_bound x p hsr3)
+      (shift_split_relation s h_bound x y h_rel_xy)
+      (shift_split_relation s h_bound p q h_rel_pq)
+      (shift_split_relation s h_bound x p h_rel_xp)
     dsimp [wordLabeling] at h_eval ⊢
     simp only [chunk_eq hw x y (le_of_lt hxy), chunk_eq hw p q (le_of_lt hpq)]
     have h_sub1 : (i + y.val) - (i + x.val) = y.val - x.val := by omega
@@ -742,19 +735,19 @@ lemma lowerSplitInterior_ramsey {A S : Type*} [Semigroup S] {h : ℕ} [Nonempty 
     intro x y
     dsimp [SplitRelation, lowerSplitInterior]
     constructor
-    · rintro ⟨h1, h2⟩
-      have h1_val := congrArg Fin.val h1
-      exact ⟨Fin.ext h1_val, fun z hz1 hz2 ↦
-        Fin.le_iff_val_le_val.mpr (Fin.le_iff_val_le_val.mp (h2 z hz1 hz2))⟩
-    · rintro ⟨h1, h2⟩
-      have h1_val := congrArg Fin.val h1
-      exact ⟨Fin.ext h1_val, fun z hz1 hz2 ↦
-        Fin.le_iff_val_le_val.mpr (Fin.le_iff_val_le_val.mp (h2 z hz1 hz2))⟩
-  exact ⟨fun x y z hxy hyz hsr_xy hsr_yz => hs_ramsey.1 x y z hxy hyz
-           ((h_rel_eq x y).mp hsr_xy) ((h_rel_eq y z).mp hsr_yz),
-         fun x y p q hxy hpq hsr1 hsr2 hsr3 =>
-           hs_ramsey.2 x y p q hxy hpq ((h_rel_eq x y).mp hsr1)
-             ((h_rel_eq p q).mp hsr2) ((h_rel_eq x p).mp hsr3)⟩
+    · rintro ⟨h_s_eq, h_s_le⟩
+      have h_s_eq_val := congrArg Fin.val h_s_eq
+      exact ⟨Fin.ext h_s_eq_val, fun z hx_le_z hz_le_y ↦
+        Fin.le_iff_val_le_val.mpr (Fin.le_iff_val_le_val.mp (h_s_le z hx_le_z hz_le_y))⟩
+    · rintro ⟨h_s_eq, h_s_le⟩
+      have h_s_eq_val := congrArg Fin.val h_s_eq
+      exact ⟨Fin.ext h_s_eq_val, fun z hx_le_z hz_le_y ↦
+        Fin.le_iff_val_le_val.mpr (Fin.le_iff_val_le_val.mp (h_s_le z hx_le_z hz_le_y))⟩
+  exact ⟨fun x y z hxy hyz h_rel_xy h_rel_yz => hs_ramsey.1 x y z hxy hyz
+           ((h_rel_eq x y).mp h_rel_xy) ((h_rel_eq y z).mp h_rel_yz),
+         fun x y p q hxy hpq h_rel_xy h_rel_pq h_rel_xp =>
+           hs_ramsey.2 x y p q hxy hpq ((h_rel_eq x y).mp h_rel_xy)
+             ((h_rel_eq p q).mp h_rel_pq) ((h_rel_eq x p).mp h_rel_xp)⟩
 
 /-- Children of an n-ary node in a Ramsey tree all evaluate to the same idempotent. -/
 lemma nary_children_ramsey {A S : Type*} [Semigroup S] {h : ℕ} [Nonempty (Fin h)]
@@ -786,9 +779,9 @@ lemma nary_children_ramsey {A S : Type*} [Semigroup S] {h : ℕ} [Nonempty (Fin 
     exact of_decide_eq_true hi.right
   have h_len_idxs : idxs.length ≥ 4 := by
     have h_map_len : (partitionIndices idxs).length = children.length := by
-      have : (((partitionIndices idxs).map _).length) = children.length :=
+      have h_map_len2 : (((partitionIndices idxs).map _).length) = children.length :=
         congrArg List.length h_children
-      rwa [List.length_map] at this
+      rwa [List.length_map] at h_map_len2
     have h_part_len : ∀ {n} (l : List (Fin (n + 1))),
         (partitionIndices l).length = l.length - 1 := by
       intro n l
@@ -811,11 +804,11 @@ lemma nary_children_ramsey {A S : Type*} [Semigroup S] {h : ℕ} [Nonempty (Fin 
     have hlt01 : i0 < i1 := List.pairwise_cons.1 h_sorted |>.1 i1 (by simp)
     have hlt12 : i1 < i2 :=
       List.pairwise_cons.1 (List.pairwise_cons.1 h_sorted |>.2) |>.1 i2 (by simp)
-    have ⟨h0, h1, h2⟩ : i0 ∈ i0 :: i1 :: i2 :: rest
+    have ⟨hi0_mem, hi1_mem, hi2_mem⟩ : i0 ∈ i0 :: i1 :: i2 :: rest
       ∧ i1 ∈ i0 :: i1 :: i2 :: rest ∧ i2 ∈ i0 :: i1 :: i2 :: rest := by simp
     obtain ⟨h_ee, h_all_pairs⟩ :=
       extract_idempotent eval hmul u s hs_ramsey (i0 :: i1 :: i2 :: rest) h_idxs i0 i1 i2
-        h0 h1 h2 hlt01 hlt12
+        hi0_mem hi1_mem hi2_mem hlt01 hlt12
     use (wordLabeling eval hmul u).σ i0 i1
     constructor
     · exact h_ee
@@ -857,16 +850,16 @@ theorem buildTree_isRamsey {A S : Type*} [Semigroup S] {h : ℕ} [Nonempty (Fin 
     IsRamseyTree eval (buildFactorizationTree eval u hu s) := by
   have h_pos : 1 ≤ h := by obtain ⟨⟨_, h_lt⟩⟩ := ‹Nonempty (Fin h)›; omega
   have hu2 : u.length = 2 → u = [u.head hu] ++ [u.getLast (by omega)] := by
-    intro h2
+    intro h_len_eq_two
     cases u with
-    | nil => revert h2; simp
+    | nil => revert h_len_eq_two; simp
     | cons a l =>
       cases l with
-      | nil => revert h2; simp
+      | nil => revert h_len_eq_two; simp
       | cons b l =>
         cases l with
         | nil => rfl
-        | cons c l => revert h2; simp
+        | cons c l => revert h_len_eq_two; simp
   induction h, ‹Nonempty (Fin h)›, u, hu, s using buildFactorizationTree.induct eval
   · rw [buildFactorizationTree.eq_def]; dsimp only at *; split_ifs; exact IsRamseyTree.leaf _
   · rw [buildFactorizationTree.eq_def]; dsimp only at *; split_ifs; sorry
