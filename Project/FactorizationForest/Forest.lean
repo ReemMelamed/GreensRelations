@@ -280,13 +280,6 @@ def buildFactorizationTree {A S : Type*} [Semigroup S] {h : ℕ} [Nonempty (Fin 
         else
           FactorizationTree.leaf (u.head hu)
       let max_h_children := (children.map FactorizationTree.height).foldl max 0
-      let tree_mid_opt : Option (FactorizationTree A) := match children with
-        | [] => none
-        | [c] => some c
-        | [c1, c2] =>
-          some (FactorizationTree.binary c1 c2 (c1.word ++ c2.word) (max_h_children + 1))
-        | c1::c2::c3::rest => some (FactorizationTree.nary (c1::c2::c3::rest)
-          (List.flatten ((c1::c2::c3::rest).map FactorizationTree.word)) (max_h_children + 1))
       if h_empty : idxs = [] then
         have h_interior : ∀ i : Fin (u.length + 1), (s i).val < h - 1 := by
           intro i
@@ -330,15 +323,15 @@ def buildFactorizationTree {A S : Type*} [Semigroup S] {h : ℕ} [Nonempty (Fin 
       else
         let k := (idxs.getLast h_empty).val
         let k_pre := (idxs.head h_empty).val
-        let t_suf_opt : Option (FactorizationTree A) :=
+        let t_suf : FactorizationTree A :=
           if h_k_full : k = u.length then
-            none
+            FactorizationTree.leaf (u.head hu)
           else
             let suf_len := u.length - k
             let char_k := u.get ⟨k, by omega⟩
             let suf_rest_len := suf_len - 1
             if h_rest : suf_rest_len = 0 then
-              some (FactorizationTree.leaf char_k)
+              FactorizationTree.leaf char_k
             else
               let w_rest := (u.drop (k + 1)).take suf_rest_len
               have h_w_rest_ne : w_rest ≠ [] := by
@@ -413,25 +406,15 @@ def buildFactorizationTree {A S : Type*} [Semigroup S] {h : ℕ} [Nonempty (Fin 
               let t_suf_rest :=
                 buildFactorizationTree eval w_rest h_w_rest_ne (lowerSplitInterior s_suf h_interior)
               let suf_w := (u.drop k).take suf_len
-              some ((FactorizationTree.leaf char_k).binary t_suf_rest
-                suf_w (max 1 t_suf_rest.height + 1))
-        let tree_mid_suf_opt : Option (FactorizationTree A) :=
-          match tree_mid_opt, t_suf_opt with
-          | none, none => none
-          | some tm, none => some tm
-          | none, some ts => some ts
-          | some tm, some ts =>
-            some (FactorizationTree.binary tm ts (tm.word ++ ts.word)
-              (max tm.height ts.height + 1))
-        if h_k_zero : k_pre = 0 then
-          match tree_mid_suf_opt with
-          | none => FactorizationTree.leaf (u.head hu)
-          | some tms => tms
-        else
-          let pre_len := k_pre
-          let char_pre := u.get ⟨k_pre - 1, by omega⟩
-          let pre_rest_len := pre_len - 1
-          let t_pre : FactorizationTree A :=
+              (FactorizationTree.leaf char_k).binary t_suf_rest
+                suf_w (max 1 t_suf_rest.height + 1)
+        let t_pre : FactorizationTree A :=
+          if h_k_zero : k_pre = 0 then
+            FactorizationTree.leaf (u.head hu)
+          else
+            let pre_len := k_pre
+            let char_pre := u.get ⟨k_pre - 1, by omega⟩
+            let pre_rest_len := pre_len - 1
             if h_rest : pre_rest_len = 0 then
               FactorizationTree.leaf char_pre
             else
@@ -513,9 +496,36 @@ def buildFactorizationTree {A S : Type*} [Semigroup S] {h : ℕ} [Nonempty (Fin 
               let pre_w := u.take pre_len
               t_pre_rest.binary (FactorizationTree.leaf char_pre)
                 pre_w (max t_pre_rest.height 1 + 1)
-          match tree_mid_suf_opt with
-          | none => t_pre
-          | some tms => FactorizationTree.binary t_pre tms u (max t_pre.height tms.height + 1)
+        if h_k_full : k = u.length then
+          if h_k_zero : k_pre = 0 then
+            FactorizationTree.leaf (u.head hu) -- Unreachable: 0 = u.length
+          else
+            if h_k_eq_pre : k_pre = k then
+              t_pre
+            else
+              match children with
+              | [] => FactorizationTree.leaf (u.head hu)
+              | [c] => FactorizationTree.binary t_pre c u (max t_pre.height c.height + 1)
+              | c1::c2::rest =>
+                FactorizationTree.nary (t_pre :: children) u
+                  (max t_pre.height max_h_children + 1)
+        else
+          if h_k_zero : k_pre = 0 then
+            if h_k_eq_pre : k_pre = k then
+              t_suf
+            else
+              match children with
+              | [] => FactorizationTree.leaf (u.head hu)
+              | [c] => FactorizationTree.binary c t_suf u (max c.height t_suf.height + 1)
+              | c1::c2::rest =>
+                FactorizationTree.nary (children ++ [t_suf]) u
+                  (max max_h_children t_suf.height + 1)
+          else
+            if h_k_eq_pre : k_pre = k then
+              FactorizationTree.binary t_pre t_suf u (max t_pre.height t_suf.height + 1)
+            else
+              FactorizationTree.nary (t_pre :: children ++ [t_suf]) u
+                (max t_pre.height (max max_h_children t_suf.height) + 1)
 termination_by (h, u.length)
 decreasing_by
   all_goals
@@ -542,36 +552,7 @@ decreasing_by
 theorem buildTree_word_eq {A S : Type*} [Semigroup S] {h : ℕ} [Nonempty (Fin h)]
     (eval : List A → S) (u : List A) (hu : u ≠ []) (s : Split (Fin (u.length + 1)) h) :
     (buildFactorizationTree eval u hu s).word = u := by
-  have h_pos : 1 ≤ h := by obtain ⟨⟨_, h_lt⟩⟩ := ‹Nonempty (Fin h)›; omega
-  have h_u_len_one : u.length = 1 → [u.head hu] = u := by
-    intro h_len_eq_one
-    cases u with
-    | nil => revert h_len_eq_one; simp
-    | cons a l =>
-      cases l with
-      | nil => rfl
-      | cons b l => revert h_len_eq_one; simp
-  have h_u_len_two : u.length = 2 → [u.head hu, u.getLast (by omega)] = u := by
-    intro h_len_eq_two
-    cases u with
-    | nil => revert h_len_eq_two; simp
-    | cons a l =>
-      cases l with
-      | nil => revert h_len_eq_two; simp
-      | cons b l =>
-        cases l with
-        | nil => rfl
-        | cons c l => revert h_len_eq_two; simp
-  induction h, ‹Nonempty (Fin h)›, u, hu, s using buildFactorizationTree.induct eval
-  case case1 => sorry
-  case case2 => sorry
-  case case3 => sorry
-  case case4 => sorry
-  case case5 => sorry
-  case case6 => sorry
-  case case7 => sorry
-  case case8 => sorry
-  case case9 => sorry
+  sorry
 
 /-- The `foldl max` of tree heights is bounded by any uniform upper bound on the children. -/
 lemma foldl_max_bound {A : Type*}
@@ -601,17 +582,7 @@ lemma foldl_max_bound {A : Type*}
 theorem buildTree_height_bound {A S : Type*} [Semigroup S] {h : ℕ} [Nonempty (Fin h)]
     (eval : List A → S) (u : List A) (hu : u ≠ []) (s : Split (Fin (u.length + 1)) h) :
     (buildFactorizationTree eval u hu s).height ≤ 3 * h - 1 := by
-  have h_pos : 1 ≤ h := by obtain ⟨⟨_, h_lt⟩⟩ := ‹Nonempty (Fin h)›; omega
-  induction h, ‹Nonempty (Fin h)›, u, hu, s using buildFactorizationTree.induct eval
-  case case1 => sorry
-  case case2 => sorry
-  case case3 => sorry
-  case case4 => sorry
-  case case5 => sorry
-  case case6 => sorry
-  case case7 => sorry
-  case case8 => sorry
-  case case9 => sorry
+  sorry
 
 /-- Extracts the idempotent from a Ramsey tree whose split indices cover the entire word. -/
 lemma extract_idempotent {A S : Type*} [Semigroup S] {h : ℕ} [Nonempty (Fin h)]
