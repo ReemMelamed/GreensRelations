@@ -215,7 +215,6 @@ lemma h_valid_of_mem_partitionIndices {A : Type*} {n h : ℕ} [Nonempty (Fin h)]
     contradiction
   exact ⟨h_lt, h_le, h_w_ne⟩
 
-
 /-- Recursively builds a factorization tree from a word and a split function. -/
 def buildFactorizationTree {A S : Type*} [Semigroup S] {h : ℕ} [Nonempty (Fin h)]
     (eval : List A → S) (u : List A) (hu : u ≠ [])
@@ -325,13 +324,15 @@ def buildFactorizationTree {A S : Type*} [Semigroup S] {h : ℕ} [Nonempty (Fin 
         let k_pre := (idxs.head h_empty).val
         let t_suf : FactorizationTree A :=
           if h_k_full : k = u.length then
-            FactorizationTree.leaf (u.head hu)
+            FactorizationTree.binary (FactorizationTree.leaf (u.head hu))
+            (FactorizationTree.leaf (u.head hu)) ((u.drop k).take (u.length - k)) 0
           else
             let suf_len := u.length - k
             let char_k := u.get ⟨k, by omega⟩
             let suf_rest_len := suf_len - 1
             if h_rest : suf_rest_len = 0 then
-              FactorizationTree.leaf char_k
+              FactorizationTree.binary (FactorizationTree.leaf char_k)
+              (FactorizationTree.leaf char_k) ((u.drop k).take suf_len) 0
             else
               let w_rest := (u.drop (k + 1)).take suf_rest_len
               have h_w_rest_ne : w_rest ≠ [] := by
@@ -410,13 +411,15 @@ def buildFactorizationTree {A S : Type*} [Semigroup S] {h : ℕ} [Nonempty (Fin 
                 suf_w (max 1 t_suf_rest.height + 1)
         let t_pre : FactorizationTree A :=
           if h_k_zero : k_pre = 0 then
-            FactorizationTree.leaf (u.head hu)
+            FactorizationTree.binary (FactorizationTree.leaf (u.head hu))
+              (FactorizationTree.leaf (u.head hu)) (u.take k_pre) 0
           else
             let pre_len := k_pre
             let char_pre := u.get ⟨k_pre - 1, by omega⟩
             let pre_rest_len := pre_len - 1
             if h_rest : pre_rest_len = 0 then
-              FactorizationTree.leaf char_pre
+              FactorizationTree.binary (FactorizationTree.leaf char_pre)
+                (FactorizationTree.leaf char_pre) (u.take pre_len) 0
             else
               let w_rest := u.take pre_rest_len
               have h_w_rest_ne : w_rest ≠ [] := by
@@ -498,13 +501,18 @@ def buildFactorizationTree {A S : Type*} [Semigroup S] {h : ℕ} [Nonempty (Fin 
                 pre_w (max t_pre_rest.height 1 + 1)
         if h_k_full : k = u.length then
           if h_k_zero : k_pre = 0 then
-            FactorizationTree.leaf (u.head hu) -- Unreachable: 0 = u.length
+            match children with
+            | [] => FactorizationTree.binary (FactorizationTree.leaf (u.head hu))
+                      (FactorizationTree.leaf (u.head hu)) u 0
+            | [c] => c
+            | c1::c2::rest => FactorizationTree.nary children u (max_h_children + 1)
           else
             if h_k_eq_pre : k_pre = k then
               t_pre
             else
               match children with
-              | [] => FactorizationTree.leaf (u.head hu)
+              | [] => FactorizationTree.binary (FactorizationTree.leaf (u.head hu))
+                        (FactorizationTree.leaf (u.head hu)) u 0
               | [c] => FactorizationTree.binary t_pre c u (max t_pre.height c.height + 1)
               | c1::c2::rest =>
                 FactorizationTree.nary (t_pre :: children) u
@@ -515,7 +523,8 @@ def buildFactorizationTree {A S : Type*} [Semigroup S] {h : ℕ} [Nonempty (Fin 
               t_suf
             else
               match children with
-              | [] => FactorizationTree.leaf (u.head hu)
+              | [] => FactorizationTree.binary (FactorizationTree.leaf (u.head hu))
+                        (FactorizationTree.leaf (u.head hu)) u 0
               | [c] => FactorizationTree.binary c t_suf u (max c.height t_suf.height + 1)
               | c1::c2::rest =>
                 FactorizationTree.nary (children ++ [t_suf]) u
@@ -548,11 +557,28 @@ decreasing_by
 @[simp] lemma height_nary {A} (cs : List (FactorizationTree A)) (w : List A) (h : ℕ) :
   (FactorizationTree.nary cs w h).height = h := rfl
 
-/-- The word of a tree built by `buildFactorizationTree` equals the original word `u`. -/
+@[simp] lemma word_leaf_eq {A} (u : List A) (hu : u ≠ []) (h : u.length = 1) : [u.head hu] = u := by
+  cases u with
+  | nil => contradiction
+  | cons hd tl =>
+    cases tl with
+    | nil => rfl
+    | cons _ _ => simp at h
+
+set_option linter.unusedSimpArgs false in
 theorem buildTree_word_eq {A S : Type*} [Semigroup S] {h : ℕ} [Nonempty (Fin h)]
     (eval : List A → S) (u : List A) (hu : u ≠ []) (s : Split (Fin (u.length + 1)) h) :
     (buildFactorizationTree eval u hu s).word = u := by
-  sorry
+  unfold buildFactorizationTree
+  split_ifs
+  all_goals
+    dsimp
+    repeat
+      first
+      | rfl
+      | split
+      | omega
+      | (simp_all [word_binary, word_nary, word_leaf, List.take_length, List.drop_zero, word_leaf_eq]; done)
 
 /-- The `foldl max` of tree heights is bounded by any uniform upper bound on the children. -/
 lemma foldl_max_bound {A : Type*}
