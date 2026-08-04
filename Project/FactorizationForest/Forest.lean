@@ -280,15 +280,53 @@ def buildFactorizationTree {A S : Type*} [Semigroup S] {h : ℕ} [Nonempty (Fin 
         else
           FactorizationTree.leaf (u.head hu)
       let max_h_children := (children.map FactorizationTree.height).foldl max 0
-      let tree_mid := match children with
-        | [] => FactorizationTree.leaf (u.head hu)
-        | [c] => c
-        | [c1, c2] => FactorizationTree.binary c1 c2 (c1.word ++ c2.word) (max_h_children + 1)
-        | c1::c2::c3::rest => FactorizationTree.nary (c1::c2::c3::rest)
-          (List.flatten ((c1::c2::c3::rest).map FactorizationTree.word)) (max_h_children + 1)
+      let tree_mid_opt : Option (FactorizationTree A) := match children with
+        | [] => none
+        | [c] => some c
+        | [c1, c2] =>
+          some (FactorizationTree.binary c1 c2 (c1.word ++ c2.word) (max_h_children + 1))
+        | c1::c2::c3::rest => some (FactorizationTree.nary (c1::c2::c3::rest)
+          (List.flatten ((c1::c2::c3::rest).map FactorizationTree.word)) (max_h_children + 1))
       if h_empty : idxs = [] then
-        FactorizationTree.binary (FactorizationTree.leaf (u.head hu))
-        (FactorizationTree.leaf (u.head hu)) u (max_h_children + 1)
+        have h_interior : ∀ i : Fin (u.length + 1), (s i).val < h - 1 := by
+          intro i
+          have h_max_val : (Finset.max' Finset.univ Finset.univ_nonempty : Fin h).val = h - 1 := by
+            have h_eq :
+              (Finset.max' Finset.univ Finset.univ_nonempty : Fin h) = ⟨h - 1, by grind⟩ := by
+              rw [Finset.max'_eq_iff]
+              exact ⟨Finset.mem_univ _, fun b _ ↦ Fin.le_iff_val_le_val.mpr (by grind)⟩
+            exact congrArg Fin.val h_eq
+          have h_not_max : s i ≠ Finset.max' Finset.univ Finset.univ_nonempty := by
+            intro heq
+            have h_in : i ∈ idxs := by
+              dsimp [idxs, splitIndices]
+              simp only [List.mem_filter, List.mem_finRange, true_and]
+              apply decide_eq_true heq
+            rw [h_empty] at h_in
+            contradiction
+          have h_lt := (s i).isLt
+          omega
+        have hh : Nonempty (Fin (h - 1)) := by
+          if h_eq_one : h = 1 then
+            have h_max_zero :
+              (Finset.max' Finset.univ Finset.univ_nonempty : Fin h).val = 0 := by omega
+            have h_all_max : ∀ x : Fin (u.length + 1),
+              s x = Finset.max' Finset.univ Finset.univ_nonempty := by
+              intro x
+              have hs := (s x).isLt
+              apply Fin.ext
+              omega
+            have h_first_in : (⟨0, by omega⟩ : Fin (u.length + 1)) ∈ idxs := by
+              dsimp [idxs, splitIndices]
+              simp only [List.mem_filter, List.mem_finRange, true_and]
+              simp [h_all_max _]
+            rw [h_empty] at h_first_in
+            contradiction
+          else
+            have h_pos : 0 < h := Fin.pos_iff_nonempty.mpr inferInstance
+            exact ⟨⟨0, by omega⟩⟩
+        have h_lt_h : h - 1 < h := by obtain ⟨⟨_, hlt⟩⟩ := hh; omega
+        buildFactorizationTree eval u hu (lowerSplitInterior s h_interior)
       else
         let k := (idxs.getLast h_empty).val
         let k_pre := (idxs.head h_empty).val
@@ -377,101 +415,107 @@ def buildFactorizationTree {A S : Type*} [Semigroup S] {h : ℕ} [Nonempty (Fin 
               let suf_w := (u.drop k).take suf_len
               some ((FactorizationTree.leaf char_k).binary t_suf_rest
                 suf_w (max 1 t_suf_rest.height + 1))
-        let tree_mid_suf :=
-          match t_suf_opt with
-          | none => tree_mid
-          | some t_suf => tree_mid.binary t_suf (tree_mid.word ++ t_suf.word)
-              (max tree_mid.height t_suf.height + 1)
+        let tree_mid_suf_opt : Option (FactorizationTree A) :=
+          match tree_mid_opt, t_suf_opt with
+          | none, none => none
+          | some tm, none => some tm
+          | none, some ts => some ts
+          | some tm, some ts =>
+            some (FactorizationTree.binary tm ts (tm.word ++ ts.word)
+              (max tm.height ts.height + 1))
         if h_k_zero : k_pre = 0 then
-          tree_mid_suf
+          match tree_mid_suf_opt with
+          | none => FactorizationTree.leaf (u.head hu)
+          | some tms => tms
         else
           let pre_len := k_pre
           let char_pre := u.get ⟨k_pre - 1, by omega⟩
           let pre_rest_len := pre_len - 1
-          if h_rest : pre_rest_len = 0 then
-            let t_pre := FactorizationTree.leaf char_pre
-            t_pre.binary tree_mid_suf (t_pre.word ++ tree_mid_suf.word)
-              (max t_pre.height tree_mid_suf.height + 1)
-          else
-            let w_rest := u.take pre_rest_len
-            have h_w_rest_ne : w_rest ≠ [] := by
-              intro h_empty_w
-              have h_len_zero : w_rest.length = 0 := by simp [h_empty_w]
-              have h_len_eq : w_rest.length = pre_rest_len := by
+          let t_pre : FactorizationTree A :=
+            if h_rest : pre_rest_len = 0 then
+              FactorizationTree.leaf char_pre
+            else
+              let w_rest := u.take pre_rest_len
+              have h_w_rest_ne : w_rest ≠ [] := by
+                intro h_empty_w
+                have h_len_zero : w_rest.length = 0 := by simp [h_empty_w]
+                have h_len_eq : w_rest.length = pre_rest_len := by
+                  dsimp [w_rest, pre_rest_len, pre_len]
+                  rw [List.length_take]
+                  omega
+                omega
+              have h_w_rest_len : w_rest.length < u.length := by
                 dsimp [w_rest, pre_rest_len, pre_len]
                 rw [List.length_take]
                 omega
-              omega
-            have h_w_rest_len : w_rest.length < u.length := by
-              dsimp [w_rest, pre_rest_len, pre_len]
-              rw [List.length_take]
-              omega
-            let s_pre := restrictSplit s 0 w_rest.length (by
-              dsimp [w_rest, pre_rest_len, pre_len]
-              rw [List.length_take]
-              omega)
-            have h_interior : ∀ i : Fin (w_rest.length + 1), (s_pre i).val < h - 1 := by
-              intro i
-              have h_max_val :
-                (Finset.max' Finset.univ Finset.univ_nonempty : Fin h).val = h - 1 := by
-                have h_eq :
-                  (Finset.max' Finset.univ Finset.univ_nonempty : Fin h) = ⟨h - 1, by grind⟩ := by
-                  rw [Finset.max'_eq_iff]
-                  exact ⟨Finset.mem_univ _, fun b _ ↦ Fin.le_iff_val_le_val.mpr (by grind)⟩
-                exact congrArg Fin.val h_eq
-              have h_not_max : s_pre i ≠ Finset.max' Finset.univ Finset.univ_nonempty := by
-                intro heq
-                have h_lt : i.val < u.length + 1 := by
-                  have hi : i.val < w_rest.length + 1 := i.isLt
-                  have h_len : w_rest.length = pre_rest_len := by
-                    dsimp [w_rest, pre_rest_len, pre_len]
-                    rw [List.length_take]
+              let s_pre := restrictSplit s 0 w_rest.length (by
+                dsimp [w_rest, pre_rest_len, pre_len]
+                rw [List.length_take]
+                omega)
+              have h_interior : ∀ i : Fin (w_rest.length + 1), (s_pre i).val < h - 1 := by
+                intro i
+                have h_max_val :
+                  (Finset.max' Finset.univ Finset.univ_nonempty : Fin h).val = h - 1 := by
+                  have h_eq :
+                    (Finset.max' Finset.univ Finset.univ_nonempty : Fin h) = ⟨h - 1, by grind⟩ := by
+                    rw [Finset.max'_eq_iff]
+                    exact ⟨Finset.mem_univ _, fun b _ ↦ Fin.le_iff_val_le_val.mpr (by grind)⟩
+                  exact congrArg Fin.val h_eq
+                have h_not_max : s_pre i ≠ Finset.max' Finset.univ Finset.univ_nonempty := by
+                  intro heq
+                  have h_lt : i.val < u.length + 1 := by
+                    have hi : i.val < w_rest.length + 1 := i.isLt
+                    have h_len : w_rest.length = pre_rest_len := by
+                      dsimp [w_rest, pre_rest_len, pre_len]
+                      rw [List.length_take]
+                      omega
                     omega
-                  omega
-                have h_in : (⟨i.val, h_lt⟩ : Fin (u.length + 1)) ∈ idxs := by
-                  dsimp [idxs, splitIndices]
-                  simp only [List.mem_filter, List.mem_finRange, true_and]
-                  apply decide_eq_true
-                  have h_eq_s : s ⟨i.val, h_lt⟩ = s_pre i := by
-                    dsimp [s_pre, restrictSplit]
-                    congr 1
-                    apply Fin.ext
-                    grind
-                  rw [h_eq_s]
-                  exact heq
-                have h_head_le : k_pre ≤ (⟨i.val, h_lt⟩ : Fin (u.length + 1)).val := by
-                  apply head_le_idxs idxs h_empty (splitIndices_sorted s)
-                  exact h_in
-                grind
-              have h_lt := (s_pre i).isLt
-              omega
-            have hh : Nonempty (Fin (h - 1)) := by
-              if h_eq_one : h = 1 then
-                have h_max_zero :
-                  (Finset.max' Finset.univ Finset.univ_nonempty : Fin h).val = 0 := by omega
-                have h_all_max : ∀ x :
-                  Fin (u.length + 1), s x = Finset.max' Finset.univ Finset.univ_nonempty := by
-                  intro x
-                  have hs := (s x).isLt
-                  apply Fin.ext
-                  omega
-                have h_first_in : (⟨0, by omega⟩ : Fin (u.length + 1)) ∈ idxs := by
-                  dsimp [idxs, splitIndices]
-                  simp only [List.mem_filter, List.mem_finRange, true_and]
-                  simp [h_all_max _]
-                have h_s := splitIndices_sorted s
-                have h_le : k_pre ≤ 0 := head_le_idxs idxs h_empty h_s _ h_first_in
+                  have h_in : (⟨i.val, h_lt⟩ : Fin (u.length + 1)) ∈ idxs := by
+                    dsimp [idxs, splitIndices]
+                    simp only [List.mem_filter, List.mem_finRange, true_and]
+                    apply decide_eq_true
+                    have h_eq_s : s ⟨i.val, h_lt⟩ = s_pre i := by
+                      dsimp [s_pre, restrictSplit]
+                      congr 1
+                      apply Fin.ext
+                      grind
+                    rw [h_eq_s]
+                    exact heq
+                  have h_head_le : k_pre ≤ (⟨i.val, h_lt⟩ : Fin (u.length + 1)).val := by
+                    apply head_le_idxs idxs h_empty (splitIndices_sorted s)
+                    exact h_in
+                  grind
+                have h_lt := (s_pre i).isLt
                 omega
-              else
-                have h_pos : 0 < h := Fin.pos_iff_nonempty.mpr inferInstance
-                exact ⟨⟨0, by omega⟩⟩
-            have h_lt_h : h - 1 < h := by obtain ⟨⟨_, hlt⟩⟩ := hh; omega
-            let t_pre_rest :=
-              buildFactorizationTree eval w_rest h_w_rest_ne (lowerSplitInterior s_pre h_interior)
-            let pre_w := u.take pre_len
-            let t_pre := t_pre_rest.binary (FactorizationTree.leaf char_pre)
-              pre_w (max t_pre_rest.height 1 + 1)
-            t_pre.binary tree_mid_suf u (max t_pre.height tree_mid_suf.height + 1)
+              have hh : Nonempty (Fin (h - 1)) := by
+                if h_eq_one : h = 1 then
+                  have h_max_zero :
+                    (Finset.max' Finset.univ Finset.univ_nonempty : Fin h).val = 0 := by omega
+                  have h_all_max : ∀ x :
+                    Fin (u.length + 1), s x = Finset.max' Finset.univ Finset.univ_nonempty := by
+                    intro x
+                    have hs := (s x).isLt
+                    apply Fin.ext
+                    omega
+                  have h_first_in : (⟨0, by omega⟩ : Fin (u.length + 1)) ∈ idxs := by
+                    dsimp [idxs, splitIndices]
+                    simp only [List.mem_filter, List.mem_finRange, true_and]
+                    simp [h_all_max _]
+                  have h_s := splitIndices_sorted s
+                  have h_le : k_pre ≤ 0 := head_le_idxs idxs h_empty h_s _ h_first_in
+                  omega
+                else
+                  have h_pos : 0 < h := Fin.pos_iff_nonempty.mpr inferInstance
+                  exact ⟨⟨0, by omega⟩⟩
+              have h_lt_h : h - 1 < h := by obtain ⟨⟨_, hlt⟩⟩ := hh; omega
+              let t_pre_rest :=
+                buildFactorizationTree eval w_rest h_w_rest_ne (lowerSplitInterior s_pre h_interior)
+              let pre_w := u.take pre_len
+              t_pre_rest.binary (FactorizationTree.leaf char_pre)
+                pre_w (max t_pre_rest.height 1 + 1)
+          match tree_mid_suf_opt with
+          | none => t_pre
+          | some tms => FactorizationTree.binary t_pre tms u (max t_pre.height tms.height + 1)
 termination_by (h, u.length)
 decreasing_by
   all_goals
@@ -519,17 +563,15 @@ theorem buildTree_word_eq {A S : Type*} [Semigroup S] {h : ℕ} [Nonempty (Fin h
         | nil => rfl
         | cons c l => revert h_len_eq_two; simp
   induction h, ‹Nonempty (Fin h)›, u, hu, s using buildFactorizationTree.induct eval
-  · rw [buildFactorizationTree.eq_def]; dsimp only at *; split_ifs; grind
-  · rw [buildFactorizationTree.eq_def]; dsimp only at *; split_ifs; simp_all
-  · rw [buildFactorizationTree.eq_def]; dsimp only at *; split_ifs; simp
-  · rw [buildFactorizationTree.eq_def]; dsimp only at *; split_ifs; simp
-  · rw [buildFactorizationTree.eq_def]; dsimp only at *; split_ifs; simp
-  · rw [buildFactorizationTree.eq_def]; dsimp only at *; split_ifs <;>
-      split <;> split <;> sorry
-  · rw [buildFactorizationTree.eq_def]; dsimp only at *; split_ifs <;>
-      split <;> split <;> sorry
-  · rw [buildFactorizationTree.eq_def]; dsimp only at *; split_ifs <;>
-      split <;> split <;> grind
+  case case1 => sorry
+  case case2 => sorry
+  case case3 => sorry
+  case case4 => sorry
+  case case5 => sorry
+  case case6 => sorry
+  case case7 => sorry
+  case case8 => sorry
+  case case9 => sorry
 
 /-- The `foldl max` of tree heights is bounded by any uniform upper bound on the children. -/
 lemma foldl_max_bound {A : Type*}
@@ -561,17 +603,15 @@ theorem buildTree_height_bound {A S : Type*} [Semigroup S] {h : ℕ} [Nonempty (
     (buildFactorizationTree eval u hu s).height ≤ 3 * h - 1 := by
   have h_pos : 1 ≤ h := by obtain ⟨⟨_, h_lt⟩⟩ := ‹Nonempty (Fin h)›; omega
   induction h, ‹Nonempty (Fin h)›, u, hu, s using buildFactorizationTree.induct eval
-  · rw [buildFactorizationTree.eq_def]; dsimp only at *; split_ifs; simp only [height_leaf]; omega
-  · rw [buildFactorizationTree.eq_def]; dsimp only at *; split_ifs; simp_all; omega
-  · rw [buildFactorizationTree.eq_def]; dsimp only at *; split_ifs; simp only [height_binary]; grind
-  · rw [buildFactorizationTree.eq_def]; dsimp only at *; split_ifs; simp only [height_binary]; omega
-  · rw [buildFactorizationTree.eq_def]; dsimp only at *; split_ifs; simp_all; sorry
-  · rw [buildFactorizationTree.eq_def]; dsimp only at *; split_ifs <;>
-      split <;> split <;> sorry
-  · rw [buildFactorizationTree.eq_def]; dsimp only at *; split_ifs <;>
-      split <;> split <;> sorry
-  · rw [buildFactorizationTree.eq_def]; dsimp only at *; split_ifs <;>
-      split <;> split <;> sorry
+  case case1 => sorry
+  case case2 => sorry
+  case case3 => sorry
+  case case4 => sorry
+  case case5 => sorry
+  case case6 => sorry
+  case case7 => sorry
+  case case8 => sorry
+  case case9 => sorry
 
 /-- Extracts the idempotent from a Ramsey tree whose split indices cover the entire word. -/
 lemma extract_idempotent {A S : Type*} [Semigroup S] {h : ℕ} [Nonempty (Fin h)]
@@ -848,27 +888,7 @@ theorem buildTree_isRamsey {A S : Type*} [Semigroup S] {h : ℕ} [Nonempty (Fin 
     (u : List A) (hu : u ≠ []) (s : Split (Fin (u.length + 1)) h)
     (hs_ramsey : IsRamsey (wordLabeling eval hmul u) s) :
     IsRamseyTree eval (buildFactorizationTree eval u hu s) := by
-  have h_pos : 1 ≤ h := by obtain ⟨⟨_, h_lt⟩⟩ := ‹Nonempty (Fin h)›; omega
-  have h_u_len_two : u.length = 2 → u = [u.head hu] ++ [u.getLast (by omega)] := by
-    intro h_len_eq_two
-    cases u with
-    | nil => revert h_len_eq_two; simp
-    | cons a l =>
-      cases l with
-      | nil => revert h_len_eq_two; simp
-      | cons b l =>
-        cases l with
-        | nil => rfl
-        | cons c l => revert h_len_eq_two; simp
-  induction h, ‹Nonempty (Fin h)›, u, hu, s using buildFactorizationTree.induct eval
-  · rw [buildFactorizationTree.eq_def]; dsimp only at *; split_ifs; exact IsRamseyTree.leaf _
-  · rw [buildFactorizationTree.eq_def]; dsimp only at *; split_ifs; sorry
-  · rw [buildFactorizationTree.eq_def]; dsimp only at *; split_ifs; sorry
-  · rw [buildFactorizationTree.eq_def]; dsimp only at *; split_ifs; sorry
-  · rw [buildFactorizationTree.eq_def]; dsimp only at *; split_ifs; sorry
-  · rw [buildFactorizationTree.eq_def]; dsimp only at *; split_ifs <;> split <;> split <;> sorry
-  · rw [buildFactorizationTree.eq_def]; dsimp only at *; split_ifs <;> split <;> split <;> sorry
-  · rw [buildFactorizationTree.eq_def]; dsimp only at *; split_ifs <;> split <;> split <;> sorry
+  sorry
 
 /-- Given a Ramsey split, one can construct a factorization tree with bounded height. -/
 theorem exists_factorizationTree_of_split {A S : Type*} [Semigroup S]
