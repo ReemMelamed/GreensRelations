@@ -629,7 +629,6 @@ lemma shift_split_relation {n h : ℕ} (s : Split (Fin (n + 1)) h)
     SplitRelation s ⟨i + x.val, by omega⟩ ⟨i + y.val, by omega⟩ := by
   exact ⟨hsr.1, fun z hz_ge hz_le ↦ by
     have h_rel_le := hsr.2
-    dsimp [restrictSplit] at h_rel_le ⊢
     rcases le_total x y with hxy | hxy
     · have hxy' : ⟨x.val, by omega⟩ ≤ (⟨y.val, by omega⟩ : Fin (len + 1)) :=
         Fin.le_iff_val_le_val.mpr (by have hxy_val := Fin.le_iff_val_le_val.mp hxy; simp; grind)
@@ -821,7 +820,7 @@ lemma nary_children_ramsey {A S : Type*} [Semigroup S] {h : ℕ} [Nonempty (Fin 
       split
       · rename_i h_valid
         obtain ⟨h_j0_mem, h_j1_mem, h_j_lt, _, _⟩ := partitionIndices_props h_sorted hj_mem
-
+        rw [buildTree_word_eq]
         have h_σ := h_all_pairs j0 j1 h_j0_mem h_j1_mem h_j_lt
         dsimp [wordLabeling, MultiplicativeLabeling.σ] at h_σ ⊢
         exact h_σ
