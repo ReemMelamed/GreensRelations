@@ -60,12 +60,13 @@ theorem simon_split {S α : Type*} [Semigroup S] [Fintype S]
   have ha : labelingIn σ (jUp a) := fun x y hlt ↦ by
     have h_x0_le : x₀ ≤ x := Finset.min'_le _ _ (Finset.mem_univ _)
     have h_le_y0 : y ≤ y₀ := Finset.le_max' _ _ (Finset.mem_univ _)
+    change IsGreenJRel (σ.σ x₀ y₀) (σ.σ x y)
     rcases h_x0_le.eq_or_lt with rfl | h_x0_lt
     · rcases h_le_y0.eq_or_lt with rfl | h_lt_y0
       · exact IsGreenJRel.refl _
       · exact IsGreenJRel.mul_right (σ.σ y y₀) (σ.prop _ y y₀ hlt h_lt_y0).symm
     · rcases h_le_y0.eq_or_lt with rfl | h_lt_y0
-      · exact IsGreenJRel.mul_left (σ.σ x₀ x) (σ.prop x₀ x y h_x0_lt hlt).symm
+      · exact IsGreenJRel.mul_left (σ.σ x₀ x) (σ.prop x₀ x _ h_x0_lt hlt).symm
       · exact IsGreenJRel.mul_both (σ.σ x₀ x) (σ.σ y y₀)
           (by rw [← σ.prop x₀ y y₀ (h_x0_lt.trans hlt) h_lt_y0, ← σ.prop x₀ x y h_x0_lt hlt])
   obtain ⟨s_a, h_norm, h_ramsey⟩ := simon_split_induction a σ ha
