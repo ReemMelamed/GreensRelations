@@ -630,13 +630,13 @@ lemma shift_split_relation {n h : ℕ} (s : Split (Fin (n + 1)) h)
   exact ⟨hsr.1, fun z hz_ge hz_le ↦ by
     have h_rel_le := hsr.2
     rcases le_total x y with hxy | hxy
-    · have hxy' : ⟨x.val, by omega⟩ ≤ (⟨y.val, by omega⟩ : Fin (len + 1)) :=
-        Fin.le_iff_val_le_val.mpr (by have hxy_val := Fin.le_iff_val_le_val.mp hxy; simp; grind)
+    · have hixy : (⟨i + x.val, by omega⟩ : Fin (n + 1)) ≤ ⟨i + y.val, by omega⟩ :=
+        Fin.le_iff_val_le_val.mpr (by have hxy_val := Fin.le_iff_val_le_val.mp hxy; grind)
       rw [min_eq_left hxy, max_eq_right hxy] at h_rel_le
-      rw [min_eq_left hxy', max_eq_right hxy'] at *
+      rw [min_eq_left hixy] at hz_ge ⊢
+      rw [max_eq_right hixy] at hz_le
       have hi_le_z : i ≤ z.val := by
         have hz_ge_val := Fin.le_iff_val_le_val.mp hz_ge
-        simp
         grind
       let zw : Fin (len + 1) := ⟨z.val - i, by
         have hz_le_val := Fin.le_iff_val_le_val.mp hz_le; have hy_lt := y.isLt; simp; grind⟩
@@ -648,14 +648,13 @@ lemma shift_split_relation {n h : ℕ} (s : Split (Fin (n + 1)) h)
       rw [(Fin.ext (by dsimp [zw]; omega) : z = (⟨i + zw.val, by dsimp [zw]; omega⟩ : Fin (n + 1)))]
       exact h_res
     · have hyx : y ≤ x := by omega
-      have hyx' : ⟨y.val, by omega⟩ ≤ (⟨x.val, by omega⟩ : Fin (len + 1)) :=
-        Fin.le_iff_val_le_val.mpr (by have hxy_val := Fin.le_iff_val_le_val.mp hxy; simp; grind)
+      have hiyx : (⟨i + y.val, by omega⟩ : Fin (n + 1)) ≤ ⟨i + x.val, by omega⟩ :=
+        Fin.le_iff_val_le_val.mpr (by have hxy_val := Fin.le_iff_val_le_val.mp hxy; grind)
       rw [min_eq_right hxy, max_eq_left hxy] at h_rel_le
-      rw [min_eq_right hyx'] at hz_ge ⊢
-      rw [max_eq_left hyx'] at hz_le
+      rw [min_eq_right hiyx] at hz_ge ⊢
+      rw [max_eq_left hiyx] at hz_le
       have hi_le_z : i ≤ z.val := by
         have hz_ge_val := Fin.le_iff_val_le_val.mp hz_ge
-        simp
         grind
       let zw : Fin (len + 1) := ⟨z.val - i, by
         have hz_le_val := Fin.le_iff_val_le_val.mp hz_le; have hx_lt := x.isLt; simp; grind⟩
