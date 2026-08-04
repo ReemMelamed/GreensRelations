@@ -1,9 +1,9 @@
 {"synthetic": false,
  "schemaVersion": "2025-09-10",
  "outputs":
- {"o": ["9b8ef11eb7e7d1af.olean"],
+ {"o": ["e6f9b72d245c2472.olean"],
   "m": false,
-  "i": "56d21cbd19f4fb21.ilean",
+  "i": "d7bb3fe05468e026.ilean",
   "c": "c4f10a8e5485da86.c"},
  "log":
  [{"message":
@@ -16,7 +16,7 @@
      [["Project.FactorizationForest.Combine transitive imports (legacy)",
        "0e491ab96c3d46ad"],
       ["Project.FactorizationForest.Combine:importAllArts",
-       "3cf02fb059699b28"]]]]],
+       "14c4a0015e23dc1a"]]]]],
   ["libs",
    [["import dynlibs", "00000000000006bb"],
     ["package external libraries", "00000000000006bb"],
@@ -25,7 +25,7 @@
   ["Lean 4.33.0, commit 62eed1db4d67327ec8120be05f1a1b0847d74561",
    "8fa8fbe052c71a8e"],
   ["C:\\Users\\reems\\git-repositories\\lean4-factorization-forest\\Project\\FactorizationForest\\Regular.lean",
-   "823c60b2efd171ac"],
+   "e88a83986d21d008"],
   ["options",
    [["-DmaxSynthPendingDepth=3", "c78e353d34de85d4"],
     ["-Dweak.linter.mathlibStandardSet=true", "8a155799906f2b42"],
@@ -35,4 +35,4 @@
   ["Module.name: Project.FactorizationForest.Regular", "0bfd65fe1eb5923b"],
   ["Package.id?: (some Project)", "264312e6c45eec93"],
   ["Module.leanArgs: #[]", "00000000000006bb"]],
- "depHash": "82f217f91b0d4ec6"}
+ "depHash": "f8262de445901969"}

@@ -130,7 +130,7 @@ lemma flatten_partitionIndices_take_drop_gen {A : Type*} (u : List A) {n : ℕ}
         List.pairwise_cons.1 h_sorted |>.2
       have h_not_empty_tail : i2 :: idxs'' ≠ [] := by simp
       have ih' := ih h_not_empty_tail h_sorted_tail
-      have hi12 : i1 < i2 := List.pairwise_cons.1 h_sorted |>.1 i2 (by simp)
+      have h_i1_lt_i2 : i1 < i2 := List.pairwise_cons.1 h_sorted |>.1 i2 (by simp)
       simp only [partitionIndices, List.map_cons, List.flatten_cons]
       rw [ih']
       have h_head : (List.head (i2 :: idxs'') h_not_empty_tail) = i2 := rfl
@@ -238,7 +238,7 @@ def buildFactorizationTree {A S : Type*} [Semigroup S] {h : ℕ} [Nonempty (Fin 
           omega
         have hw : w ≠ [] := by
           intro h
-          have hw0 : w.length = 0 := congrArg List.length h
+          have h_w_len_zero : w.length = 0 := congrArg List.length h
           omega
         have h_bound : 1 + w.length ≤ u.length := by omega
         let s_w := restrictSplit s 1 w.length h_bound
@@ -499,7 +499,7 @@ theorem buildTree_word_eq {A S : Type*} [Semigroup S] {h : ℕ} [Nonempty (Fin h
     (eval : List A → S) (u : List A) (hu : u ≠ []) (s : Split (Fin (u.length + 1)) h) :
     (buildFactorizationTree eval u hu s).word = u := by
   have h_pos : 1 ≤ h := by obtain ⟨⟨_, h_lt⟩⟩ := ‹Nonempty (Fin h)›; omega
-  have hu1 : u.length = 1 → [u.head hu] = u := by
+  have h_u_len_one : u.length = 1 → [u.head hu] = u := by
     intro h_len_eq_one
     cases u with
     | nil => revert h_len_eq_one; simp
@@ -507,7 +507,7 @@ theorem buildTree_word_eq {A S : Type*} [Semigroup S] {h : ℕ} [Nonempty (Fin h
       cases l with
       | nil => rfl
       | cons b l => revert h_len_eq_one; simp
-  have hu2 : u.length = 2 → [u.head hu, u.getLast (by omega)] = u := by
+  have h_u_len_two : u.length = 2 → [u.head hu, u.getLast (by omega)] = u := by
     intro h_len_eq_two
     cases u with
     | nil => revert h_len_eq_two; simp
@@ -591,7 +591,7 @@ lemma extract_idempotent {A S : Type*} [Semigroup S] {h : ℕ} [Nonempty (Fin h)
   have mk_rel : ∀ a b, a ∈ idxs → b ∈ idxs → a < b → SplitRelation s a b := by
     intro a b ha hb hab
     dsimp [SplitRelation]
-    exact ⟨by rw [h_idxs a ha, h_idxs b hb], fun z hz1 hz2 ↦ by
+    exact ⟨by rw [h_idxs a ha, h_idxs b hb], fun z hz_ge hz_le ↦ by
       have h_s_min : s (min a b) = Finset.max' Finset.univ Finset.univ_nonempty := by
         rw [min_eq_left (le_of_lt hab), h_idxs a ha]
       rw [h_s_min]
@@ -599,16 +599,16 @@ lemma extract_idempotent {A S : Type*} [Semigroup S] {h : ℕ} [Nonempty (Fin h)
   constructor
   · exact hs_ramsey.left i0 i1 i2 hlt01 hlt12 (mk_rel i0 i1 hi0_mem hi1_mem hlt01)
       (mk_rel i1 i2 hi1_mem hi2_mem hlt12)
-  · intros j0 j1 hj0 hj1 hlt_j
+  · intros j0 j1 h_j0_mem h_j1_mem hlt_j
     have h_rel_cross : SplitRelation s i0 j0 := by
       dsimp [SplitRelation]
-      exact ⟨by rw [h_idxs i0 hi0_mem, h_idxs j0 hj0], fun z hi0_le_z hz_le_j0 ↦ by
+      exact ⟨by rw [h_idxs i0 hi0_mem, h_idxs j0 h_j0_mem], fun z h_i0_le_z h_z_le_j0 ↦ by
         have h_s_min : s (min i0 j0) = Finset.max' Finset.univ Finset.univ_nonempty := by
           obtain h_le | h_le := le_total i0 j0 <;>
-            simp only [min_eq_left h_le, min_eq_right h_le, h_idxs i0 hi0_mem, h_idxs j0 hj0]
+            simp only [min_eq_left h_le, min_eq_right h_le, h_idxs i0 hi0_mem, h_idxs j0 h_j0_mem]
         exact h_s_min ▸ Finset.le_max' _ _ (Finset.mem_univ _)⟩
     exact (hs_ramsey.right i0 i1 j0 j1 hlt01 hlt_j (mk_rel i0 i1 hi0_mem hi1_mem hlt01)
-      (mk_rel j0 j1 hj0 hj1 hlt_j) h_rel_cross).symm
+      (mk_rel j0 j1 h_j0_mem h_j1_mem hlt_j) h_rel_cross).symm
 
 /-- A chunk of a word equals the corresponding sublist. -/
 lemma chunk_eq {A : Type*} {u w : List A} {i : ℕ} (hw : ∃ j, w = (u.drop i).take (j - i))
@@ -627,42 +627,44 @@ lemma shift_split_relation {n h : ℕ} (s : Split (Fin (n + 1)) h)
     {i len : ℕ} (h_bound : i + len ≤ n) (x y : Fin (len + 1))
     (hsr : SplitRelation (restrictSplit s i len h_bound) x y) :
     SplitRelation s ⟨i + x.val, by omega⟩ ⟨i + y.val, by omega⟩ := by
-  exact ⟨hsr.1, fun z hz1 hz2 ↦ by
-    have hsr2 := hsr.2
+  exact ⟨hsr.1, fun z hz_ge hz_le ↦ by
+    have h_rel_le := hsr.2
+    dsimp [restrictSplit] at h_rel_le ⊢
     rcases le_total x y with hxy | hxy
-    · have hxy' : (⟨i + x.val, by omega⟩ : Fin (n + 1)) ≤ ⟨i + y.val, by omega⟩ :=
-        Fin.le_iff_val_le_val.mpr (by have := Fin.le_iff_val_le_val.mp hxy; simp; grind)
-      rw [min_eq_left hxy, max_eq_right hxy] at hsr2
+    · have hxy' : ⟨x.val, by omega⟩ ≤ (⟨y.val, by omega⟩ : Fin (len + 1)) :=
+        Fin.le_iff_val_le_val.mpr (by have hxy_val := Fin.le_iff_val_le_val.mp hxy; simp; grind)
+      rw [min_eq_left hxy, max_eq_right hxy] at h_rel_le
       rw [min_eq_left hxy', max_eq_right hxy'] at *
       have hi_le_z : i ≤ z.val := by
-        have hz1_val := Fin.le_iff_val_le_val.mp hz1
+        have hz_ge_val := Fin.le_iff_val_le_val.mp hz_ge
         simp
         grind
       let zw : Fin (len + 1) := ⟨z.val - i, by
-        have hz2_val := Fin.le_iff_val_le_val.mp hz2; have hy_lt := y.isLt; simp; grind⟩
+        have hz_le_val := Fin.le_iff_val_le_val.mp hz_le; have hy_lt := y.isLt; simp; grind⟩
       have hx_zw : x ≤ zw := Fin.le_iff_val_le_val.mpr (by
-        dsimp [zw]; have hz1_val := Fin.le_iff_val_le_val.mp hz1; simp; grind)
+        dsimp [zw]; have hz_ge_val := Fin.le_iff_val_le_val.mp hz_ge; simp; grind)
       have hzw_y : zw ≤ y := Fin.le_iff_val_le_val.mpr (by
-        dsimp [zw]; have hz2_val := Fin.le_iff_val_le_val.mp hz2; simp; grind)
-      have h_res := hsr2 zw hx_zw hzw_y
+        dsimp [zw]; have hz_le_val := Fin.le_iff_val_le_val.mp hz_le; simp; grind)
+      have h_res := h_rel_le zw hx_zw hzw_y
       rw [(Fin.ext (by dsimp [zw]; omega) : z = (⟨i + zw.val, by dsimp [zw]; omega⟩ : Fin (n + 1)))]
       exact h_res
-    · have hyx' : (⟨i + y.val, by omega⟩ : Fin (n + 1)) ≤ ⟨i + x.val, by omega⟩ :=
-        Fin.le_iff_val_le_val.mpr (by have := Fin.le_iff_val_le_val.mp hxy; simp; grind)
-      rw [min_eq_right hxy, max_eq_left hxy] at hsr2
-      rw [min_eq_right hyx'] at hz1 ⊢
-      rw [max_eq_left hyx'] at hz2
+    · have hyx : y ≤ x := by omega
+      have hyx' : ⟨y.val, by omega⟩ ≤ (⟨x.val, by omega⟩ : Fin (len + 1)) :=
+        Fin.le_iff_val_le_val.mpr (by have hxy_val := Fin.le_iff_val_le_val.mp hxy; simp; grind)
+      rw [min_eq_right hxy, max_eq_left hxy] at h_rel_le
+      rw [min_eq_right hyx'] at hz_ge ⊢
+      rw [max_eq_left hyx'] at hz_le
       have hi_le_z : i ≤ z.val := by
-        have hz1_val := Fin.le_iff_val_le_val.mp hz1
+        have hz_ge_val := Fin.le_iff_val_le_val.mp hz_ge
         simp
         grind
       let zw : Fin (len + 1) := ⟨z.val - i, by
-        have hz2_val := Fin.le_iff_val_le_val.mp hz2; have hx_lt := x.isLt; simp; grind⟩
+        have hz_le_val := Fin.le_iff_val_le_val.mp hz_le; have hx_lt := x.isLt; simp; grind⟩
       have hy_zw : y ≤ zw := Fin.le_iff_val_le_val.mpr (by
-        dsimp [zw]; have hz1_val := Fin.le_iff_val_le_val.mp hz1; simp; grind)
+        dsimp [zw]; have hz_ge_val := Fin.le_iff_val_le_val.mp hz_ge; simp; grind)
       have hzw_x : zw ≤ x := Fin.le_iff_val_le_val.mpr (by
-        dsimp [zw]; have hz2_val := Fin.le_iff_val_le_val.mp hz2; simp; grind)
-      have h_res := hsr2 zw hy_zw hzw_x
+        dsimp [zw]; have hz_le_val := Fin.le_iff_val_le_val.mp hz_le; simp; grind)
+      have h_res := h_rel_le zw hy_zw hzw_x
       rw [(Fin.ext (by dsimp [zw]; omega) : z = (⟨i + zw.val, by dsimp [zw]; omega⟩ : Fin (n + 1)))]
       exact h_res⟩
 
@@ -818,9 +820,9 @@ lemma nary_children_ramsey {A S : Type*} [Semigroup S] {h : ℕ} [Nonempty (Fin 
       simp only [← hc_eq]
       split
       · rename_i h_valid
-        obtain ⟨hj0, hj1, hjlt, _, _⟩ := partitionIndices_props h_sorted hj_mem
-        rw [buildTree_word_eq]
-        have h_σ := h_all_pairs j0 j1 hj0 hj1 hjlt
+        obtain ⟨h_j0_mem, h_j1_mem, h_j_lt, _, _⟩ := partitionIndices_props h_sorted hj_mem
+
+        have h_σ := h_all_pairs j0 j1 h_j0_mem h_j1_mem h_j_lt
         dsimp [wordLabeling, MultiplicativeLabeling.σ] at h_σ ⊢
         exact h_σ
       · rename_i h_valid_false
@@ -849,7 +851,7 @@ theorem buildTree_isRamsey {A S : Type*} [Semigroup S] {h : ℕ} [Nonempty (Fin 
     (hs_ramsey : IsRamsey (wordLabeling eval hmul u) s) :
     IsRamseyTree eval (buildFactorizationTree eval u hu s) := by
   have h_pos : 1 ≤ h := by obtain ⟨⟨_, h_lt⟩⟩ := ‹Nonempty (Fin h)›; omega
-  have hu2 : u.length = 2 → u = [u.head hu] ++ [u.getLast (by omega)] := by
+  have h_u_len_two : u.length = 2 → u = [u.head hu] ++ [u.getLast (by omega)] := by
     intro h_len_eq_two
     cases u with
     | nil => revert h_len_eq_two; simp

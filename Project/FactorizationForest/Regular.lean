@@ -69,31 +69,33 @@ noncomputable abbrev hOf (ctx : SimonContext S α) (x : α) : Set S :=
 /-- The chosen L-class is well-defined and depends only on
   the elements strictly smaller than `x`. -/
 lemma lOf_well_defined (ctx : SimonContext S α) (x y1 y2 : α)
-    (hy1 : y1 < x) (hy2 : y2 < x) :
+    (h_y1_lt_x : y1 < x) (h_y2_lt_x : y2 < x) :
     IsGreenL.eqvClass (ctx.σ.σ y1 x) = IsGreenL.eqvClass (ctx.σ.σ y2 x) := by
-  wlog h_le : y1 ≤ y2 generalizing y1 y2 hy1 hy2
-  · exact (this y2 y1 hy2 hy1 (not_le.mp h_le).le).symm
+  wlog h_le : y1 ≤ y2 generalizing y1 y2 h_y1_lt_x h_y2_lt_x
+  · exact (this y2 y1 h_y2_lt_x h_y1_lt_x (not_le.mp h_le).le).symm
   · rcases h_le.eq_or_lt with rfl | h_lt
     · rfl
-    · have hp := (ctx.σ.prop y1 y2 x h_lt hy2).symm
-      have hL : IsGreenL (ctx.σ.σ y2 x) (ctx.σ.σ y1 x) := hp ▸ (mul_mem_isGreenD_eqvClass_properties
-        ⟨ctx.x₀, ctx.hx₀⟩ _ _ (ctx.h_range y1 y2 h_lt) (ctx.h_range y2 x hy2)
-        (hp ▸ ctx.h_range y1 x hy1)).1.2
+    · have hp := (ctx.σ.prop y1 y2 x h_lt h_y2_lt_x).symm
+      have hL : IsGreenL (ctx.σ.σ y2 x) (ctx.σ.σ y1 x) :=
+        hp ▸ (mul_mem_isGreenD_eqvClass_properties
+        ⟨ctx.x₀, ctx.hx₀⟩ _ _ (ctx.h_range y1 y2 h_lt) (ctx.h_range y2 x h_y2_lt_x)
+        (hp ▸ ctx.h_range y1 x h_y1_lt_x)).1.2
       exact Set.ext fun _ ↦ ⟨fun hz ↦ hz.trans hL.symm, fun hz ↦ hz.trans hL⟩
 
 /-- The chosen R-class is well-defined and depends only on
   the elements strictly greater than `x`. -/
 lemma rOf_well_defined (ctx : SimonContext S α) (x y1 y2 : α)
-    (hy1 : x < y1) (hy2 : x < y2) :
+    (h_x_lt_y1 : x < y1) (h_x_lt_y2 : x < y2) :
     IsGreenR.eqvClass (ctx.σ.σ x y1) = IsGreenR.eqvClass (ctx.σ.σ x y2) := by
-  wlog h_le : y1 ≤ y2 generalizing y1 y2 hy1 hy2
-  · exact (this y2 y1 hy2 hy1 (not_le.mp h_le).le).symm
+  wlog h_le : y1 ≤ y2 generalizing y1 y2 h_x_lt_y1 h_x_lt_y2
+  · exact (this y2 y1 h_x_lt_y2 h_x_lt_y1 (not_le.mp h_le).le).symm
   · rcases h_le.eq_or_lt with rfl | h_lt
     · rfl
-    · have hp := ctx.σ.prop x y1 y2 hy1 h_lt
-      have hR : IsGreenR (ctx.σ.σ x y1) (ctx.σ.σ x y2) := hp ▸ (mul_mem_isGreenD_eqvClass_properties
-        ⟨ctx.x₀, ctx.hx₀⟩ _ _ (ctx.h_range x y1 hy1) (ctx.h_range y1 y2 h_lt)
-        (hp.symm ▸ ctx.h_range x y2 hy2)).1.1
+    · have hp := ctx.σ.prop x y1 y2 h_x_lt_y1 h_lt
+      have hR : IsGreenR (ctx.σ.σ x y1) (ctx.σ.σ x y2) :=
+        hp ▸ (mul_mem_isGreenD_eqvClass_properties
+        ⟨ctx.x₀, ctx.hx₀⟩ _ _ (ctx.h_range x y1 h_x_lt_y1) (ctx.h_range y1 y2 h_lt)
+        (hp.symm ▸ ctx.h_range x y2 h_x_lt_y2)).1.1
       exact Set.ext fun _ ↦ ⟨fun hz ↦ hz.trans hR, fun hz ↦ hz.trans hR.symm⟩
 
 open Classical in
@@ -244,7 +246,8 @@ lemma simon_regular_d_case
   classical
   obtain ⟨x₀, hx₀⟩ := hD
   let ctx : SimonContext S α := ⟨σ, D, x₀, hx₀, hReg, h_range⟩
-  have h_card_G_D : Fintype.card { y : S // y ∈ D ∧ ∃ e ∈ D, e * e = e ∧ IsGreenH y e } = nD D := by
+  have h_card_G_D : Fintype.card { y : S // y ∈ D ∧ ∃ e ∈ D, e * e = e ∧ IsGreenH y e } = nD D :=
+    by
     simp only [nD, if_pos hReg, Fintype.card_subtype]
   let equiv := Fintype.equivOfCardEq (h_card_G_D.trans (Fintype.card_fin _).symm)
   have h_pos : 0 < nD D := Fin.pos_iff_nonempty.mpr h_ne
@@ -263,7 +266,7 @@ lemma simon_regular_d_case
     let mx := Finset.min' (mClass x) hmx
     let my := Finset.min' (mClass y) hmy
     have min_x_eq_min_y : mx = my := by
-      have : mClass x = mClass y := by simp only [mClass, hOf_eq_class, he_eq_ey]
+      have h_mclass_eq : mClass x = mClass y := by simp only [mClass, hOf_eq_class, he_eq_ey]
       grind
     have h_ese_eq_e : eId ctx x * σ.σ x y * eId ctx x = eId ctx x := by
       by_cases h_mx_lt_x : mx < x
@@ -307,7 +310,7 @@ lemma simon_regular_d_case
   exact ⟨fun y ↦ indexMap (fColoring ctx y), by
       simp only [IsNormalized, indexMap, Equiv.trans_apply, Equiv.swap_apply_left]
       symm; rw [Finset.max'_eq_iff]; exact ⟨Finset.mem_univ _, fun _ _ ↦ by grind⟩,
-    fun x y z hlt1 _ hsr1 _ ↦ by simp [h_sig_eq_eId x y hlt1 hsr1],
+    fun x y z h_lt_xy _ h_rel_xy _ ↦ by simp [h_sig_eq_eId x y h_lt_xy h_rel_xy],
     fun x y u v hlt_xy hlt_uv hsr_xy hsr_uv hsr_xu ↦ by
       have val_eq := congrArg Subtype.val (indexMap.injective hsr_xu.1)
       have he_eq_xu := MulSeq.eq_of_isGreenH_of_idempotent
@@ -334,7 +337,7 @@ noncomputable abbrev regularSplits {α S : Type*}
     Split α (nSElement a) :=
   combineSplits a xs
     (fun x => ⟨(sX x).val + (nSElement a - nD (IsGreenD.eqvClass a)), by
-      have := (sX x).isLt
+      have h_lt := (sX x).isLt
       rw [nSElement]
       omega⟩)
     sY
@@ -357,14 +360,14 @@ lemma regularSplits_props {α S : Type*}
       Finset.univ_nonempty) ∈ xs)
     (h_σ_X : ∀ x y, σ_X.σ x y = σ.σ x.val y.val)
     (h_σ_Y : ∀ i x y, (σ_Y i).σ x y = σ.σ x.val y.val)
-    (h_cov : ∀ x, x ∉ xs → ∃ (i : ℕ) (h1 : i < xs.length),
-      xs.get ⟨i, h1⟩ < x ∧
-      ∀ (h2 : i + 1 < xs.length), x < xs.get ⟨i + 1, h2⟩)
+    (h_cov : ∀ x, x ∉ xs → ∃ (i : ℕ) (hi_lt : i < xs.length),
+      xs.get ⟨i, hi_lt⟩ < x ∧
+      ∀ (h_next_lt : i + 1 < xs.length), x < xs.get ⟨i + 1, h_next_lt⟩)
     (hsY_strict : ∀ (i : ℕ) [Nonempty (OpenIntervalType xs i)]
       (z : OpenIntervalType xs i),
       (sY i z).val < nSElement a - nD (IsGreenD.eqvClass a))
-    (h_xs_mono : ∀ (i j : ℕ) (h1 : i < xs.length) (h2 : j < xs.length), i < j →
-      xs.get ⟨i, h1⟩ < xs.get ⟨j, h2⟩)
+    (h_xs_mono : ∀ (i j : ℕ) (hi_lt : i < xs.length) (hj_lt : j < xs.length), i < j →
+      xs.get ⟨i, hi_lt⟩ < xs.get ⟨j, hj_lt⟩)
     (h_interval_ramsey : ∀ x y, x ∉ xs → x < y →
       SplitRelation (regularSplits a xs sX sY) x y →
       ∃ (i : ℕ) (x_val y_val : OpenIntervalType xs i),
@@ -381,7 +384,7 @@ lemma regularSplits_props {α S : Type*}
     IsRamsey σ (regularSplits a xs sX sY) := by
   let rankX (x : {x // x ∈ xs}) : Fin (nSElement a) :=
     ⟨(sX x).val + (nSElement a - nD (IsGreenD.eqvClass a)), by
-      have := (sX x).isLt; rw [nSElement]; omega⟩
+      have h_lt := (sX x).isLt; rw [nSElement]; omega⟩
   apply combineSplits_props a xs (nSElement a - nD (IsGreenD.eqvClass a))
     σ σ_Y rankX sY hsY_ramsey h_σ_Y h_cov hsY_strict
   · intro x hx
@@ -398,14 +401,14 @@ lemma regularSplits_props {α S : Type*}
         have h_eq := congrArg Fin.val hsr_pq.left
         simp only [regularSplits, combineSplits, hp, hq, ↓reduceDIte] at h_eq
         omega
-      · intro z hz1 hz2
+      · intro z hz_ge hz_le
         have h_pq_le : (⟨p, hp⟩ : {x // x ∈ xs}) ≤ ⟨q, hq⟩ := le_of_lt hpq
         have h_min_eq : min (⟨p, hp⟩ : {x // x ∈ xs}) ⟨q, hq⟩ = ⟨p, hp⟩ := min_eq_left h_pq_le
         have h_max_eq : max (⟨p, hp⟩ : {x // x ∈ xs}) ⟨q, hq⟩ = ⟨q, hq⟩ := max_eq_right h_pq_le
-        rw [h_min_eq] at hz1
-        rw [h_max_eq] at hz2
-        have hz1_val : min p q ≤ z.val := (min_eq_left (le_of_lt hpq)).symm ▸ hz1
-        have hz2_val : z.val ≤ max p q := (max_eq_right (le_of_lt hpq)).symm ▸ hz2
+        rw [h_min_eq] at hz_ge
+        rw [h_max_eq] at hz_le
+        have hz1_val : min p q ≤ z.val := (min_eq_left (le_of_lt hpq)).symm ▸ hz_ge
+        have hz2_val : z.val ≤ max p q := (max_eq_right (le_of_lt hpq)).symm ▸ hz_le
         have hsr_right_eval := hsr_pq.right z.val hz1_val hz2_val
         rw [min_eq_left (le_of_lt hpq)] at hsr_right_eval
         have hz_prop := z.property
@@ -426,18 +429,18 @@ lemma regularSplits_props {α S : Type*}
         have h_eq := congrArg Fin.val hsr_pq.left
         simp only [regularSplits, combineSplits, hp, hq, ↓reduceDIte] at h_eq
         omega
-      · intro z hz1 hz2
+      · intro z hz_ge hz_le
         have h_pq_le : (⟨p, hp⟩ : {x // x ∈ xs}) ≤ ⟨q, hq⟩ := le_of_lt hpq
         have h_min_eq : min (⟨p, hp⟩ : {x // x ∈ xs}) ⟨q, hq⟩ = ⟨p, hp⟩ := min_eq_left h_pq_le
         have h_max_eq : max (⟨p, hp⟩ : {x // x ∈ xs}) ⟨q, hq⟩ = ⟨q, hq⟩ := max_eq_right h_pq_le
-        rw [h_min_eq] at hz1
-        rw [h_max_eq] at hz2
+        rw [h_min_eq] at hz_ge
+        rw [h_max_eq] at hz_le
         have hz1_val : min p q ≤ z.val := by
           rw [min_eq_left (le_of_lt hpq)]
-          exact hz1
+          exact hz_ge
         have hz2_val : z.val ≤ max p q := by
           rw [max_eq_right (le_of_lt hpq)]
-          exact hz2
+          exact hz_le
         have hsr_right_eval := hsr_pq.right z.val hz1_val hz2_val
         rw [min_eq_left (le_of_lt hpq)] at hsr_right_eval
         have hz_prop := z.property
@@ -458,13 +461,13 @@ lemma regularSplits_props {α S : Type*}
           simp only [regularSplits, combineSplits, dif_pos hu]
         rw [h_rx, h_ru] at h_eq
         omega
-      · intro z hz1 hz2
+      · intro z hz_ge hz_le
         rcases le_or_gt x u with hxu | hux
         · have hxu_le : (⟨x, hx⟩ : {x // x ∈ xs}) ≤ ⟨u, hu⟩ := hxu
-          rw [min_eq_left hxu_le] at hz1 ⊢
-          rw [max_eq_right hxu_le] at hz2
+          rw [min_eq_left hxu_le] at hz_ge ⊢
+          rw [max_eq_right hxu_le] at hz_le
           have h_bound := hsr_xu.right z.val
-            ((min_eq_left hxu).symm ▸ hz1) ((max_eq_right hxu).symm ▸ hz2)
+            ((min_eq_left hxu).symm ▸ hz_ge) ((max_eq_right hxu).symm ▸ hz_le)
           rw [min_eq_left hxu] at h_bound
           have hb := Fin.le_iff_val_le_val.mp h_bound
           have h_rz : (regularSplits a xs sX sY z.val).val =
@@ -476,11 +479,11 @@ lemma regularSplits_props {α S : Type*}
           rw [h_rz, h_rx] at hb
           exact Fin.le_iff_val_le_val.mpr (by omega)
         · have hux_le : (⟨u, hu⟩ : {x // x ∈ xs}) ≤ ⟨x, hx⟩ := le_of_lt hux
-          rw [min_eq_right hux_le] at hz1 ⊢
-          rw [max_eq_left hux_le] at hz2
+          rw [min_eq_right hux_le] at hz_ge ⊢
+          rw [max_eq_left hux_le] at hz_le
           have h_bound := hsr_xu.right z.val
-            ((min_eq_right (le_of_lt hux)).symm ▸ hz1)
-            ((max_eq_left (le_of_lt hux)).symm ▸ hz2)
+            ((min_eq_right (le_of_lt hux)).symm ▸ hz_ge)
+            ((max_eq_left (le_of_lt hux)).symm ▸ hz_le)
           rw [min_eq_right (le_of_lt hux)] at h_bound
           have hb := Fin.le_iff_val_le_val.mp h_bound
           have h_rz : (regularSplits a xs sX sY z.val).val =
@@ -518,7 +521,8 @@ lemma simon_split_regular_case {S : Type*} [Semigroup S] [Fintype S]
     ⟨fun x y ↦ σ.σ x.val y.val, fun x y z hx hy ↦ σ.prop x.val y.val z.val hx hy⟩
   let σ_Y (i : ℕ) : MultiplicativeLabeling S (OpenIntervalType xs i) :=
     ⟨fun x y ↦ σ.σ x.val y.val, fun x y z hx hy ↦ σ.prop x.val y.val z.val hx hy⟩
-  obtain ⟨sX, hsX_norm, hsX_ramsey⟩ := simon_regular_d_case σ_X (IsGreenD.eqvClass a) ⟨a, rfl⟩ h_reg
+  obtain ⟨sX, hsX_norm, hsX_ramsey⟩ :=
+    simon_regular_d_case σ_X (IsGreenD.eqvClass a) ⟨a, rfl⟩ h_reg
     (fun x y hlt ↦ (buildXSeq_properties a σ _h_img x₀).2.1 x.val x.prop y.val y.prop hlt)
   choose sY hsY_ramsey hsY_strict using build_interval_splits_of_ih a σ _h_img x₀ xs
     (buildXSeq_properties a σ _h_img x₀).2.2.2 (buildXSeq_properties a σ _h_img x₀).2.2.1 ih
@@ -528,7 +532,7 @@ lemma simon_split_regular_case {S : Type*} [Semigroup S] [Fintype S]
     (buildXSeq_properties a σ _h_img x₀).2.2.2
     (h_interval_ramsey := combineSplits_interval_ramsey a xs
       (fun x : {x // x ∈ xs} ↦ (⟨(sX x).val + (nSElement a - nD (IsGreenD.eqvClass a)),
-        by have := (sX x).isLt; rw [nSElement]; omega⟩ : Fin (nSElement a)))
+        by have h_lt := (sX x).isLt; rw [nSElement]; omega⟩ : Fin (nSElement a)))
       sY (nSElement a - nD (IsGreenD.eqvClass a)) (buildXSeq_properties a σ _h_img x₀).2.2.2
       (fun x hx ↦ buildXSeq_covers a σ x₀ x (Finset.min'_le _ _ (Finset.mem_univ x)) hx) hsY_strict
       (by intro x; exact Nat.le_add_left _ _))

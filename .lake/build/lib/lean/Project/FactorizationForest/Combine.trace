@@ -1,9 +1,9 @@
 {"synthetic": false,
  "schemaVersion": "2025-09-10",
  "outputs":
- {"o": ["963a53cdd1aa3ea1.olean"],
+ {"o": ["2bb0781a205e669c.olean"],
   "m": false,
-  "i": "770ad4e296671f75.ilean",
+  "i": "fa14a3fa6123d693.ilean",
   "c": "4ecf626acab260a2.c"},
  "log":
  [{"message":
@@ -34,7 +34,7 @@
   ["Lean 4.33.0, commit 62eed1db4d67327ec8120be05f1a1b0847d74561",
    "8fa8fbe052c71a8e"],
   ["C:\\Users\\reems\\git-repositories\\lean4-factorization-forest\\Project\\FactorizationForest\\Combine.lean",
-   "60ed012241c05cc6"],
+   "1e0ef23f491cea59"],
   ["options",
    [["-DmaxSynthPendingDepth=3", "c78e353d34de85d4"],
     ["-Dweak.linter.mathlibStandardSet=true", "8a155799906f2b42"],
@@ -44,4 +44,4 @@
   ["Module.name: Project.FactorizationForest.Combine", "2753442d5667908b"],
   ["Package.id?: (some Project)", "264312e6c45eec93"],
   ["Module.leanArgs: #[]", "00000000000006bb"]],
- "depHash": "fc0fa2458a9c0018"}
+ "depHash": "52a6a75bed58e8d7"}

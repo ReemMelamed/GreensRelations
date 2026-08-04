@@ -55,7 +55,7 @@ noncomputable abbrev irregularSplits {α S : Type*}
       Split (OpenIntervalType xs i) (nSElement a)) :
     Split α (nSElement a) :=
   combineSplits a xs
-    (fun _ => ⟨nSElement a - 1, by have := nSElement_pos a; omega⟩) sY
+    (fun _ => ⟨nSElement a - 1, by have h_pos := nSElement_pos a; omega⟩) sY
 
 /-- Proves the normalization and Ramsey properties specifically for `irregularSplits`. -/
 lemma irregularSplits_props {α S : Type*}
@@ -72,13 +72,13 @@ lemma irregularSplits_props {α S : Type*}
     (h_max_val : (Finset.max' (Finset.univ : Finset (Fin (nSElement a)))
       Finset.univ_nonempty).val = nSElement a - 1)
     (h_σ_Y : ∀ i x y, (σ_Y i).σ x y = σ.σ x.val y.val)
-    (h_cov : ∀ x, x ∉ xs → ∃ (i : ℕ) (h1 : i < xs.length),
-      xs.get ⟨i, h1⟩ < x ∧
-      ∀ (h2 : i + 1 < xs.length), x < xs.get ⟨i + 1, h2⟩)
+    (h_cov : ∀ x, x ∉ xs → ∃ (i : ℕ) (hi_lt : i < xs.length),
+      xs.get ⟨i, hi_lt⟩ < x ∧
+      ∀ (h_next_lt : i + 1 < xs.length), x < xs.get ⟨i + 1, h_next_lt⟩)
     (hsY_strict : ∀ (i : ℕ) [Nonempty (OpenIntervalType xs i)],
       ∀ z : OpenIntervalType xs i, (sY i z).val < nSElement a - 1)
-    (h_xs_mono : ∀ (i j : ℕ) (h1 : i < xs.length) (h2 : j < xs.length), i < j →
-      xs.get ⟨i, h1⟩ < xs.get ⟨j, h2⟩)
+    (h_xs_mono : ∀ (i j : ℕ) (hi_lt : i < xs.length) (hj_lt : j < xs.length), i < j →
+      xs.get ⟨i, hi_lt⟩ < xs.get ⟨j, hj_lt⟩)
     (h_xs_len : xs.length ≤ 2)
     (h_interval_ramsey : ∀ x y, x ∉ xs → x < y →
       SplitRelation (irregularSplits a xs sY) x y →
@@ -88,7 +88,7 @@ lemma irregularSplits_props {α S : Type*}
     IsNormalized (irregularSplits a xs sY) ∧
     IsRamsey σ (irregularSplits a xs sY) := by
   exact combineSplits_props a xs (nSElement a - 1) σ σ_Y
-    (fun _ ↦ ⟨nSElement a - 1, by have := nSElement_pos a; omega⟩)
+    (fun _ ↦ ⟨nSElement a - 1, by have h_pos := nSElement_pos a; omega⟩)
     sY hsY_ramsey h_σ_Y h_cov hsY_strict
     (h_rankX_ge := fun x hx ↦ by dsimp only; omega)
     (h_xs_mono := h_xs_mono)
@@ -97,12 +97,12 @@ lemma irregularSplits_props {α S : Type*}
       rcases List.mem_iff_get.mp hx with ⟨⟨ix, hix⟩, rfl⟩
       rcases List.mem_iff_get.mp hy with ⟨⟨iy, hiy⟩, rfl⟩
       rcases List.mem_iff_get.mp hz with ⟨⟨iz, hiz⟩, rfl⟩
-      have h1 : ix < iy := by
+      have h_ix_lt_iy : ix < iy := by
         rcases lt_trichotomy ix iy with h | rfl | h
         · exact h
         · exact False.elim (lt_irrefl _ hlt_xy)
         · exact False.elim (lt_irrefl _ (hlt_xy.trans (h_xs_mono iy ix hiy hix h)))
-      have h2 : iy < iz := by
+      have h_iy_lt_iz : iy < iz := by
         rcases lt_trichotomy iy iz with h | rfl | h
         · exact h
         · exact False.elim (lt_irrefl _ hlt_yz)
@@ -113,12 +113,12 @@ lemma irregularSplits_props {α S : Type*}
       rcases List.mem_iff_get.mp hy with ⟨⟨iy, hiy⟩, rfl⟩
       rcases List.mem_iff_get.mp hu with ⟨⟨iu, hiu⟩, rfl⟩
       rcases List.mem_iff_get.mp hv with ⟨⟨iv, hiv⟩, rfl⟩
-      have : ix < iy := by
+      have h_ix_lt_iy : ix < iy := by
         rcases lt_trichotomy ix iy with h | rfl | h
         · exact h
         · exact False.elim (lt_irrefl _ hlt_xy)
         · exact False.elim (lt_irrefl _ (hlt_xy.trans (h_xs_mono iy ix hiy hix h)))
-      have : iu < iv := by
+      have h_iu_lt_iv : iu < iv := by
         rcases lt_trichotomy iu iv with h | rfl | h
         · exact h
         · exact False.elim (lt_irrefl _ hlt_uv)
@@ -167,7 +167,7 @@ lemma simon_split_irregular_case {S : Type*} [Semigroup S] [Fintype S]
         buildXSeq a σ (Finset.min' _ h) else [x₀] := by rw [buildXSeq]
     have h_c0 : (Finset.univ.filter (fun z ↦ x₀ < z ∧ IsGreenD (σ.σ x₀ z) a)).Nonempty := by
       by_contra hn
-      have : xs.length = 1 := by
+      have h_len_eq_one : xs.length = 1 := by
         change (buildXSeq a σ x₀).length = 1
         rw [h_eval0, dif_neg hn]
         rfl
@@ -183,7 +183,7 @@ lemma simon_split_irregular_case {S : Type*} [Semigroup S] [Fintype S]
         buildXSeq a σ (Finset.min' _ h) else [x1] := by rw [buildXSeq]
     have h_c1 : (Finset.univ.filter (fun z ↦ x1 < z ∧ IsGreenD (σ.σ x1 z) a)).Nonempty := by
       by_contra hn
-      have : xs.length = 2 := by rw [h_bw1, h_eval1, dif_neg hn]; rfl
+      have h_len_eq_two : xs.length = 2 := by rw [h_bw1, h_eval1, dif_neg hn]; rfl
       omega
     let x2 := Finset.min' _ h_c1
     have h_x2_p : x1 < x2 ∧ IsGreenD (σ.σ x1 x2) a :=
@@ -202,16 +202,16 @@ lemma simon_split_irregular_case {S : Type*} [Semigroup S] [Fintype S]
     (h_σ_Y := fun _ _ _ ↦ rfl)
     (h_cov := fun x hx ↦ buildXSeq_covers a σ x₀ x (Finset.min'_le _ _ (Finset.mem_univ x)) hx)
     (hsY_strict := fun i _ z ↦ by
-      have := hsY_strict i z
-      simp only [nD, if_neg _h_not_reg] at this
+      have h_strict := hsY_strict i z
+      simp only [nD, if_neg _h_not_reg] at h_strict
       omega)
     (h_interval_ramsey := combineSplits_interval_ramsey a xs
-      (fun _ ↦ ⟨nSElement a - 1, by have := nSElement_pos a; omega⟩)
+      (fun _ ↦ ⟨nSElement a - 1, by have h_pos := nSElement_pos a; omega⟩)
       sY (nSElement a - 1) (buildXSeq_properties a σ _h_img x₀).2.2.2
       (fun x hx ↦ buildXSeq_covers a σ x₀ x (Finset.min'_le _ _ (Finset.mem_univ x)) hx)
       (fun i _ z ↦ by
-        have := hsY_strict i z
-        simp only [nD, if_neg _h_not_reg] at this
+        have h_strict := hsY_strict i z
+        simp only [nD, if_neg _h_not_reg] at h_strict
         omega)
       (by intro x; dsimp only; omega))⟩
 

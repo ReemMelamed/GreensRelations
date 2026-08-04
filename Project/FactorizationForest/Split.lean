@@ -58,17 +58,16 @@ theorem simon_split {S α : Type*} [Semigroup S] [Fintype S]
   let y₀ := Finset.max' (Finset.univ : Finset α) Finset.univ_nonempty
   let a := σ.σ x₀ y₀
   have ha : labelingIn σ (jUp a) := fun x y hlt ↦ by
-    have hx0 : x₀ ≤ x := Finset.min'_le _ _ (Finset.mem_univ _)
-    have hy0 : y ≤ y₀ := Finset.le_max' _ _ (Finset.mem_univ _)
-    change IsGreenJRel (σ.σ x₀ y₀) (σ.σ x y)
-    rcases hx0.eq_or_lt with rfl | hx0_lt
-    · rcases hy0.eq_or_lt with rfl | hy0_lt
+    have h_x0_le : x₀ ≤ x := Finset.min'_le _ _ (Finset.mem_univ _)
+    have h_le_y0 : y ≤ y₀ := Finset.le_max' _ _ (Finset.mem_univ _)
+    rcases h_x0_le.eq_or_lt with rfl | h_x0_lt
+    · rcases h_le_y0.eq_or_lt with rfl | h_lt_y0
       · exact IsGreenJRel.refl _
-      · exact IsGreenJRel.mul_right (σ.σ y y₀) (σ.prop _ y y₀ hlt hy0_lt).symm
-    · rcases hy0.eq_or_lt with rfl | hy0_lt
-      · exact IsGreenJRel.mul_left (σ.σ x₀ x) (σ.prop x₀ x _ hx0_lt hlt).symm
+      · exact IsGreenJRel.mul_right (σ.σ y y₀) (σ.prop _ y y₀ hlt h_lt_y0).symm
+    · rcases h_le_y0.eq_or_lt with rfl | h_lt_y0
+      · exact IsGreenJRel.mul_left (σ.σ x₀ x) (σ.prop x₀ x y h_x0_lt hlt).symm
       · exact IsGreenJRel.mul_both (σ.σ x₀ x) (σ.σ y y₀)
-          (by rw [← σ.prop x₀ y y₀ (hx0_lt.trans hlt) hy0_lt, ← σ.prop x₀ x y hx0_lt hlt])
+          (by rw [← σ.prop x₀ y y₀ (h_x0_lt.trans hlt) h_lt_y0, ← σ.prop x₀ x y h_x0_lt hlt])
   obtain ⟨s_a, h_norm, h_ramsey⟩ := simon_split_induction a σ ha
   have h_le : nSElement a ≤ nS S := by
     unfold nS
@@ -88,22 +87,22 @@ theorem simon_split {S α : Type*} [Semigroup S] [Fintype S]
       rw [Fin.le_iff_val_le_val, Fin.le_iff_val_le_val]
       change (s_a z).val + Δ ≤ (s_a (min u v)).val + Δ ↔ (s_a z).val ≤ (s_a (min u v)).val
       exact ⟨fun h ↦ by omega, fun h ↦ by omega⟩
-    exact ⟨fun h ↦ ⟨h_eq.mp h.1, fun z hz1 hz2 ↦ (h_le z).mp (h.2 z hz1 hz2)⟩,
-           fun h ↦ ⟨h_eq.mpr h.1, fun z hz1 hz2 ↦ (h_le z).mpr (h.2 z hz1 hz2)⟩⟩
+    exact ⟨fun h ↦ ⟨h_eq.mp h.1, fun z hz_ge hz_le ↦ (h_le z).mp (h.2 z hz_ge hz_le)⟩,
+           fun h ↦ ⟨h_eq.mpr h.1, fun z hz_ge hz_le ↦ (h_le z).mpr (h.2 z hz_ge hz_le)⟩⟩
   exact ⟨s, by
       ext; simp only [h_norm, s]
-      have h2 : (Finset.max' Finset.univ Finset.univ_nonempty : Fin (nSElement a)).val
+      have h_max_a : (Finset.max' Finset.univ Finset.univ_nonempty : Fin (nSElement a)).val
           = nSElement a - 1 :=
         congrArg Fin.val ((Finset.max'_eq_iff _ _
-          (⟨nSElement a - 1, by have : 0 < nSElement a := nSElement_pos a; omega⟩ :
+          (⟨nSElement a - 1, by have h_pos : 0 < nSElement a := nSElement_pos a; omega⟩ :
           Fin (nSElement a))).mpr ⟨Finset.mem_univ _, fun w _ ↦ Fin.le_iff_val_le_val.mpr
           (Nat.le_pred_of_lt w.isLt)⟩)
-      have h3 : (Finset.max' Finset.univ Finset.univ_nonempty : Fin (nS S)).val = nS S - 1 :=
+      have h_max_S : (Finset.max' Finset.univ Finset.univ_nonempty : Fin (nS S)).val = nS S - 1 :=
         congrArg Fin.val ((Finset.max'_eq_iff _ _
-          (⟨nS S - 1, by have : 0 < nS S := Fin.pos_iff_nonempty.mpr inferInstance; omega⟩ :
+          (⟨nS S - 1, by have h_pos : 0 < nS S := Fin.pos_iff_nonempty.mpr inferInstance; omega⟩ :
           Fin (nS S))).mpr ⟨Finset.mem_univ _, fun w _ ↦ Fin.le_iff_val_le_val.mpr
           (Nat.le_pred_of_lt w.isLt)⟩)
-      have h4 : 0 < nSElement a := nSElement_pos a
+      have h_pos_a : 0 < nSElement a := nSElement_pos a
       omega,
     fun x y z hxy hyz hsr_xy hsr_yz ↦
       h_ramsey.1 x y z hxy hyz ((hsr_iff x y).mp hsr_xy) ((hsr_iff y z).mp hsr_yz),
