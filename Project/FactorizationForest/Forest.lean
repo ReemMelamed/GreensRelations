@@ -875,7 +875,7 @@ theorem buildTree_isRamsey {A S : Type*} [Semigroup S] {h : ℕ} [Nonempty (Fin 
   · rw [buildFactorizationTree.eq_def]; dsimp only at *; split_ifs; sorry
   · rw [buildFactorizationTree.eq_def]; dsimp only at *; split_ifs <;> split <;> split <;> sorry
   · rw [buildFactorizationTree.eq_def]; dsimp only at *; split_ifs <;> split <;> split <;> sorry
-  · rw [buildFactorizationTree.eq_def]; dsimp only at *; split_ifs <;> split <;> split <;> grind
+  · rw [buildFactorizationTree.eq_def]; dsimp only at *; split_ifs <;> split <;> split <;> sorry
 
 /-- Given a Ramsey split, one can construct a factorization tree with bounded height. -/
 theorem exists_factorizationTree_of_split {A S : Type*} [Semigroup S]
