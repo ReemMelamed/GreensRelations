@@ -72,7 +72,8 @@ lemma partitionIndices_props {n : ℕ} {l : List (Fin (n + 1))} {i j : Fin (n + 
               omega
             · exact h_adj k hk⟩
 
-/-- Taking the first `x` elements and then `y` elements from the remainder gives the first `x + y` elements. -/
+/-- Taking the first `x` elements and then `y` elements
+from the remainder gives the first `x + y` elements. -/
 lemma take_append_take_drop {A : Type*} : (L : List A) → (x y : ℕ) →
     L.take x ++ (L.drop x).take y = L.take (x + y)
   | [], _, _ => by simp
@@ -581,7 +582,8 @@ decreasing_by
 theorem buildTree_word_eq {A S : Type*} [Semigroup S] {h : ℕ} [Nonempty (Fin h)]
     (eval : List A → S) (u : List A) (hu : u ≠ []) (s : Split (Fin (u.length + 1)) h) :
     (buildFactorizationTree eval u hu s).word = u := by
-  let P := fun (h_val : ℕ) => ∀ [Nonempty (Fin h_val)] (u : List A) (hu : u ≠ []) (s' : Split (Fin (u.length + 1)) h_val),
+  let P := fun (h_val : ℕ) => ∀ [Nonempty (Fin h_val)] (u : List A) (hu : u ≠ [])
+    (s' : Split (Fin (u.length + 1)) h_val),
     (buildFactorizationTree eval u hu s').word = u
   have H_P : P h := by
     induction h using Nat.strong_induction_on with | h h' ih =>
@@ -624,7 +626,8 @@ lemma foldl_max_bound {A : Type*}
 theorem buildTree_height_bound {A S : Type*} [Semigroup S] {h : ℕ} [Nonempty (Fin h)]
     (eval : List A → S) (u : List A) (hu : u ≠ []) (s : Split (Fin (u.length + 1)) h) :
     (buildFactorizationTree eval u hu s).height ≤ 3 * h - 1 := by
-  let P := fun (h_val : ℕ) => ∀ [Nonempty (Fin h_val)] (u : List A) (hu : u ≠ []) (s' : Split (Fin (u.length + 1)) h_val),
+  let P := fun (h_val : ℕ) => ∀ [Nonempty (Fin h_val)] (u : List A) (hu : u ≠ [])
+    (s' : Split (Fin (u.length + 1)) h_val),
     (buildFactorizationTree eval u hu s').height ≤ 3 * h_val - 1
   have H_P : P h := by
     induction h using Nat.strong_induction_on with | h h' ih =>
