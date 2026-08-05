@@ -508,8 +508,9 @@ def buildFactorizationTree {A S : Type*} [Semigroup S] {h : ℕ} [Nonempty (Fin 
             match children with
             | [] => FactorizationTree.binary (FactorizationTree.leaf (u.head hu))
                       (FactorizationTree.leaf (u.head hu)) u 0
-            | [c] => FactorizationTree.nary [c] u (max_h_children + 1)
-            | c1::c2::rest => FactorizationTree.nary children u (max_h_children + 1)
+            | [c] => FactorizationTree.binary c c u (max_h_children + 1)
+            | [c1, c2] => FactorizationTree.binary c1 c2 u (max_h_children + 1)
+            | c1::c2::c3::rest => FactorizationTree.nary children u (max_h_children + 1)
           else
             if h_k_eq_pre : k_pre = k then
               t_pre
@@ -578,6 +579,52 @@ decreasing_by
     | nil => rfl
     | cons _ _ => simp at h
 
+lemma word_ite {A} (c : Prop) [Decidable c] (t f : FactorizationTree A) :
+  (if c then t else f).word = if c then t.word else f.word := by
+  split <;> rfl
+
+lemma word_dite {A} (c : Prop) [Decidable c] (t : c → FactorizationTree A)
+    (f : ¬c → FactorizationTree A) :
+  (dite c t f).word = dite c (fun h => (t h).word) (fun h => (f h).word) := by
+  split <;> rfl
+
+lemma match_children_word_eq1 {A : Type*} (children : List (FactorizationTree A)) (u : List A)
+    (hu : u ≠ []) (max_h_children : ℕ) :
+  (match children with
+  | [] => (FactorizationTree.leaf (u.head hu)).binary (FactorizationTree.leaf (u.head hu)) u 0
+  | [c] => c.binary c u (max_h_children + 1)
+  | [c1, c2] => c1.binary c2 u (max_h_children + 1)
+  | _ :: _ :: _ :: _ => FactorizationTree.nary children u (max_h_children + 1)).word = u := by
+  match children with
+  | [] => rfl
+  | [_] => rfl
+  | [_, _] => rfl
+  | _ :: _ :: _ :: _ => rfl
+
+lemma match_children_word_eq2 {A : Type*} (children : List (FactorizationTree A)) (u : List A)
+    (hu : u ≠ []) (max_h_children : ℕ) (t_pre : FactorizationTree A) :
+  (match children with
+  | [] => (FactorizationTree.leaf (u.head hu)).binary (FactorizationTree.leaf (u.head hu)) u 0
+  | [c] => t_pre.binary c u (max t_pre.height c.height + 1)
+  | _ :: _ :: _ => FactorizationTree.nary
+    (t_pre :: children) u (max t_pre.height max_h_children + 1)).word = u := by
+  match children with
+  | [] => rfl
+  | [_] => rfl
+  | _ :: _ :: _ => rfl
+
+lemma match_children_word_eq3 {A : Type*} (children : List (FactorizationTree A)) (u : List A)
+    (hu : u ≠ []) (max_h_children : ℕ) (t_suf : FactorizationTree A) :
+  (match children with
+  | [] => (FactorizationTree.leaf (u.head hu)).binary (FactorizationTree.leaf (u.head hu)) u 0
+  | [c] => c.binary t_suf u (max c.height t_suf.height + 1)
+  | _ :: _ :: _ => FactorizationTree.nary
+    (children ++ [t_suf]) u (max max_h_children t_suf.height + 1)).word = u := by
+  match children with
+  | [] => rfl
+  | [_] => rfl
+  | _ :: _ :: _ => rfl
+
 /-- The tree built by `buildFactorizationTree` has the original word as its word. -/
 theorem buildTree_word_eq {A S : Type*} [Semigroup S] {h : ℕ} [Nonempty (Fin h)]
     (eval : List A → S) (u : List A) (hu : u ≠ []) (s : Split (Fin (u.length + 1)) h) :
@@ -586,13 +633,47 @@ theorem buildTree_word_eq {A S : Type*} [Semigroup S] {h : ℕ} [Nonempty (Fin h
     (s' : Split (Fin (u.length + 1)) h_val),
     (buildFactorizationTree eval u hu s').word = u
   have H_P : P h := by
+    clear u hu s
     induction h using Nat.strong_induction_on with | h h' ih =>
     intro h_nonempty u hu s'
     have h_pos : 0 < h' := by
       have ⟨⟨_, hlt⟩⟩ := h_nonempty
       omega
     rw [buildFactorizationTree]
-    sorry
+    split
+    · split
+      · exact word_leaf_eq u hu ‹u.length = 1›
+      · rfl
+    · simp only [word_ite, word_dite, match_children_word_eq1,
+        match_children_word_eq2, match_children_word_eq3, dite_eq_ite, ite_self]
+      by_cases h_idxs : (splitIndices s').map (fun x : Fin (u.length + 1) => (x:ℕ)) = [0, u.length]
+      · simp only [h_idxs, if_true]
+      · simp only [h_idxs, if_false]
+        by_cases h_empty : splitIndices s' = []
+        · simp only [h_empty, dite_true]
+          haveI inst : Nonempty (Fin (h' - 1)) := by
+            if h_eq_one : h' = 1 then
+              have h_max_zero :
+                (Finset.max' Finset.univ Finset.univ_nonempty : Fin h').val = 0 := by omega
+              have h_all_max : ∀ x : Fin (u.length + 1),
+                s' x = Finset.max' Finset.univ Finset.univ_nonempty := by
+                intro x
+                have hs := (s' x).isLt
+                apply Fin.ext
+                omega
+              have h_first_in : (⟨0, by omega⟩ : Fin (u.length + 1)) ∈ splitIndices s' := by
+                dsimp [splitIndices]
+                simp only [List.mem_filter, List.mem_finRange, true_and]
+                simp [h_all_max _]
+              rw [h_empty] at h_first_in
+              contradiction
+            else
+              exact ⟨⟨0, by omega⟩⟩
+          exact ih (h' - 1) (by omega) u hu _
+        · simp only [h_empty, dite_false]
+          split_ifs
+          all_goals
+            simp_all [FactorizationTree.word]
   exact H_P u hu s
 
 /-- Auxiliary lemma to add 1 to both sides of an inequality with subtraction. -/
