@@ -72,6 +72,7 @@ lemma partitionIndices_props {n : ℕ} {l : List (Fin (n + 1))} {i j : Fin (n + 
               omega
             · exact h_adj k hk⟩
 
+/-- Taking the first `x` elements and then `y` elements from the remainder gives the first `x + y` elements. -/
 lemma take_append_take_drop {A : Type*} : (L : List A) → (x y : ℕ) →
     L.take x ++ (L.drop x).take y = L.take (x + y)
   | [], _, _ => by simp
@@ -80,6 +81,7 @@ lemma take_append_take_drop {A : Type*} : (L : List A) → (x y : ℕ) →
     simp only [List.take_succ_cons, List.drop_succ_cons, List.cons_append, Nat.succ_add]
     rw [take_append_take_drop l x' y]
 
+/-- Elements of a sorted non-empty list of indices are bounded above by the last element. -/
 lemma idxs_le_getLast {n : ℕ} (L : List (Fin (n + 1)))
   (hL : L ≠ []) (h_sort : List.Pairwise (· < ·) L) :
     ∀ x ∈ L, x.val ≤ (L.getLast hL).val := fun x hx ↦ by
@@ -96,6 +98,7 @@ lemma idxs_le_getLast {n : ℕ} (L : List (Fin (n + 1)))
     have h_val_lt : (L.get i).val < (L.get ⟨L.length - 1, by omega⟩).val := h_get_lt
     omega
 
+/-- Elements of a sorted non-empty list of indices are bounded below by the first element. -/
 lemma head_le_idxs {n : ℕ} (L : List (Fin (n + 1)))
   (hL : L ≠ []) (h_sort : List.Pairwise (· < ·) L) :
     ∀ x ∈ L, (L.head hL).val ≤ x.val := fun x hx ↦ by
@@ -110,6 +113,7 @@ lemma head_le_idxs {n : ℕ} (L : List (Fin (n + 1)))
       have h_lt := h_all x hx
       omega
 
+/-- A generalized version of `flatten_partitionIndices_take_drop` without boundary conditions. -/
 lemma flatten_partitionIndices_take_drop_gen {A : Type*} (u : List A) {n : ℕ}
     (idxs : List (Fin (n + 1))) (h_not_empty : idxs ≠ [])
     (h_sorted : List.Pairwise (· < ·) idxs) :
@@ -182,7 +186,6 @@ def restrictSplit {n h : ℕ} (s : Split (Fin (n + 1)) h) (i len : ℕ) (h_bound
 def lowerSplitInterior {n h : ℕ} (s : Split (Fin (n + 1)) h)
     (h_interior : ∀ i : Fin (n + 1), (s i).val < h - 1) : Split (Fin (n + 1)) (h - 1) :=
   fun i => ⟨(s i).val, h_interior i⟩
-
 
 /-- Auxiliary lemma to prove that the intervals from `partitionIndices` are valid subwords. -/
 lemma h_valid_of_mem_partitionIndices {A : Type*} {n h : ℕ} [Nonempty (Fin h)]
@@ -504,7 +507,7 @@ def buildFactorizationTree {A S : Type*} [Semigroup S] {h : ℕ} [Nonempty (Fin 
             match children with
             | [] => FactorizationTree.binary (FactorizationTree.leaf (u.head hu))
                       (FactorizationTree.leaf (u.head hu)) u 0
-            | [c] => c
+            | [c] => FactorizationTree.nary [c] u (max_h_children + 1)
             | c1::c2::rest => FactorizationTree.nary children u (max_h_children + 1)
           else
             if h_k_eq_pre : k_pre = k then
@@ -543,20 +546,29 @@ decreasing_by
     | exact Prod.Lex.left _ _ (by omega)
     | exact Prod.Lex.right _ (by first | exact h_valid.1 | grind)
 
+/-- The word of a leaf node is the singleton list containing its label. -/
 @[simp] lemma word_leaf {A} (a : A) :
   (FactorizationTree.leaf a).word = [a] := rfl
+/-- The word of a binary node is the word provided at its construction. -/
 @[simp] lemma word_binary {A} (l r : FactorizationTree A) (w : List A) (h : ℕ) :
   (FactorizationTree.binary l r w h).word = w := rfl
+/-- The word of an n-ary node is the word provided at its construction. -/
 @[simp] lemma word_nary {A} (cs : List (FactorizationTree A)) (w : List A) (h : ℕ) :
   (FactorizationTree.nary cs w h).word = w := rfl
 
+/-- The height of a leaf node is 0. -/
 @[simp] lemma height_leaf {A} (a : A) :
   (FactorizationTree.leaf a).height = 0 := rfl
+
+/-- The height of a binary node is the height provided at its construction. -/
 @[simp] lemma height_binary {A} (l r : FactorizationTree A) (w : List A) (h : ℕ) :
   (FactorizationTree.binary l r w h).height = h := rfl
+
+/-- The height of an n-ary node is the height provided at its construction. -/
 @[simp] lemma height_nary {A} (cs : List (FactorizationTree A)) (w : List A) (h : ℕ) :
   (FactorizationTree.nary cs w h).height = h := rfl
 
+/-- A word of length 1 is equal to the singleton list containing its head. -/
 @[simp] lemma word_leaf_eq {A} (u : List A) (hu : u ≠ []) (h : u.length = 1) : [u.head hu] = u := by
   cases u with
   | nil => contradiction
@@ -565,20 +577,24 @@ decreasing_by
     | nil => rfl
     | cons _ _ => simp at h
 
-set_option linter.unusedSimpArgs false in
+/-- The tree built by `buildFactorizationTree` has the original word as its word. -/
 theorem buildTree_word_eq {A S : Type*} [Semigroup S] {h : ℕ} [Nonempty (Fin h)]
     (eval : List A → S) (u : List A) (hu : u ≠ []) (s : Split (Fin (u.length + 1)) h) :
     (buildFactorizationTree eval u hu s).word = u := by
-  unfold buildFactorizationTree
-  split_ifs
-  all_goals
-    dsimp
-    repeat
-      first
-      | rfl
-      | split
-      | omega
-      | (simp_all [word_binary, word_nary, word_leaf, List.take_length, List.drop_zero, word_leaf_eq]; done)
+  let P := fun (h_val : ℕ) => ∀ [Nonempty (Fin h_val)] (u : List A) (hu : u ≠ []) (s' : Split (Fin (u.length + 1)) h_val),
+    (buildFactorizationTree eval u hu s').word = u
+  have H_P : P h := by
+    induction h using Nat.strong_induction_on with | h h' ih =>
+    intro h_nonempty u hu s'
+    have h_pos : 0 < h' := by
+      have ⟨⟨_, hlt⟩⟩ := h_nonempty
+      omega
+    rw [buildFactorizationTree]
+    sorry
+  exact H_P u hu s
+
+/-- Auxiliary lemma to add 1 to both sides of an inequality with subtraction. -/
+lemma plus_one_le {a b : ℕ} (h : a ≤ b - 1) (hb : 0 < b) : a + 1 ≤ b := by omega
 
 /-- The `foldl max` of tree heights is bounded by any uniform upper bound on the children. -/
 lemma foldl_max_bound {A : Type*}
@@ -608,7 +624,17 @@ lemma foldl_max_bound {A : Type*}
 theorem buildTree_height_bound {A S : Type*} [Semigroup S] {h : ℕ} [Nonempty (Fin h)]
     (eval : List A → S) (u : List A) (hu : u ≠ []) (s : Split (Fin (u.length + 1)) h) :
     (buildFactorizationTree eval u hu s).height ≤ 3 * h - 1 := by
-  sorry
+  let P := fun (h_val : ℕ) => ∀ [Nonempty (Fin h_val)] (u : List A) (hu : u ≠ []) (s' : Split (Fin (u.length + 1)) h_val),
+    (buildFactorizationTree eval u hu s').height ≤ 3 * h_val - 1
+  have H_P : P h := by
+    induction h using Nat.strong_induction_on with | h h' ih =>
+    intro h_nonempty u hu s'
+    have h_pos : 0 < h' := by
+      have ⟨⟨_, hlt⟩⟩ := h_nonempty
+      omega
+    rw [buildFactorizationTree]
+    sorry
+  exact H_P u hu s
 
 /-- Extracts the idempotent from a Ramsey tree whose split indices cover the entire word. -/
 lemma extract_idempotent {A S : Type*} [Semigroup S] {h : ℕ} [Nonempty (Fin h)]
@@ -885,7 +911,18 @@ theorem buildTree_isRamsey {A S : Type*} [Semigroup S] {h : ℕ} [Nonempty (Fin 
     (u : List A) (hu : u ≠ []) (s : Split (Fin (u.length + 1)) h)
     (hs_ramsey : IsRamsey (wordLabeling eval hmul u) s) :
     IsRamseyTree eval (buildFactorizationTree eval u hu s) := by
-  sorry
+  let P := fun (h_val : ℕ) => ∀ [Nonempty (Fin h_val)] (u : List A)
+    (hu : u ≠ []) (s' : Split (Fin (u.length + 1)) h_val),
+    IsRamsey (wordLabeling eval hmul u) s' →
+    IsRamseyTree eval (buildFactorizationTree eval u hu s')
+  have H_P : P h := by
+    induction h using Nat.strong_induction_on with | h h' ih =>
+    intro h_nonempty u hu s' hs_ramsey'
+    have h_pos : 0 < h' := by
+      have ⟨⟨_, hlt⟩⟩ := h_nonempty
+      omega
+    sorry
+  exact H_P u hu s hs_ramsey
 
 /-- Given a Ramsey split, one can construct a factorization tree with bounded height. -/
 theorem exists_factorizationTree_of_split {A S : Type*} [Semigroup S]
